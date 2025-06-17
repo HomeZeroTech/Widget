@@ -1,0 +1,278 @@
+hz-embed {
+    width: 100%;
+}
+
+.embed-form {
+    width: 100%;
+    display: block;
+    container-type: inline-size;
+}
+
+.embed-form .embed-row {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.embed-form .embed-col {
+    flex-basis: 0;
+    flex-grow: 1;
+    max-width: 100%;
+    position: relative;
+    width: 100%;
+}
+
+.embed-form .embed-flex-container {
+    display: flex;
+    gap: 16px;
+}
+
+@container (max-width: 500px) {
+    .embed-flex-container {
+        flex-direction: column;
+        gap: 0;
+    }
+}
+
+.embed-address-container {
+    display: flex;
+    gap: 16px;
+    width: 100%;
+    container-type: inline-size;
+}
+
+.embed-address-container .embed-form-container {
+    flex: 1;
+}
+
+/* Make fields stack on smaller screens */
+@container (max-width: 375px) {
+    .embed-address-container {
+        flex-wrap: wrap;
+        gap: 0;
+    }
+
+    .embed-address-container .embed-form-container:first-child {
+        width: 100%;
+        flex: none;
+    }
+
+    .embed-address-container .embed-form-container:not(:first-child) {
+        flex: 1;
+    }
+
+    .embed-address-container .embed-form-container:nth-child(2) {
+        margin-right: 16px;
+    }
+}
+
+.embed-form .embed-form-container {
+    margin-bottom: 16px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.embed-form .embed-label-bold {
+    font-weight: 500 !important;
+    font-size: 12px !important;
+    line-height: 150% !important;
+    margin-bottom: 4px !important;
+    margin-top: 0 !important;
+}
+
+.embed-form .embed-input-field {
+    background-color: #fff !important;
+    border-radius: 8px !important;
+    padding: 12px !important;
+    color: #132039 !important;
+    border: 1px solid #dadee7 !important;
+    transition: all 0.2s ease-in-out !important;
+    box-shadow: none !important;
+    font-size: 14px !important;
+    line-height: 140% !important;
+    margin: 0 !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    outline: none !important;
+    font-weight: 500 !important;
+    &::placeholder {
+        color: #a2acc1 !important;
+    }
+}
+
+/* Add hover and active states for input fields */
+.embed-form .embed-input-field:hover {
+    border-color: var(--primary-color) !important;
+}
+
+.embed-form .embed-input-field:focus {
+    border-color: var(--primary-color) !important;
+}
+
+/* Custom dropdown styling */
+.custom-dropdown {
+    position: relative;
+    width: 100%;
+    cursor: pointer;
+}
+
+.dropdown-selected {
+    padding: 12px;
+    border: 1px solid #dadee7;
+    border-radius: 8px;
+    background-color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: #132039;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease-in-out;
+}
+
+.dropdown-selected:hover {
+    border-color: var(--primary-color) !important;
+}
+
+.dropdown-selected.open {
+    border-color: var(--primary-color) !important;
+}
+
+.dropdown-selected .selected-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 500;
+}
+
+.dropdown-selected .chevron-icon {
+    width: 14px;
+    height: 14px;
+    fill: #132039;
+    transition: transform 0.3s;
+    margin-left: auto;
+    margin-right: 0;
+}
+
+.dropdown-selected.open .chevron-icon {
+    transform: rotate(180deg);
+}
+
+.dropdown-options {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 20px #05234c24;
+    max-height: 200px;
+    overflow-y: auto;
+    display: none;
+    z-index: 1000;
+    padding: 6px;
+}
+
+.dropdown-options.show {
+    display: block;
+}
+
+.dropdown-option {
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    font-size: 14px;
+    color: #7585a3;
+    transition: background-color 0.2s;
+    font-weight: 500;
+    border-radius: 8px;
+}
+
+.dropdown-option .option-content {
+    display: flex;
+    align-items: center;
+}
+
+.dropdown-option .checkmark-icon {
+    display: none;
+    margin-right: 0;
+}
+
+.dropdown-option.selected .checkmark-icon {
+    display: block;
+}
+
+.dropdown-option.selected .checkmark-icon path {
+    fill: var(--contrast-color);
+}
+
+.dropdown-option.selected {
+    background-color: var(--primary-color);
+    color: var(--contrast-color);
+}
+
+.dropdown-option.selected svg {
+    color: var(--contrast-color);
+}
+
+.dropdown-option:hover:not(.selected) {
+    background-color: #f0f4fa;
+    color: black;
+}
+
+.dropdown-selected svg,
+.dropdown-option svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    margin-right: 8px;
+}
+
+.dropdown-selected .selected-icon {
+    width: 16px;
+    height: 16px;
+    display: inline-flex;
+}
+
+/* Submit button */
+.embed-form .embed-submit-button {
+    width: 100% !important;
+    margin: 0 !important;
+    font-size: 16px !important;
+    line-height: 140% !important;
+    padding: 13px 40px !important;
+    border-radius: 10px !important;
+    font-weight: 500 !important;
+    color: #fff !important;
+    transition: all 0.2s ease-in-out;
+    text-align: center !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    border: none !important;
+    cursor: pointer !important;
+}
+
+.embed-form .embed-submit-button:hover {
+    opacity: 0.8 !important;
+}
+
+.embed-form .embed-validation-message {
+    color: #fd3118 !important;
+    font-size: 14px !important;
+    margin-top: 6px !important;
+    margin-bottom: 4px !important;
+    line-height: 150% !important;
+}
+
+.embed-form .embed-title {
+    font-size: 26px;
+    font-weight: 500;
+    margin: 0 0 4px 0;
+}
+
+.embed-form .embed-subtitle {
+    font-size: 18px;
+    margin: 0 0 16px 0;
+}
