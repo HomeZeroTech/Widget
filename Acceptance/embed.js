@@ -66,6 +66,8 @@
             emailLabel: "E-mail",
             dropdownLabel: "Make a choice",
             dropdownPlaceholder: "Make a choice",
+            addressLabel: "Address",
+            addressPlaceholder: "Start typing your address...",
             validation: {
                 city: "Please enter a city.",
                 zipcode: "Please enter a valid zipcode.",
@@ -76,6 +78,7 @@
                 email: "Please enter a valid e-mail address.",
                 emailRequired: "Please enter an e-mail address.",
                 dropdown: "Please select an option.",
+                address: "Please enter a valid address.",
             },
         },
         nl: {
@@ -91,6 +94,8 @@
             emailLabel: "E-mail",
             dropdownLabel: "Maak een keuze",
             dropdownPlaceholder: "Maak een keuze",
+            addressLabel: "Adres",
+            addressPlaceholder: "Begin met typen van uw adres...",
             validation: {
                 city: "Vul een stad in.",
                 zipcode: "Vul een geldige postcode in.",
@@ -101,6 +106,7 @@
                 email: "Vul een geldig e-mailadres in.",
                 emailRequired: "Vul een e-mailadres in.",
                 dropdown: "Selecteer een maatregel.",
+                address: "Vul een geldig adres in.",
             },
         },
         fr: {
@@ -116,6 +122,8 @@
             emailLabel: "E-mail",
             dropdownLabel: "Faites un choix",
             dropdownPlaceholder: "Faites un choix",
+            addressLabel: "Adresse",
+            addressPlaceholder: "Commencez à taper votre adresse...",
             validation: {
                 city: "Veuillez entrer une ville.",
                 zipcode: "Veuillez entrer un code postal valide.",
@@ -126,6 +134,7 @@
                 email: "Veuillez entrer une adresse e-mail valide.",
                 emailRequired: "Veuillez entrer une adresse e-mail.",
                 dropdown: "Veuillez sélectionner une option.",
+                address: "Veuillez entrer une adresse valide.",
             },
         },
         de: {
@@ -141,6 +150,8 @@
             emailLabel: "E-Mail",
             dropdownLabel: "Treffen Sie eine Wahl",
             dropdownPlaceholder: "Treffen Sie eine Wahl",
+            addressLabel: "Adresse",
+            addressPlaceholder: "Beginnen Sie mit der Eingabe Ihrer Adresse...",
             validation: {
                 city: "Bitte geben Sie eine Stadt ein.",
                 zipcode: "Bitte geben Sie eine gültige Postleitzahl ein.",
@@ -151,6 +162,7 @@
                 email: "Bitte geben Sie eine gültige E-Mail-Adresse ein.",
                 emailRequired: "Bitte geben Sie eine E-Mail-Adresse ein.",
                 dropdown: "Bitte wählen Sie eine Option aus.",
+                address: "Bitte geben Sie eine gültige Adresse ein.",
             },
         },
         // Default dutch validation messages for existing fields
@@ -166,6 +178,338 @@
         },
     };
 
+    // Rate limiting for Google Places API
+    const rateLimiter = {
+        requests: [],
+        maxRequests: 50, // Max requests per minute
+        timeWindow: 60000, // 1 minute in milliseconds
+
+        canMakeRequest: function () {
+            const now = Date.now();
+            // Remove old requests outside time window
+            this.requests = this.requests.filter(
+                (time) => now - time < this.timeWindow
+            );
+
+            if (this.requests.length >= this.maxRequests) {
+                return false;
+            }
+
+            this.requests.push(now);
+            return true;
+        },
+    };
+
+    // Google Places API loading and management
+    let googleApiPromise = null;
+    const GOOGLE_API_KEY = "AIzaSyAGOPVG4UinlU37eP7p-Jim3eigcWwLwsA";
+
+    function loadGooglePlacesAPI() {
+        if (googleApiPromise) {
+            return googleApiPromise;
+        }
+
+        googleApiPromise = new Promise((resolve, reject) => {
+            if (
+                window.google &&
+                window.google.maps &&
+                window.google.maps.places
+            ) {
+                resolve(window.google);
+                return;
+            }
+
+            const script = document.createElement("script");
+            script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_API_KEY}&libraries=places&loading=async`;
+            script.async = true;
+            script.defer = true;
+
+            script.onload = () => {
+                if (
+                    window.google &&
+                    window.google.maps &&
+                    window.google.maps.places
+                ) {
+                    resolve(window.google);
+                } else {
+                    reject(new Error("Google Places API failed to load"));
+                }
+            };
+
+            script.onerror = () =>
+                reject(new Error("Failed to load Google Places API script"));
+
+            document.head.appendChild(script);
+        });
+
+        return googleApiPromise;
+    }
+
+    // Parse address manually if Google API fails or user enters text directly
+    function parseAddressManually(addressText, addressFormat, country) {
+        if (!addressText || typeof addressText !== "string") {
+            return null;
+        }
+
+        const address = addressText.trim();
+
+        if (addressFormat === "dutch") {
+            // Dutch address patterns: "Street 123A, 1234AB City" or "Street 123A 1234AB City"
+            // Try to extract Dutch postcode pattern
+            const postcodeMatch = address.match(
+                /\b([1-9]\d{3}\s?[A-Za-z]{2})\b/
+            );
+            if (!postcodeMatch) {
+                return null; // No valid Dutch postcode found
+            }
+
+            const postcode = postcodeMatch[1].replace(/\s/, "").toUpperCase();
+            const postcodeIndex = address.indexOf(postcodeMatch[1]);
+
+            // Extract house number - look for number before postcode
+            const beforePostcode = address.substring(0, postcodeIndex).trim();
+            const houseNumberMatch = beforePostcode.match(
+                /(\d+\s*[A-Za-z]*)\s*,?\s*$/
+            );
+
+            if (!houseNumberMatch) {
+                return null; // No house number found
+            }
+
+            const fullHouseNumber = houseNumberMatch[1].trim();
+            const houseNumberOnly = fullHouseNumber.match(/^\d+/);
+            const addition = fullHouseNumber.replace(/^\d+\s*/, "") || "";
+
+            if (!houseNumberOnly) {
+                return null;
+            }
+
+            return {
+                valid: true,
+                postcode: postcode,
+                huisnummer: houseNumberOnly[0],
+                toevoeging: addition,
+            };
+        } else {
+            // International address parsing - more complex, try common European patterns
+            const lines = address.split(",").map((line) => line.trim());
+
+            if (lines.length < 2) {
+                return null; // Need at least street and city
+            }
+
+            // Last part usually contains postal code and city
+            const lastLine = lines[lines.length - 1];
+            const firstLine = lines[0];
+
+            // Try to extract postal code (various European formats)
+            let zipcode = "";
+            let city = "";
+
+            // Common European postal code patterns
+            const zipPatterns = [
+                /\b(\d{4,5})\s+([A-Za-z\s]+)$/, // Germany, Netherlands: "12345 Berlin"
+                /\b(\d{5})\s+([A-Za-z\s]+)$/, // France, Spain: "75001 Paris"
+                /^([A-Za-z]{1,2}\d{1,2}\s?\d[A-Za-z]{2})\s+([A-Za-z\s]+)$/, // UK: "SW1A 0AA London"
+            ];
+
+            for (const pattern of zipPatterns) {
+                const match = lastLine.match(pattern);
+                if (match) {
+                    zipcode = match[1].trim();
+                    city = match[2].trim();
+                    break;
+                }
+            }
+
+            if (!zipcode || !city) {
+                // Fallback: assume last word is city, look for numbers as zipcode
+                const words = lastLine.split(/\s+/);
+                city = words[words.length - 1];
+                const zipMatch = lastLine.match(/\b\d{4,5}\b/);
+                zipcode = zipMatch ? zipMatch[0] : "";
+            }
+
+            // Extract street and house number from first line
+            let street = "";
+            let housenumber = "";
+
+            // Try to extract house number (European patterns)
+            const streetMatch = firstLine.match(
+                /^(.+?)\s+(\d+\s*[A-Za-z]*)\s*$/
+            );
+            if (streetMatch) {
+                street = streetMatch[1].trim();
+                housenumber = streetMatch[2].trim();
+            } else {
+                // Fallback: treat entire first line as street
+                street = firstLine;
+                // Try to extract any number
+                const numberMatch = firstLine.match(/\d+/);
+                housenumber = numberMatch ? numberMatch[0] : "1";
+            }
+
+            // Validation: we need all required fields
+            if (!street || !housenumber || !zipcode || !city) {
+                return null;
+            }
+
+            return {
+                valid: true,
+                street: street,
+                housenumber: housenumber,
+                zipcode: zipcode,
+                city: city,
+            };
+        }
+    }
+
+    // Setup Google Places Autocomplete
+    function setupGoogleAutocomplete(input, country, addressFormat, form) {
+        if (!rateLimiter.canMakeRequest()) {
+            console.warn("Rate limit exceeded for Google Places API");
+            return;
+        }
+
+        loadGooglePlacesAPI()
+            .then((google) => {
+                const autocomplete = new google.maps.places.Autocomplete(
+                    input,
+                    {
+                        types: ["address"],
+                        componentRestrictions: {
+                            country: country.toLowerCase(),
+                        },
+                        fields: [
+                            "place_id",
+                            "formatted_address",
+                            "address_components",
+                        ],
+                    }
+                );
+
+                // Store selected place data on the input element
+                input.setAttribute("data-selected-place", "false");
+
+                autocomplete.addListener("place_changed", () => {
+                    const place = autocomplete.getPlace();
+
+                    if (!place.place_id) {
+                        input.setAttribute("data-selected-place", "false");
+                        return;
+                    }
+
+                    // Mark that user selected a place from dropdown
+                    input.setAttribute("data-selected-place", "true");
+
+                    // Get detailed place information
+                    if (rateLimiter.canMakeRequest()) {
+                        const service = new google.maps.places.PlacesService(
+                            document.createElement("div")
+                        );
+                        service.getDetails(
+                            {
+                                placeId: place.place_id,
+                                fields: [
+                                    "address_components",
+                                    "formatted_address",
+                                ],
+                            },
+                            (placeDetails, status) => {
+                                if (
+                                    status ===
+                                        google.maps.places.PlacesServiceStatus
+                                            .OK &&
+                                    placeDetails
+                                ) {
+                                    const addressData =
+                                        extractAddressComponents(
+                                            placeDetails.address_components,
+                                            addressFormat
+                                        );
+
+                                    // Store the extracted data on the input element
+                                    input.setAttribute(
+                                        "data-address-components",
+                                        JSON.stringify(addressData)
+                                    );
+
+                                    // Clear any existing validation messages
+                                    const validationMessage =
+                                        input.nextElementSibling;
+                                    if (
+                                        validationMessage &&
+                                        validationMessage.classList.contains(
+                                            "embed-validation-message"
+                                        )
+                                    ) {
+                                        validationMessage.remove();
+                                    }
+                                    input.style.borderColor = "";
+                                }
+                            }
+                        );
+                    }
+                });
+
+                // Handle manual input (when user types without selecting from dropdown)
+                input.addEventListener("input", function () {
+                    // Reset selection state when user manually types
+                    this.setAttribute("data-selected-place", "false");
+                    this.removeAttribute("data-address-components");
+                });
+            })
+            .catch((error) => {
+                console.error("Failed to load Google Places API:", error);
+                // API failed, manual parsing will be used as fallback
+            });
+    }
+
+    // Extract address components from Google Places API response
+    function extractAddressComponents(components, addressFormat) {
+        const result = {};
+
+        for (const component of components) {
+            const types = component.types;
+
+            if (types.includes("street_number")) {
+                result.street_number = component.long_name;
+            } else if (types.includes("route")) {
+                result.route = component.long_name;
+            } else if (types.includes("locality")) {
+                result.locality = component.long_name;
+            } else if (types.includes("administrative_area_level_1")) {
+                result.administrative_area_level_1 = component.long_name;
+            } else if (types.includes("country")) {
+                result.country = component.short_name;
+            } else if (types.includes("postal_code")) {
+                result.postal_code = component.long_name;
+            }
+        }
+
+        if (addressFormat === "dutch") {
+            return {
+                valid: !!(result.postal_code && result.street_number),
+                postcode: result.postal_code || "",
+                huisnummer: result.street_number || "",
+                toevoeging: "", // Google doesn't typically provide this
+            };
+        } else {
+            return {
+                valid: !!(
+                    result.route &&
+                    result.street_number &&
+                    result.postal_code &&
+                    result.locality
+                ),
+                street: result.route || "",
+                housenumber: result.street_number || "",
+                zipcode: result.postal_code || "",
+                city: result.locality || "",
+            };
+        }
+    }
+
     function init() {
         // Load the CSS only once
         const cssPromise = new Promise((resolve) => {
@@ -180,7 +524,7 @@
             const link = document.createElement("link");
             link.rel = "stylesheet";
             link.href =
-                "https://homezero.mendixcloud.com/embed/inline/embed-styles.css";
+                "https://cdn.jsdelivr.net/gh/HomeZeroTech/Widget@main/Acceptance/embed-styles.css";
             link.onload = () => resolve();
             document.head.appendChild(link);
         });
@@ -219,6 +563,9 @@
                     element.getAttribute("data-phone-required") === "true";
                 const emailRequired =
                     element.getAttribute("data-email-required") === "true";
+                const googleSearch =
+                    element.getAttribute("data-google-search") === "true";
+                const country = element.getAttribute("data-country") || "nl";
                 const title = element.getAttribute("data-title");
                 const subtitle = element.getAttribute("data-subtitle");
                 const addressFormat =
@@ -256,7 +603,77 @@
                     let url = src || selectedValue;
                     let addressParams = {};
 
-                    if (currentAddressFormat === "dutch") {
+                    // Check if using Google search
+                    const googleAddressInput =
+                        form.querySelector("#google-address");
+
+                    if (googleAddressInput) {
+                        // Handle Google Places address input
+                        const addressText = googleAddressInput.value.trim();
+                        const selectedPlace =
+                            googleAddressInput.getAttribute(
+                                "data-selected-place"
+                            ) === "true";
+                        const storedComponents =
+                            googleAddressInput.getAttribute(
+                                "data-address-components"
+                            );
+
+                        if (!addressText) {
+                            displayValidationMessage(
+                                googleAddressInput,
+                                selectedLang.validation.address
+                            );
+                            isValid = false;
+                        } else {
+                            let addressData = null;
+
+                            // Try to use stored Google Places data first
+                            if (selectedPlace && storedComponents) {
+                                try {
+                                    addressData = JSON.parse(storedComponents);
+                                } catch (e) {
+                                    console.error(
+                                        "Failed to parse stored address components:",
+                                        e
+                                    );
+                                }
+                            }
+
+                            // Fallback to manual parsing if Google data not available
+                            if (!addressData || !addressData.valid) {
+                                addressData = parseAddressManually(
+                                    addressText,
+                                    currentAddressFormat,
+                                    country
+                                );
+                            }
+
+                            if (!addressData || !addressData.valid) {
+                                displayValidationMessage(
+                                    googleAddressInput,
+                                    selectedLang.validation.address
+                                );
+                                isValid = false;
+                            } else {
+                                // Map to URL parameters based on address format
+                                if (currentAddressFormat === "dutch") {
+                                    addressParams = {
+                                        Zipcode: addressData.postcode,
+                                        Housenumber: addressData.huisnummer,
+                                        Addition: addressData.toevoeging || "",
+                                    };
+                                } else {
+                                    addressParams = {
+                                        City: addressData.city,
+                                        Zipcode: addressData.zipcode,
+                                        Street: addressData.street,
+                                        Housenumber: addressData.housenumber,
+                                    };
+                                }
+                            }
+                        }
+                    } else if (currentAddressFormat === "dutch") {
                         const postcode = form.querySelector("#postcode");
                         const huisnummer = form.querySelector("#huisnummer");
                         const toevoegingElement =
@@ -514,7 +931,19 @@
 
                 // Add address input fields based on format
                 let addressFieldsHtml = "";
-                if (addressFormat === "dutch") {
+                if (googleSearch) {
+                    // Use Google Places autocomplete instead of manual fields
+                    addressFieldsHtml += `
+                        <div class="embed-row">
+                            <div class="embed-col">
+                                <div class="embed-form-container">
+                                    <label for="google-address" class="embed-label-bold">${selectedLang.addressLabel}*</label>
+                                    <input type="text" id="google-address" class="embed-input-field" placeholder="${selectedLang.addressPlaceholder}" data-address-format="${addressFormat}" data-country="${country}">
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } else if (addressFormat === "dutch") {
                     // Dutch uses hardcoded labels
                     addressFieldsHtml += `
                         <div class="embed-row">
@@ -667,6 +1096,20 @@
 
                 if (!src) {
                     setupCustomDropdown(form, element, selectedLang);
+                }
+
+                // Setup Google Places autocomplete if enabled
+                if (googleSearch) {
+                    const googleAddressInput =
+                        form.querySelector("#google-address");
+                    if (googleAddressInput) {
+                        setupGoogleAutocomplete(
+                            googleAddressInput,
+                            country,
+                            addressFormat,
+                            form
+                        );
+                    }
                 }
 
                 element.appendChild(form);
