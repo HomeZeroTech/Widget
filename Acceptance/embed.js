@@ -254,23 +254,27 @@
         const address = addressText.trim();
 
         if (addressFormat === "dutch") {
-            // Dutch address patterns: "Street 123A, 1234AB City" or "Street 123A 1234AB City"
-            // Try to extract Dutch postcode pattern
+            // Dutch address patterns: be flexible with spacing and formatting
+            // Try to extract Dutch postcode pattern - handle various formats: "1234AB", "1234 AB", etc.
             const postcodeMatch = address.match(
-                /\b([1-9]\d{3}\s?[A-Za-z]{2})\b/
+                /\b([1-9]\d{3}\s*[A-Za-z]{2})\b/
             );
             if (!postcodeMatch) {
                 return null; // No valid Dutch postcode found
             }
 
-            const postcode = postcodeMatch[1].replace(/\s/, "").toUpperCase();
+            const postcode = postcodeMatch[1].replace(/\s+/g, "").toUpperCase();
             const postcodeIndex = address.indexOf(postcodeMatch[1]);
 
-            // Extract house number - look for number before postcode
+            // Extract house number - be more flexible, look for any number pattern before postcode
             const beforePostcode = address.substring(0, postcodeIndex).trim();
-            const houseNumberMatch = beforePostcode.match(
-                /(\d+\s*[A-Za-z]*)\s*,?\s*$/
-            );
+            
+            // Try multiple patterns for house number extraction
+            let houseNumberMatch = beforePostcode.match(/(\d+\s*[A-Za-z]*)\s*,?\s*$/); // Standard: "123A"
+            if (!houseNumberMatch) {
+                // Try alternative patterns - number anywhere in the string
+                houseNumberMatch = beforePostcode.match(/.*?(\d+\s*[A-Za-z]*)/);
+            }
 
             if (!houseNumberMatch) {
                 return null; // No house number found
@@ -291,68 +295,113 @@
                 toevoeging: addition,
             };
         } else {
-            // International address parsing - more complex, try common European patterns
-            const lines = address.split(",").map((line) => line.trim());
-
-            if (lines.length < 2) {
-                return null; // Need at least street and city
+            // International address parsing - be flexible with different formats
+            // Handle both comma-separated and space-separated addresses
+            let lines;
+            if (address.includes(",")) {
+                lines = address.split(",").map((line) => line.trim());
+            } else {
+                // For addresses without commas, try to split smartly
+                // Look for postal code patterns to split the address
+                const zipMatch = address.match(/\b(\d{4,5}|[A-Za-z]{1,2}\d{1,2}\s*\d[A-Za-z]{2})\s+([A-Za-z\s]+)$/);
+                if (zipMatch) {
+                    const beforeZip = address.substring(0, address.indexOf(zipMatch[0])).trim();
+                    const zipAndCity = zipMatch[0];
+                    lines = [beforeZip, zipAndCity];
+                } else {
+                    // Fallback: treat as single line
+                    lines = [address];
+                }
             }
 
-            // Last part usually contains postal code and city
-            const lastLine = lines[lines.length - 1];
-            const firstLine = lines[0];
+            if (lines.length < 1) {
+                return null;
+            }
 
-            // Try to extract postal code (various European formats)
+            // Try to extract postal code and city from the last part
             let zipcode = "";
             let city = "";
-
-            // Common European postal code patterns
+            
+            const lastLine = lines[lines.length - 1];
+            
+            // More flexible postal code patterns
             const zipPatterns = [
                 /\b(\d{4,5})\s+([A-Za-z\s]+)$/, // Germany, Netherlands: "12345 Berlin"
                 /\b(\d{5})\s+([A-Za-z\s]+)$/, // France, Spain: "75001 Paris"
-                /^([A-Za-z]{1,2}\d{1,2}\s?\d[A-Za-z]{2})\s+([A-Za-z\s]+)$/, // UK: "SW1A 0AA London"
+                /\b([A-Za-z]{1,2}\d{1,2}\s*\d[A-Za-z]{2})\s+([A-Za-z\s]+)$/, // UK: "SW1A 0AA London"
+                /\b(\d{4,6})\s*([A-Za-z\s]+)$/, // Generic: any 4-6 digit code
             ];
 
             for (const pattern of zipPatterns) {
                 const match = lastLine.match(pattern);
                 if (match) {
-                    zipcode = match[1].trim();
+                    zipcode = match[1].replace(/\s+/g, "").trim();
                     city = match[2].trim();
                     break;
                 }
             }
 
             if (!zipcode || !city) {
-                // Fallback: assume last word is city, look for numbers as zipcode
+                // More flexible fallback - try to find any number sequence as zipcode
                 const words = lastLine.split(/\s+/);
-                city = words[words.length - 1];
-                const zipMatch = lastLine.match(/\b\d{4,5}\b/);
-                zipcode = zipMatch ? zipMatch[0] : "";
+                if (words.length >= 2) {
+                    // Look for a word that contains mostly digits
+                    for (let i = 0; i < words.length - 1; i++) {
+                        if (words[i].match(/\d{3,}/)) {
+                            zipcode = words[i];
+                            city = words.slice(i + 1).join(" ");
+                            break;
+                        }
+                    }
+                }
+                
+                // Final fallback
+                if (!zipcode && words.length >= 1) {
+                    city = words[words.length - 1];
+                    const zipMatch = lastLine.match(/\d{3,}/);
+                    zipcode = zipMatch ? zipMatch[0] : "";
+                }
             }
 
-            // Extract street and house number from first line
+            // Extract street and house number from first line (or combined if single line)
             let street = "";
             let housenumber = "";
-
-            // Try to extract house number (European patterns)
-            const streetMatch = firstLine.match(
-                /^(.+?)\s+(\d+\s*[A-Za-z]*)\s*$/
-            );
+            
+            const firstLine = lines[0];
+            
+            // More flexible house number extraction
+            let streetMatch = firstLine.match(/^(.+?)\s+(\d+\s*[A-Za-z]*)\s*$/); // Standard: "Street 123A"
+            if (!streetMatch) {
+                streetMatch = firstLine.match(/^(.+?)(\d+[A-Za-z]*)\s*$/); // No space: "Street123A"
+            }
+            if (!streetMatch) {
+                streetMatch = firstLine.match(/^(.+?)\s+(\d+)/); // Just number: "Street 123"
+            }
+            
             if (streetMatch) {
                 street = streetMatch[1].trim();
                 housenumber = streetMatch[2].trim();
             } else {
-                // Fallback: treat entire first line as street
-                street = firstLine;
-                // Try to extract any number
+                // Final fallback: treat entire first line as street, extract any number
+                street = firstLine.replace(/\s*\d+.*$/, "").trim(); // Remove number part
                 const numberMatch = firstLine.match(/\d+/);
                 housenumber = numberMatch ? numberMatch[0] : "1";
+                
+                // If we removed too much, keep the original
+                if (!street) {
+                    street = firstLine;
+                }
             }
 
-            // Validation: we need all required fields
-            if (!street || !housenumber || !zipcode || !city) {
+            // More lenient validation - we need at least street and either zipcode or city
+            if (!street || (!zipcode && !city)) {
                 return null;
             }
+            
+            // Provide defaults for missing values
+            if (!housenumber) housenumber = "1";
+            if (!zipcode) zipcode = "";
+            if (!city) city = "";
 
             return {
                 valid: true,
