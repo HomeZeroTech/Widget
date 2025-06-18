@@ -443,134 +443,374 @@
         }
     }
 
-    // Setup Google Places Autocomplete
-    function setupGoogleAutocomplete(input, country, addressFormat, form) {
+    // Setup Google Places Autocomplete with custom dropdown
+    function setupGoogleAutocomplete(
+        input,
+        country,
+        addressFormat,
+        form,
+        language
+    ) {
         if (!rateLimiter.canMakeRequest()) {
             console.warn("Rate limit exceeded for Google Places API");
             return;
         }
 
+        // Map language codes to proper locale formats
+        const languageMap = {
+            nl: "nl-NL",
+            en: "en-US",
+            fr: "fr-FR",
+            de: "de-DE",
+        };
+
+        const locale = languageMap[language] || "en-US";
+
         loadGooglePlacesAPI()
             .then((google) => {
-                autocomplete = new google.maps.places.Autocomplete(input, {
-                    types: ["address"],
-                    componentRestrictions: {
-                        country: country.toLowerCase(),
-                    },
-                    fields: [
-                        "place_id",
-                        "formatted_address",
-                        "address_components",
-                    ],
-                });
+                console.log(
+                    "Google API loaded, setting up custom autocomplete"
+                );
 
-                // Store selected place data on the input element
-                input.setAttribute("data-selected-place", "false");
+                // We'll use the new Place Autocomplete Data API
+                // No service initialization needed
 
-                autocomplete.addListener("place_changed", () => {
-                    const place = autocomplete.getPlace();
+                // Store the original parent and next sibling for proper insertion
+                const originalParent = input.parentNode;
+                const nextSibling = input.nextSibling;
 
-                    if (!place.place_id) {
-                        input.setAttribute("data-selected-place", "false");
+                // Create custom dropdown structure
+                const container = document.createElement("div");
+                container.className = "custom-dropdown address-autocomplete";
+
+                const inputWrapper = document.createElement("div");
+                inputWrapper.className = "address-input-wrapper";
+
+                // Update the input styling
+                input.className =
+                    "embed-input-field address-autocomplete-input";
+                input.setAttribute("autocomplete", "off");
+
+                const dropdownIcon = document.createElement("div");
+                dropdownIcon.className = "dropdown-icon";
+                dropdownIcon.innerHTML = `
+                    <svg class="search-icon" viewBox="0 0 24 24" width="16px" height="16px" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" fill="currentColor"/>
+                        </svg>
+                    `;
+
+                const dropdown = document.createElement("div");
+                dropdown.className = "dropdown-options address-dropdown";
+
+                // First remove the input from its current parent
+                originalParent.removeChild(input);
+
+                // Build the new structure
+                inputWrapper.appendChild(input);
+                inputWrapper.appendChild(dropdownIcon);
+                container.appendChild(inputWrapper);
+                container.appendChild(dropdown);
+
+                // Insert the container where the input was
+                if (nextSibling) {
+                    originalParent.insertBefore(container, nextSibling);
+                } else {
+                    originalParent.appendChild(container);
+                }
+
+                // Store references and state
+                let currentPredictions = [];
+                let selectedIndex = -1;
+                let isDropdownOpen = false;
+                let searchTimeout;
+                let sessionToken;
+
+                // Store address data on the container
+                container._addressData = null;
+                container.setAttribute("data-selected-place", "false");
+
+                // Initialize session token
+                function refreshSessionToken() {
+                    sessionToken =
+                        new google.maps.places.AutocompleteSessionToken();
+                }
+                refreshSessionToken();
+
+                function showDropdown() {
+                    dropdown.classList.add("show");
+                    isDropdownOpen = true;
+                }
+
+                function hideDropdown() {
+                    dropdown.classList.remove("show");
+                    isDropdownOpen = false;
+                    selectedIndex = -1;
+                }
+
+                function updateDropdown(suggestions) {
+                    dropdown.innerHTML = "";
+                    currentPredictions = suggestions;
+
+                    if (suggestions.length === 0) {
+                        hideDropdown();
                         return;
                     }
 
-                    // Mark that user selected a place from dropdown
-                    input.setAttribute("data-selected-place", "true");
+                    suggestions.forEach((suggestion, index) => {
+                        const placePrediction = suggestion.placePrediction;
+                        const option = document.createElement("div");
+                        option.className = "dropdown-option address-option";
+                        option.innerHTML = `
+                            <svg class="location-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="currentColor"/>
+                            </svg>
+                            <div class="option-content">
+                                <div class="prediction-main">${placePrediction.mainText.text.toString()}</div>
+                                <div class="prediction-secondary">${
+                                    placePrediction.secondaryText?.text.toString() ||
+                                    ""
+                                }</div>
+                            </div>
+                        `;
 
-                    // Get detailed place information
-                    if (rateLimiter.canMakeRequest()) {
-                        try {
-                            const service =
-                                new google.maps.places.PlacesService(
-                                    document.createElement("div")
-                                );
+                        option.addEventListener("click", () => {
+                            selectPrediction(placePrediction, index);
+                        });
 
-                            service.getDetails(
-                                {
-                                    placeId: place.place_id,
-                                    fields: [
-                                        "address_components",
-                                        "formatted_address",
-                                    ],
-                                },
-                                (placeDetails, status) => {
-                                    if (
-                                        status ===
-                                            google.maps.places
-                                                .PlacesServiceStatus.OK &&
-                                        placeDetails
-                                    ) {
-                                        console.log(
-                                            "Place details retrieved successfully",
-                                            placeDetails
-                                        );
-                                        const addressData =
-                                            extractAddressComponents(
-                                                placeDetails.address_components,
-                                                addressFormat
-                                            );
+                        dropdown.appendChild(option);
+                    });
 
-                                        // Store the extracted data on the input element
-                                        input.setAttribute(
-                                            "data-address-components",
-                                            JSON.stringify(addressData)
-                                        );
+                    showDropdown();
+                }
 
-                                        // Clear any existing validation messages
-                                        const validationMessage =
-                                            input.nextElementSibling;
-                                        if (
-                                            validationMessage &&
-                                            validationMessage.classList.contains(
-                                                "embed-validation-message"
-                                            )
-                                        ) {
-                                            validationMessage.remove();
-                                        }
-                                        input.style.borderColor = "";
-                                    } else {
-                                        console.error(
-                                            `Failed to get place details. Status: ${status}`,
-                                            {
-                                                placeId: place.place_id,
-                                                status: status,
-                                                placeDetails: placeDetails,
-                                            }
-                                        );
-                                    }
-                                }
+                async function selectPrediction(placePrediction, index) {
+                    if (!rateLimiter.canMakeRequest()) {
+                        console.warn("Rate limit exceeded for place details");
+                        return;
+                    }
+
+                    // Update the input value
+                    input.value = placePrediction.text.text;
+                    hideDropdown();
+
+                    // Mark as selected
+                    container.setAttribute("data-selected-place", "true");
+
+                    try {
+                        // Convert prediction to place and get details
+                        const place = placePrediction.toPlace();
+                        await place.fetchFields({
+                            fields: ["addressComponents", "formattedAddress"],
+                        });
+
+                        if (
+                            place.addressComponents &&
+                            place.addressComponents.length > 0
+                        ) {
+                            const addressData = extractAddressComponents(
+                                place.addressComponents,
+                                addressFormat
                             );
-                        } catch (error) {
+
+                            // Store the extracted data
+                            container._addressData = addressData;
+
+                            // Clear any validation messages
+                            const validationMessage =
+                                container.nextElementSibling;
+                            if (
+                                validationMessage &&
+                                validationMessage.classList.contains(
+                                    "embed-validation-message"
+                                )
+                            ) {
+                                validationMessage.remove();
+                            }
+                            input.style.borderColor = "";
+
+                            // Refresh session token after successful selection
+                            refreshSessionToken();
+                        } else {
                             console.error(
-                                "Error in Places service:",
-                                error.message,
-                                error
+                                "No address components found in place"
                             );
                         }
-                    } else {
-                        console.warn(
-                            "Rate limit exceeded when trying to get place details"
-                        );
+                    } catch (error) {
+                        console.error("Error getting place details:", error);
+                    }
+                }
+
+                function highlightOption(index) {
+                    const options =
+                        dropdown.querySelectorAll(".address-option");
+                    options.forEach((option, i) => {
+                        option.classList.toggle("highlighted", i === index);
+                    });
+                }
+
+                // Input event handlers
+                input.addEventListener("input", (e) => {
+                    const value = e.target.value.trim();
+
+                    // Reset selection state
+                    container.setAttribute("data-selected-place", "false");
+                    container._addressData = null;
+                    selectedIndex = -1;
+
+                    // Clear any validation messages
+                    const validationMessage = container.nextElementSibling;
+                    if (
+                        validationMessage &&
+                        validationMessage.classList.contains(
+                            "embed-validation-message"
+                        )
+                    ) {
+                        validationMessage.remove();
+                    }
+                    input.style.borderColor = "";
+
+                    // Clear previous timeout
+                    if (searchTimeout) {
+                        clearTimeout(searchTimeout);
+                    }
+
+                    if (value.length < 2) {
+                        hideDropdown();
+                        return;
+                    }
+
+                    // Debounce the search
+                    searchTimeout = setTimeout(async () => {
+                        if (!rateLimiter.canMakeRequest()) {
+                            console.warn(
+                                "Rate limit exceeded for autocomplete search"
+                            );
+                            return;
+                        }
+
+                        try {
+                            const request = {
+                                input: value,
+                                sessionToken: sessionToken,
+                                language: locale,
+                                region: country.toLowerCase(),
+                            };
+
+                            const { suggestions } =
+                                await google.maps.places.AutocompleteSuggestion.fetchAutocompleteSuggestions(
+                                    request
+                                );
+
+                            if (suggestions && suggestions.length > 0) {
+                                updateDropdown(suggestions);
+                            } else {
+                                updateDropdown([]);
+                            }
+                        } catch (error) {
+                            console.warn("Autocomplete service error:", error);
+                            hideDropdown();
+                        }
+                    }, 300);
+                });
+
+                // Keyboard navigation
+                input.addEventListener("keydown", (e) => {
+                    if (!isDropdownOpen || currentPredictions.length === 0) {
+                        return;
+                    }
+
+                    switch (e.key) {
+                        case "ArrowDown":
+                            e.preventDefault();
+                            selectedIndex = Math.min(
+                                selectedIndex + 1,
+                                currentPredictions.length - 1
+                            );
+                            highlightOption(selectedIndex);
+                            break;
+                        case "ArrowUp":
+                            e.preventDefault();
+                            selectedIndex = Math.max(selectedIndex - 1, -1);
+                            highlightOption(selectedIndex);
+                            break;
+                        case "Enter":
+                            e.preventDefault();
+                            if (selectedIndex >= 0) {
+                                const suggestion =
+                                    currentPredictions[selectedIndex];
+                                selectPrediction(
+                                    suggestion.placePrediction,
+                                    selectedIndex
+                                );
+                            }
+                            break;
+                        case "Escape":
+                            hideDropdown();
+                            break;
                     }
                 });
 
-                // Handle manual input (when user types without selecting from dropdown)
-                input.addEventListener("input", function () {
-                    // Reset selection state when user manually types
-                    this.setAttribute("data-selected-place", "false");
-                    this.removeAttribute("data-address-components");
+                // Focus handlers
+                input.addEventListener("focus", () => {
+                    if (
+                        input.value.trim().length >= 2 &&
+                        currentPredictions.length > 0
+                    ) {
+                        showDropdown();
+                    }
                 });
+
+                // Click outside to close
+                document.addEventListener("click", (e) => {
+                    if (!container.contains(e.target)) {
+                        hideDropdown();
+                    }
+                });
+
+                // Update the form's Google address input reference
+                if (form.querySelector("#google-address")) {
+                    // Replace the reference to point to our container
+                    Object.defineProperty(container, "value", {
+                        get: () => input.value,
+                        set: (val) => {
+                            input.value = val;
+                        },
+                    });
+
+                    // Store original methods to avoid infinite recursion
+                    const originalGetAttribute =
+                        container.getAttribute.bind(container);
+                    const originalSetAttribute =
+                        container.setAttribute.bind(container);
+
+                    // Add the same methods that might be called on it
+                    container.getAttribute = (attr) => {
+                        if (attr === "data-selected-place") {
+                            return originalGetAttribute("data-selected-place");
+                        }
+                        return input.getAttribute(attr);
+                    };
+                    container.setAttribute = (attr, val) => {
+                        if (attr === "data-selected-place") {
+                            originalSetAttribute("data-selected-place", val);
+                        } else {
+                            input.setAttribute(attr, val);
+                        }
+                    };
+                    container.nextElementSibling = input.nextElementSibling;
+                    container.style = input.style;
+                }
+
+                console.log("Custom Google Places autocomplete setup complete");
             })
             .catch((error) => {
                 console.error("Failed to setup Google Places Autocomplete:", {
                     error: error.message,
                     stack: error.stack,
                     country: country,
-                    addressFormat: addressFormat
+                    addressFormat: addressFormat,
                 });
                 console.log("Falling back to manual address parsing");
-                // API failed, manual parsing will be used as fallback
             });
     }
 
@@ -582,17 +822,19 @@
             const types = component.types;
 
             if (types.includes("street_number")) {
-                result.street_number = component.long_name;
+                result.street_number =
+                    component.longText || component.shortText;
             } else if (types.includes("route")) {
-                result.route = component.long_name;
+                result.route = component.longText || component.shortText;
             } else if (types.includes("locality")) {
-                result.locality = component.long_name;
+                result.locality = component.longText || component.shortText;
             } else if (types.includes("administrative_area_level_1")) {
-                result.administrative_area_level_1 = component.long_name;
+                result.administrative_area_level_1 =
+                    component.longText || component.shortText;
             } else if (types.includes("country")) {
-                result.country = component.short_name;
+                result.country = component.shortText || component.longText;
             } else if (types.includes("postal_code")) {
-                result.postal_code = component.long_name;
+                result.postal_code = component.longText || component.shortText;
             }
         }
 
@@ -633,7 +875,7 @@
             const link = document.createElement("link");
             link.rel = "stylesheet";
             link.href =
-                "https://cdn.jsdelivr.net/gh/HomeZeroTech/Widget@main/Acceptance/embed-styles.css";
+                "https://configurator-accp.homezero.nl/embed/inline/embed-styles.css";
             link.onload = () => resolve();
             document.head.appendChild(link);
         });
@@ -717,69 +959,73 @@
                         form.querySelector("#google-address");
 
                     if (googleAddressInput) {
-                        // Handle Google Places address input
-                        const addressText = googleAddressInput.value.trim();
+                        // Handle our custom Google Places autocomplete
+                        const addressText = googleAddressInput.value
+                            ? googleAddressInput.value.trim()
+                            : "";
+
+                        // Check for the attribute on the container (address-autocomplete) or fallback to input
+                        const addressContainer = googleAddressInput.closest(
+                            ".address-autocomplete"
+                        );
                         const selectedPlace =
-                            googleAddressInput.getAttribute(
+                            addressContainer.getAttribute(
                                 "data-selected-place"
                             ) === "true";
-                        const storedComponents =
-                            googleAddressInput.getAttribute(
-                                "data-address-components"
+
+                        let addressData = null;
+
+                        // Try to use stored Google Places data first - check both container and input for _addressData
+                        const dataSource =
+                            addressContainer || googleAddressInput;
+                        if (selectedPlace && dataSource._addressData) {
+                            addressData = dataSource._addressData;
+                        }
+
+                        // Fallback to manual parsing if Google data not available and there's text
+                        if (
+                            (!addressData || !addressData.valid) &&
+                            addressText
+                        ) {
+                            addressData = parseAddressManually(
+                                addressText,
+                                currentAddressFormat,
+                                country
                             );
+                        }
 
-                        if (!addressText) {
-                            displayValidationMessage(
-                                googleAddressInput,
-                                selectedLang.validation.address
-                            );
-                            isValid = false;
-                        } else {
-                            let addressData = null;
-
-                            // Try to use stored Google Places data first
-                            if (selectedPlace && storedComponents) {
-                                try {
-                                    addressData = JSON.parse(storedComponents);
-                                } catch (e) {
-                                    console.error(
-                                        "Failed to parse stored address components:",
-                                        e
-                                    );
-                                }
-                            }
-
-                            // Fallback to manual parsing if Google data not available
-                            if (!addressData || !addressData.valid) {
-                                addressData = parseAddressManually(
-                                    addressText,
-                                    currentAddressFormat,
-                                    country
-                                );
-                            }
-
-                            if (!addressData || !addressData.valid) {
+                        // Validate: either we have valid address data OR there's manual text input
+                        if (!addressData || !addressData.valid) {
+                            if (!addressText) {
+                                // No text and no valid address data
                                 displayValidationMessage(
                                     googleAddressInput,
                                     selectedLang.validation.address
                                 );
                                 isValid = false;
                             } else {
-                                // Map to URL parameters based on address format
-                                if (currentAddressFormat === "dutch") {
-                                    addressParams = {
-                                        Zipcode: addressData.postcode,
-                                        Housenumber: addressData.huisnummer,
-                                        Addition: addressData.toevoeging || "",
-                                    };
-                                } else {
-                                    addressParams = {
-                                        City: addressData.city,
-                                        Zipcode: addressData.zipcode,
-                                        Street: addressData.street,
-                                        Housenumber: addressData.housenumber,
-                                    };
-                                }
+                                // There's text but it couldn't be parsed
+                                displayValidationMessage(
+                                    googleAddressInput,
+                                    selectedLang.validation.address
+                                );
+                                isValid = false;
+                            }
+                        } else {
+                            // We have valid address data - map to URL parameters
+                            if (currentAddressFormat === "dutch") {
+                                addressParams = {
+                                    Zipcode: addressData.postcode,
+                                    Housenumber: addressData.huisnummer,
+                                    Addition: addressData.toevoeging || "",
+                                };
+                            } else {
+                                addressParams = {
+                                    City: addressData.city,
+                                    Zipcode: addressData.zipcode,
+                                    Street: addressData.street,
+                                    Housenumber: addressData.housenumber,
+                                };
                             }
                         }
                     } else if (currentAddressFormat === "dutch") {
@@ -1216,7 +1462,8 @@
                             googleAddressInput,
                             country,
                             addressFormat,
-                            form
+                            form,
+                            language
                         );
                     }
                 }
@@ -1248,8 +1495,20 @@
         const selected = inputElement
             .closest(".embed-form")
             .querySelector(".dropdown-selected");
+
+        // Check if this is a Google address autocomplete input
+        const addressAutocompleteContainer = inputElement.closest(
+            ".address-autocomplete"
+        );
+
         if (inputElement === selected) {
             inputElement.parentElement.insertAdjacentElement(
+                "afterend",
+                messageElement
+            );
+        } else if (addressAutocompleteContainer) {
+            // For Google address autocomplete, place message after the entire container
+            addressAutocompleteContainer.insertAdjacentElement(
                 "afterend",
                 messageElement
             );
