@@ -215,29 +215,53 @@
                 window.google.maps &&
                 window.google.maps.places
             ) {
+                console.log("Google Places API already loaded");
                 resolve(window.google);
                 return;
             }
 
+            console.log("Loading Google Places API...");
             const script = document.createElement("script");
             script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_API_KEY}&libraries=places&loading=async`;
             script.async = true;
             script.defer = true;
 
             script.onload = () => {
-                if (
-                    window.google &&
-                    window.google.maps &&
-                    window.google.maps.places
-                ) {
-                    resolve(window.google);
-                } else {
-                    reject(new Error("Google Places API failed to load"));
-                }
+                console.log("Google API script loaded successfully");
+                // Add a small delay to ensure the API is fully initialized
+                setTimeout(() => {
+                    if (
+                        window.google &&
+                        window.google.maps &&
+                        window.google.maps.places
+                    ) {
+                        console.log(
+                            "Google Places API initialized successfully"
+                        );
+                        resolve(window.google);
+                    } else {
+                        const errorMsg = `Google Places API failed to initialize. Available: google=${!!window.google}, maps=${!!(
+                            window.google && window.google.maps
+                        )}, places=${!!(
+                            window.google &&
+                            window.google.maps &&
+                            window.google.maps.places
+                        )}`;
+                        console.error(errorMsg);
+                        reject(new Error(errorMsg));
+                    }
+                }, 100);
             };
 
-            script.onerror = () =>
-                reject(new Error("Failed to load Google Places API script"));
+            script.onerror = (event) => {
+                const errorMsg = `Failed to load Google Places API script. Error: ${
+                    event.error ||
+                    event.message ||
+                    "Unknown script loading error"
+                }. URL: ${script.src}`;
+                console.error(errorMsg, event);
+                reject(new Error(errorMsg));
+            };
 
             document.head.appendChild(script);
         });
@@ -268,9 +292,11 @@
 
             // Extract house number - be more flexible, look for any number pattern before postcode
             const beforePostcode = address.substring(0, postcodeIndex).trim();
-            
+
             // Try multiple patterns for house number extraction
-            let houseNumberMatch = beforePostcode.match(/(\d+\s*[A-Za-z]*)\s*,?\s*$/); // Standard: "123A"
+            let houseNumberMatch = beforePostcode.match(
+                /(\d+\s*[A-Za-z]*)\s*,?\s*$/
+            ); // Standard: "123A"
             if (!houseNumberMatch) {
                 // Try alternative patterns - number anywhere in the string
                 houseNumberMatch = beforePostcode.match(/.*?(\d+\s*[A-Za-z]*)/);
@@ -303,9 +329,13 @@
             } else {
                 // For addresses without commas, try to split smartly
                 // Look for postal code patterns to split the address
-                const zipMatch = address.match(/\b(\d{4,5}|[A-Za-z]{1,2}\d{1,2}\s*\d[A-Za-z]{2})\s+([A-Za-z\s]+)$/);
+                const zipMatch = address.match(
+                    /\b(\d{4,5}|[A-Za-z]{1,2}\d{1,2}\s*\d[A-Za-z]{2})\s+([A-Za-z\s]+)$/
+                );
                 if (zipMatch) {
-                    const beforeZip = address.substring(0, address.indexOf(zipMatch[0])).trim();
+                    const beforeZip = address
+                        .substring(0, address.indexOf(zipMatch[0]))
+                        .trim();
                     const zipAndCity = zipMatch[0];
                     lines = [beforeZip, zipAndCity];
                 } else {
@@ -321,9 +351,9 @@
             // Try to extract postal code and city from the last part
             let zipcode = "";
             let city = "";
-            
+
             const lastLine = lines[lines.length - 1];
-            
+
             // More flexible postal code patterns
             const zipPatterns = [
                 /\b(\d{4,5})\s+([A-Za-z\s]+)$/, // Germany, Netherlands: "12345 Berlin"
@@ -354,7 +384,7 @@
                         }
                     }
                 }
-                
+
                 // Final fallback
                 if (!zipcode && words.length >= 1) {
                     city = words[words.length - 1];
@@ -366,9 +396,9 @@
             // Extract street and house number from first line (or combined if single line)
             let street = "";
             let housenumber = "";
-            
+
             const firstLine = lines[0];
-            
+
             // More flexible house number extraction
             let streetMatch = firstLine.match(/^(.+?)\s+(\d+\s*[A-Za-z]*)\s*$/); // Standard: "Street 123A"
             if (!streetMatch) {
@@ -377,7 +407,7 @@
             if (!streetMatch) {
                 streetMatch = firstLine.match(/^(.+?)\s+(\d+)/); // Just number: "Street 123"
             }
-            
+
             if (streetMatch) {
                 street = streetMatch[1].trim();
                 housenumber = streetMatch[2].trim();
@@ -386,7 +416,7 @@
                 street = firstLine.replace(/\s*\d+.*$/, "").trim(); // Remove number part
                 const numberMatch = firstLine.match(/\d+/);
                 housenumber = numberMatch ? numberMatch[0] : "1";
-                
+
                 // If we removed too much, keep the original
                 if (!street) {
                     street = firstLine;
@@ -397,7 +427,7 @@
             if (!street || (!zipcode && !city)) {
                 return null;
             }
-            
+
             // Provide defaults for missing values
             if (!housenumber) housenumber = "1";
             if (!zipcode) zipcode = "";
@@ -422,20 +452,17 @@
 
         loadGooglePlacesAPI()
             .then((google) => {
-                const autocomplete = new google.maps.places.Autocomplete(
-                    input,
-                    {
-                        types: ["address"],
-                        componentRestrictions: {
-                            country: country.toLowerCase(),
-                        },
-                        fields: [
-                            "place_id",
-                            "formatted_address",
-                            "address_components",
-                        ],
-                    }
-                );
+                autocomplete = new google.maps.places.Autocomplete(input, {
+                    types: ["address"],
+                    componentRestrictions: {
+                        country: country.toLowerCase(),
+                    },
+                    fields: [
+                        "place_id",
+                        "formatted_address",
+                        "address_components",
+                    ],
+                });
 
                 // Store selected place data on the input element
                 input.setAttribute("data-selected-place", "false");
@@ -453,50 +480,77 @@
 
                     // Get detailed place information
                     if (rateLimiter.canMakeRequest()) {
-                        const service = new google.maps.places.PlacesService(
-                            document.createElement("div")
-                        );
-                        service.getDetails(
-                            {
-                                placeId: place.place_id,
-                                fields: [
-                                    "address_components",
-                                    "formatted_address",
-                                ],
-                            },
-                            (placeDetails, status) => {
-                                if (
-                                    status ===
-                                        google.maps.places.PlacesServiceStatus
-                                            .OK &&
-                                    placeDetails
-                                ) {
-                                    const addressData =
-                                        extractAddressComponents(
-                                            placeDetails.address_components,
-                                            addressFormat
+                        try {
+                            const service =
+                                new google.maps.places.PlacesService(
+                                    document.createElement("div")
+                                );
+
+                            service.getDetails(
+                                {
+                                    placeId: place.place_id,
+                                    fields: [
+                                        "address_components",
+                                        "formatted_address",
+                                    ],
+                                },
+                                (placeDetails, status) => {
+                                    if (
+                                        status ===
+                                            google.maps.places
+                                                .PlacesServiceStatus.OK &&
+                                        placeDetails
+                                    ) {
+                                        console.log(
+                                            "Place details retrieved successfully",
+                                            placeDetails
+                                        );
+                                        const addressData =
+                                            extractAddressComponents(
+                                                placeDetails.address_components,
+                                                addressFormat
+                                            );
+
+                                        // Store the extracted data on the input element
+                                        input.setAttribute(
+                                            "data-address-components",
+                                            JSON.stringify(addressData)
                                         );
 
-                                    // Store the extracted data on the input element
-                                    input.setAttribute(
-                                        "data-address-components",
-                                        JSON.stringify(addressData)
-                                    );
-
-                                    // Clear any existing validation messages
-                                    const validationMessage =
-                                        input.nextElementSibling;
-                                    if (
-                                        validationMessage &&
-                                        validationMessage.classList.contains(
-                                            "embed-validation-message"
-                                        )
-                                    ) {
-                                        validationMessage.remove();
+                                        // Clear any existing validation messages
+                                        const validationMessage =
+                                            input.nextElementSibling;
+                                        if (
+                                            validationMessage &&
+                                            validationMessage.classList.contains(
+                                                "embed-validation-message"
+                                            )
+                                        ) {
+                                            validationMessage.remove();
+                                        }
+                                        input.style.borderColor = "";
+                                    } else {
+                                        console.error(
+                                            `Failed to get place details. Status: ${status}`,
+                                            {
+                                                placeId: place.place_id,
+                                                status: status,
+                                                placeDetails: placeDetails,
+                                            }
+                                        );
                                     }
-                                    input.style.borderColor = "";
                                 }
-                            }
+                            );
+                        } catch (error) {
+                            console.error(
+                                "Error in Places service:",
+                                error.message,
+                                error
+                            );
+                        }
+                    } else {
+                        console.warn(
+                            "Rate limit exceeded when trying to get place details"
                         );
                     }
                 });
@@ -509,7 +563,13 @@
                 });
             })
             .catch((error) => {
-                console.error("Failed to load Google Places API:", error);
+                console.error("Failed to setup Google Places Autocomplete:", {
+                    error: error.message,
+                    stack: error.stack,
+                    country: country,
+                    addressFormat: addressFormat
+                });
+                console.log("Falling back to manual address parsing");
                 // API failed, manual parsing will be used as fallback
             });
     }
