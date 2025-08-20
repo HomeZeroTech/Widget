@@ -49,6 +49,12 @@
                             <path fill-rule="evenodd" clip-rule="evenodd" d="M8.32915 7.50419C8.55695 7.73199 8.55695 8.10134 8.32915 8.32915L4.82915 11.8291C4.60134 12.057 4.23199 12.057 4.00419 11.8291C3.77638 11.6013 3.77638 11.232 4.00419 11.0042L7.50419 7.50419C7.73199 7.27638 8.10134 7.27638 8.32915 7.50419Z" fill="currentColor"></path>
                             <path fill-rule="evenodd" clip-rule="evenodd" d="M16.4958 15.6709C16.7236 15.8987 16.7236 16.268 16.4958 16.4958L12.9958 19.9958C12.768 20.2236 12.3987 20.2236 12.1709 19.9958C11.943 19.768 11.943 19.3987 12.1709 19.1709L15.6709 15.6709C15.8987 15.443 16.268 15.443 16.4958 15.6709Z" fill="currentColor"></path>
                           </svg>`,
+        advisormodule: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                          <path fill-rule="evenodd" clip-rule="evenodd" d="M18.934 1.42359C18.0749 1.38511 17.2312 1.65866 16.56 2.19453L16.5599 2.19464C15.8883 2.73039 15.4336 3.49207 15.2815 4.33721C15.1294 5.18257 15.2894 6.05446 15.7323 6.79075C15.7974 6.89896 15.814 7.02954 15.7781 7.15061L15.4222 8.35114L16.7519 8.03305C16.8602 8.00713 16.9744 8.02232 17.0722 8.07569C17.8265 8.48735 18.7046 8.61143 19.5441 8.42442C20.3832 8.23741 21.1253 7.75267 21.6337 7.05961C22.1417 6.36658 22.3807 5.51292 22.3059 4.65775L22.3059 4.65753C22.2314 3.8017 21.8484 3.00244 21.2281 2.40728C20.6084 1.81291 19.7931 1.46357 18.934 1.42359ZM15.9986 1.49108C16.8408 0.818755 17.8986 0.476205 18.9747 0.524512L18.9754 0.524543C20.0515 0.574517 21.0737 1.01208 21.8511 1.75778L21.8511 1.75779C22.6287 2.50377 23.1091 3.50602 23.2025 4.57952C23.2963 5.65255 22.9963 6.72309 22.3595 7.59182L22.3594 7.59196C21.722 8.46073 20.7917 9.06847 19.7398 9.30288L19.7398 9.30289C18.7452 9.52444 17.7073 9.39766 16.7981 8.9474L14.874 9.40766C14.7177 9.44505 14.5533 9.39624 14.4428 9.2796C14.3322 9.16295 14.2922 8.99619 14.3379 8.8421L14.8607 7.07882C14.382 6.19412 14.217 5.1713 14.3957 4.17783C14.5865 3.11766 15.1567 2.16277 15.9985 1.49119L15.9986 1.49108ZM8.27002 5.46948C7.07655 5.46948 5.93195 5.94359 5.08804 6.7875C4.24413 7.63142 3.77002 8.77601 3.77002 9.96948C3.77002 11.163 4.24413 12.3075 5.08804 13.1515C5.93195 13.9954 7.07655 14.4695 8.27002 14.4695C9.46349 14.4695 10.6081 13.9954 11.452 13.1515C12.2959 12.3075 12.77 11.163 12.77 9.96948C12.77 8.77601 12.2959 7.63142 11.452 6.7875C10.6081 5.94359 9.46349 5.46948 8.27002 5.46948ZM5.79515 7.49461C6.45152 6.83823 7.34176 6.46948 8.27002 6.46948C9.19828 6.46948 10.0885 6.83823 10.7449 7.49461C11.4013 8.15099 11.77 9.04122 11.77 9.96948C11.77 10.8977 11.4013 11.788 10.7449 12.4444C10.0885 13.1007 9.19828 13.4695 8.27002 13.4695C7.34176 13.4695 6.45152 13.1007 5.79515 12.4444C5.13877 11.788 4.77002 10.8977 4.77002 9.96948C4.77002 9.04122 5.13877 8.15099 5.79515 7.49461ZM2.99041 17.6899C3.77181 16.9085 4.83162 16.4695 5.93669 16.4695H10.6034C11.7084 16.4695 12.7682 16.9085 13.5496 17.6899C14.331 18.4713 14.77 19.5311 14.77 20.6362V20.9695C14.77 21.7979 14.0984 22.4695 13.27 22.4695H3.27002C2.44159 22.4695 1.77002 21.7979 1.77002 20.9695V20.6362C1.77002 19.5311 2.20901 18.4713 2.99041 17.6899ZM5.93669 15.4695C4.5664 15.4695 3.25224 16.0138 2.2833 16.9828C1.31436 17.9517 0.77002 19.2659 0.77002 20.6362V20.9695C0.77002 22.3502 1.88931 23.4695 3.27002 23.4695H13.27C14.6507 23.4695 15.77 22.3502 15.77 20.9695V20.6362C15.77 19.2659 15.2257 17.9517 14.2567 16.9828C13.2878 16.0138 11.9736 15.4695 10.6034 15.4695H5.93669ZM19.1947 5.39377C19.0822 5.50629 18.9295 5.56951 18.7704 5.56951C18.6113 5.56951 18.4587 5.50629 18.3461 5.39377C18.2336 5.28125 18.1704 5.12864 18.1704 4.96951C18.1704 4.81038 18.2336 4.65776 18.3461 4.54524C18.4587 4.43272 18.6113 4.36951 18.7704 4.36951C18.9295 4.36951 19.0822 4.43272 19.1947 4.54524C19.3072 4.65776 19.3704 4.81038 19.3704 4.96951C19.3704 5.12864 19.3072 5.28125 19.1947 5.39377ZM20.4706 5.56951C20.6297 5.56951 20.7823 5.50629 20.8949 5.39377C21.0074 5.28125 21.0706 5.12864 21.0706 4.96951C21.0706 4.81038 21.0074 4.65776 20.8949 4.54524C20.7823 4.43272 20.6297 4.36951 20.4706 4.36951C20.3115 4.36951 20.1589 4.43272 20.0463 4.54524C19.9338 4.65776 19.8706 4.81038 19.8706 4.96951C19.8706 5.12864 19.9338 5.28125 20.0463 5.39377C20.1589 5.50629 20.3115 5.56951 20.4706 5.56951ZM17.4945 5.39377C17.382 5.50629 17.2293 5.56951 17.0702 5.56951C16.9111 5.56951 16.7585 5.50629 16.646 5.39377C16.5334 5.28125 16.4702 5.12864 16.4702 4.96951C16.4702 4.81038 16.5334 4.65776 16.646 4.54524C16.7585 4.43272 16.9111 4.36951 17.0702 4.36951C17.2293 4.36951 17.382 4.43272 17.4945 4.54524C17.607 4.65776 17.6702 4.81038 17.6702 4.96951C17.6702 5.12864 17.607 5.28125 17.4945 5.39377Z" fill="black"/>
+                      </svg>`,
+        solarboiler: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                          <path fill-rule="evenodd" clip-rule="evenodd" d="M18.934 1.42359C18.0749 1.38511 17.2312 1.65866 16.56 2.19453L16.5599 2.19464C15.8883 2.73039 15.4336 3.49207 15.2815 4.33721C15.1294 5.18257 15.2894 6.05446 15.7323 6.79075C15.7974 6.89896 15.814 7.02954 15.7781 7.15061L15.4222 8.35114L16.7519 8.03305C16.8602 8.00713 16.9744 8.02232 17.0722 8.07569C17.8265 8.48735 18.7046 8.61143 19.5441 8.42442C20.3832 8.23741 21.1253 7.75267 21.6337 7.05961C22.1417 6.36658 22.3807 5.51292 22.3059 4.65775L22.3059 4.65753C22.2314 3.8017 21.8484 3.00244 21.2281 2.40728C20.6084 1.81291 19.7931 1.46357 18.934 1.42359ZM15.9986 1.49108C16.8408 0.818755 17.8986 0.476205 18.9747 0.524512L18.9754 0.524543C20.0515 0.574517 21.0737 1.01208 21.8511 1.75778L21.8511 1.75779C22.6287 2.50377 23.1091 3.50602 23.2025 4.57952C23.2963 5.65255 22.9963 6.72309 22.3595 7.59182L22.3594 7.59196C21.722 8.46073 20.7917 9.06847 19.7398 9.30288L19.7398 9.30289C18.7452 9.52444 17.7073 9.39766 16.7981 8.9474L14.874 9.40766C14.7177 9.44505 14.5533 9.39624 14.4428 9.2796C14.3322 9.16295 14.2922 8.99619 14.3379 8.8421L14.8607 7.07882C14.382 6.19412 14.217 5.1713 14.3957 4.17783C14.5865 3.11766 15.1567 2.16277 15.9985 1.49119L15.9986 1.49108ZM8.27002 5.46948C7.07655 5.46948 5.93195 5.94359 5.08804 6.7875C4.24413 7.63142 3.77002 8.77601 3.77002 9.96948C3.77002 11.163 4.24413 12.3075 5.08804 13.1515C5.93195 13.9954 7.07655 14.4695 8.27002 14.4695C9.46349 14.4695 10.6081 13.9954 11.452 13.1515C12.2959 12.3075 12.77 11.163 12.77 9.96948C12.77 8.77601 12.2959 7.63142 11.452 6.7875C10.6081 5.94359 9.46349 5.46948 8.27002 5.46948ZM5.79515 7.49461C6.45152 6.83823 7.34176 6.46948 8.27002 6.46948C9.19828 6.46948 10.0885 6.83823 10.7449 7.49461C11.4013 8.15099 11.77 9.04122 11.77 9.96948C11.77 10.8977 11.4013 11.788 10.7449 12.4444C10.0885 13.1007 9.19828 13.4695 8.27002 13.4695C7.34176 13.4695 6.45152 13.1007 5.79515 12.4444C5.13877 11.788 4.77002 10.8977 4.77002 9.96948C4.77002 9.04122 5.13877 8.15099 5.79515 7.49461ZM2.99041 17.6899C3.77181 16.9085 4.83162 16.4695 5.93669 16.4695H10.6034C11.7084 16.4695 12.7682 16.9085 13.5496 17.6899C14.331 18.4713 14.77 19.5311 14.77 20.6362V20.9695C14.77 21.7979 14.0984 22.4695 13.27 22.4695H3.27002C2.44159 22.4695 1.77002 21.7979 1.77002 20.9695V20.6362C1.77002 19.5311 2.20901 18.4713 2.99041 17.6899ZM5.93669 15.4695C4.5664 15.4695 3.25224 16.0138 2.2833 16.9828C1.31436 17.9517 0.77002 19.2659 0.77002 20.6362V20.9695C0.77002 22.3502 1.88931 23.4695 3.27002 23.4695H13.27C14.6507 23.4695 15.77 22.3502 15.77 20.9695V20.6362C15.77 19.2659 15.2257 17.9517 14.2567 16.9828C13.2878 16.0138 11.9736 15.4695 10.6034 15.4695H5.93669ZM19.1947 5.39377C19.0822 5.50629 18.9295 5.56951 18.7704 5.56951C18.6113 5.56951 18.4587 5.50629 18.3461 5.39377C18.2336 5.28125 18.1704 5.12864 18.1704 4.96951C18.1704 4.81038 18.2336 4.65776 18.3461 4.54524C18.4587 4.43272 18.6113 4.36951 18.7704 4.36951C18.9295 4.36951 19.0822 4.43272 19.1947 4.54524C19.3072 4.65776 19.3704 4.81038 19.3704 4.96951C19.3704 5.12864 19.3072 5.28125 19.1947 5.39377ZM20.4706 5.56951C20.6297 5.56951 20.7823 5.50629 20.8949 5.39377C21.0074 5.28125 21.0706 5.12864 21.0706 4.96951C21.0706 4.81038 21.0074 4.65776 20.8949 4.54524C20.7823 4.43272 20.6297 4.36951 20.4706 4.36951C20.3115 4.36951 20.1589 4.43272 20.0463 4.54524C19.9338 4.65776 19.8706 4.81038 19.8706 4.96951C19.8706 5.12864 19.9338 5.28125 20.0463 5.39377C20.1589 5.50629 20.3115 5.56951 20.4706 5.56951ZM17.4945 5.39377C17.382 5.50629 17.2293 5.56951 17.0702 5.56951C16.9111 5.56951 16.7585 5.50629 16.646 5.39377C16.5334 5.28125 16.4702 5.12864 16.4702 4.96951C16.4702 4.81038 16.5334 4.65776 16.646 4.54524C16.7585 4.43272 16.9111 4.36951 17.0702 4.36951C17.2293 4.36951 17.382 4.43272 17.4945 4.54524C17.607 4.65776 17.6702 4.81038 17.6702 4.96951C17.6702 5.12864 17.607 5.28125 17.4945 5.39377Z" fill="black"/>
+                      </svg>`,
     };
 
     // Add translations for international address fields
@@ -95,7 +101,7 @@
             dropdownLabel: "Maak een keuze",
             dropdownPlaceholder: "Maak een keuze",
             addressLabel: "Adres",
-            addressPlaceholder: "Begin met typen van uw adres...",
+            addressPlaceholder: "Begin met typen van het adres...",
             validation: {
                 city: "Vul een stad in.",
                 zipcode: "Vul een geldige postcode in.",
@@ -472,9 +478,6 @@
                     "Google API loaded, setting up custom autocomplete"
                 );
 
-                // We'll use the new Place Autocomplete Data API
-                // No service initialization needed
-
                 // Store the original parent and next sibling for proper insertion
                 const originalParent = input.parentNode;
                 const nextSibling = input.nextSibling;
@@ -547,16 +550,61 @@
                     selectedIndex = -1;
                 }
 
+                // Helper function to determine if a suggestion is likely a street address
+                function isLikelyStreetAddress(placePrediction) {
+                    const mainText = placePrediction.mainText.text;
+                    const fullText = placePrediction.text.text;
+                    
+                    // Check if it contains numbers (likely street number)
+                    const hasNumbers = /\d+/.test(mainText);
+                    
+                    // Check if it looks like a street address pattern
+                    const streetPatterns = [
+                        /^\d+\s+\w+/,  // Starts with number + street name
+                        /\d+.*\s+(street|st|avenue|ave|road|rd|drive|dr|lane|ln|way|blvd|boulevard|circle|cir|court|ct|place|pl)\b/i,
+                        /\d+.*\s+(straat|laan|weg|gracht|kade|plein|singel)\b/i  // Dutch street types
+                    ];
+                    
+                    const matchesStreetPattern = streetPatterns.some(pattern => 
+                        pattern.test(mainText) || pattern.test(fullText)
+                    );
+                    
+                    // Check if place types indicate it's a street address (if available)
+                    const types = placePrediction.types || [];
+                    const hasStreetAddressType = types.includes('street_address') || 
+                                               types.includes('premise') ||
+                                               types.includes('subpremise');
+                    
+                    // Exclude obvious non-addresses
+                    const excludePatterns = [
+                        /^(city|town|village|municipality)\s+of\s+/i,
+                        /^(province|state|region|county)\s+of\s+/i,
+                        /\b(airport|station|hospital|university|school|mall|center|centre)\b/i
+                    ];
+                    
+                    const isExcluded = excludePatterns.some(pattern => 
+                        pattern.test(mainText) || pattern.test(fullText)
+                    );
+                    
+                    return (hasNumbers || matchesStreetPattern || hasStreetAddressType) && !isExcluded;
+                }
+
                 function updateDropdown(suggestions) {
                     dropdown.innerHTML = "";
-                    currentPredictions = suggestions;
+                    
+                    // Filter suggestions to only show likely street addresses
+                    const streetAddresses = suggestions.filter((suggestion) => 
+                        isLikelyStreetAddress(suggestion.placePrediction)
+                    );
+                    
+                    currentPredictions = streetAddresses;
 
-                    if (suggestions.length === 0) {
+                    if (streetAddresses.length === 0) {
                         hideDropdown();
                         return;
                     }
 
-                    suggestions.forEach((suggestion, index) => {
+                    streetAddresses.forEach((suggestion, index) => {
                         const placePrediction = suggestion.placePrediction;
                         const option = document.createElement("div");
                         option.className = "dropdown-option address-option";
@@ -693,7 +741,9 @@
                                 input: value,
                                 sessionToken: sessionToken,
                                 language: locale,
+                                includedPrimaryTypes: ["geocode"],
                                 region: country.toLowerCase(),
+                                includedRegionCodes: [country.toLowerCase()],
                             };
 
                             const { suggestions } =
@@ -710,7 +760,7 @@
                             console.warn("Autocomplete service error:", error);
                             hideDropdown();
                         }
-                    }, 300);
+                    }, 250);
                 });
 
                 // Keyboard navigation
@@ -843,7 +893,7 @@
                 valid: !!(result.postal_code && result.street_number),
                 postcode: result.postal_code || "",
                 huisnummer: result.street_number || "",
-                toevoeging: "", // Google doesn't typically provide this
+                toevoeging: "", // Google doesn't provide this
             };
         } else {
             return {
@@ -858,6 +908,61 @@
                 zipcode: result.postal_code || "",
                 city: result.locality || "",
             };
+        }
+    }
+
+    function redirectToUrlWithCheck(url, openNewTab, preopenedWin) {
+        try {
+            const targetUrl = new URL(url);
+            const baseUrl = targetUrl.origin;
+
+            const img = new Image();
+            img.onload = function () {
+                // Server is up, redirect
+                if (openNewTab === "true" && preopenedWin) {
+                    preopenedWin.location.href = url;
+                } else if (openNewTab === "true") {
+                    // Fallback if popup was blocked: navigate in same tab
+                    window.location.href = url;
+                } else {
+                    window.location.href = url;
+                }
+            };
+            img.onerror = function () {
+                // Server is down, redirect to fallback
+                console.error(
+                    `Server ${baseUrl} appears to be offline. Redirecting to fallback.`
+                );
+                const fallbackUrl = new URL(
+                    "https://homezerotech.github.io/files/fallback/offline.html"
+                );
+                fallbackUrl.searchParams.set("referralUrl", url);
+
+                if (openNewTab === "true" && preopenedWin) {
+                    preopenedWin.location.href = fallbackUrl.href;
+                } else if (openNewTab === "true") {
+                    // Fallback if popup was blocked: navigate in same tab
+                    window.location.href = fallbackUrl.href;
+                } else {
+                    window.location.href = fallbackUrl.href;
+                }
+            };
+            // Add a cache buster to avoid cached responses
+            img.src = baseUrl + "/favicon.ico?_=" + Date.now();
+        } catch (e) {
+            console.error(
+                "Invalid URL, cannot perform online check. Redirecting directly.",
+                url,
+                e
+            );
+            if (openNewTab === "true" && preopenedWin) {
+                preopenedWin.location.href = url;
+            } else if (openNewTab === "true") {
+                // Fallback if popup was blocked: navigate in same tab
+                window.location.href = url;
+            } else {
+                window.location.href = url;
+            }
         }
     }
 
@@ -885,7 +990,7 @@
             const elements = document.querySelectorAll(
                 "hz-embed:not([data-initialized])"
             );
-            const utmParams = getQueryParams();
+            const queryParams = getQueryParams();
 
             elements.forEach(function (element) {
                 // Mark the element as initialized immediately to prevent double initialization
@@ -1171,6 +1276,9 @@
 
                     // If the form is valid, proceed with URL construction and navigation
                     if (isValid) {
+                        // Pre-open a window synchronously on user gesture for iOS Safari
+                        const preopenedWin =
+                            openNewTab === "true" ? window.open("about:blank", "_blank") : null;
                         url +=
                             "&ReferralURL=" +
                             encodeURIComponent(window.location.href); // Start with ReferralURL
@@ -1199,21 +1307,17 @@
                             url += "&Email=" + encodeURIComponent(email.value);
                         }
 
-                        // Append UTM parameters if present
-                        Object.keys(utmParams).forEach(function (key) {
+                        // Append query parameters if present
+                        Object.keys(queryParams).forEach(function (key) {
                             url +=
                                 "&" +
                                 key +
                                 "=" +
-                                encodeURIComponent(utmParams[key]);
+                                encodeURIComponent(queryParams[key]);
                         });
 
                         // Check if the form should open in a new tab or in the same window
-                        if (openNewTab === "true") {
-                            window.open(url, "_blank");
-                        } else {
-                            window.location.href = url;
-                        }
+                        redirectToUrlWithCheck(url, openNewTab, preopenedWin);
                     }
                 };
 
@@ -1475,14 +1579,23 @@
 
     function getQueryParams() {
         const params = new URLSearchParams(window.location.search);
-        const utmParams = {};
-        ["utm_campaign", "utm_medium", "utm_source"].forEach(function (param) {
+        const queryParams = {};
+        [
+            "utm_campaign",
+            "utm_medium",
+            "utm_source",
+            "utm_content",
+            "utm_term",
+            "gclid",
+            "gbraid",
+            "wbraid",
+        ].forEach(function (param) {
             const value = params.get(param);
             if (value) {
-                utmParams[param] = value;
+                queryParams[param] = value;
             }
         });
-        return utmParams;
+        return queryParams;
     }
 
     // Function to display a custom validation message

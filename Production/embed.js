@@ -49,6 +49,12 @@
                             <path fill-rule="evenodd" clip-rule="evenodd" d="M8.32915 7.50419C8.55695 7.73199 8.55695 8.10134 8.32915 8.32915L4.82915 11.8291C4.60134 12.057 4.23199 12.057 4.00419 11.8291C3.77638 11.6013 3.77638 11.232 4.00419 11.0042L7.50419 7.50419C7.73199 7.27638 8.10134 7.27638 8.32915 7.50419Z" fill="currentColor"></path>
                             <path fill-rule="evenodd" clip-rule="evenodd" d="M16.4958 15.6709C16.7236 15.8987 16.7236 16.268 16.4958 16.4958L12.9958 19.9958C12.768 20.2236 12.3987 20.2236 12.1709 19.9958C11.943 19.768 11.943 19.3987 12.1709 19.1709L15.6709 15.6709C15.8987 15.443 16.268 15.443 16.4958 15.6709Z" fill="currentColor"></path>
                           </svg>`,
+        advisormodule: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                          <path fill-rule="evenodd" clip-rule="evenodd" d="M18.934 1.42359C18.0749 1.38511 17.2312 1.65866 16.56 2.19453L16.5599 2.19464C15.8883 2.73039 15.4336 3.49207 15.2815 4.33721C15.1294 5.18257 15.2894 6.05446 15.7323 6.79075C15.7974 6.89896 15.814 7.02954 15.7781 7.15061L15.4222 8.35114L16.7519 8.03305C16.8602 8.00713 16.9744 8.02232 17.0722 8.07569C17.8265 8.48735 18.7046 8.61143 19.5441 8.42442C20.3832 8.23741 21.1253 7.75267 21.6337 7.05961C22.1417 6.36658 22.3807 5.51292 22.3059 4.65775L22.3059 4.65753C22.2314 3.8017 21.8484 3.00244 21.2281 2.40728C20.6084 1.81291 19.7931 1.46357 18.934 1.42359ZM15.9986 1.49108C16.8408 0.818755 17.8986 0.476205 18.9747 0.524512L18.9754 0.524543C20.0515 0.574517 21.0737 1.01208 21.8511 1.75778L21.8511 1.75779C22.6287 2.50377 23.1091 3.50602 23.2025 4.57952C23.2963 5.65255 22.9963 6.72309 22.3595 7.59182L22.3594 7.59196C21.722 8.46073 20.7917 9.06847 19.7398 9.30288L19.7398 9.30289C18.7452 9.52444 17.7073 9.39766 16.7981 8.9474L14.874 9.40766C14.7177 9.44505 14.5533 9.39624 14.4428 9.2796C14.3322 9.16295 14.2922 8.99619 14.3379 8.8421L14.8607 7.07882C14.382 6.19412 14.217 5.1713 14.3957 4.17783C14.5865 3.11766 15.1567 2.16277 15.9985 1.49119L15.9986 1.49108ZM8.27002 5.46948C7.07655 5.46948 5.93195 5.94359 5.08804 6.7875C4.24413 7.63142 3.77002 8.77601 3.77002 9.96948C3.77002 11.163 4.24413 12.3075 5.08804 13.1515C5.93195 13.9954 7.07655 14.4695 8.27002 14.4695C9.46349 14.4695 10.6081 13.9954 11.452 13.1515C12.2959 12.3075 12.77 11.163 12.77 9.96948C12.77 8.77601 12.2959 7.63142 11.452 6.7875C10.6081 5.94359 9.46349 5.46948 8.27002 5.46948ZM5.79515 7.49461C6.45152 6.83823 7.34176 6.46948 8.27002 6.46948C9.19828 6.46948 10.0885 6.83823 10.7449 7.49461C11.4013 8.15099 11.77 9.04122 11.77 9.96948C11.77 10.8977 11.4013 11.788 10.7449 12.4444C10.0885 13.1007 9.19828 13.4695 8.27002 13.4695C7.34176 13.4695 6.45152 13.1007 5.79515 12.4444C5.13877 11.788 4.77002 10.8977 4.77002 9.96948C4.77002 9.04122 5.13877 8.15099 5.79515 7.49461ZM2.99041 17.6899C3.77181 16.9085 4.83162 16.4695 5.93669 16.4695H10.6034C11.7084 16.4695 12.7682 16.9085 13.5496 17.6899C14.331 18.4713 14.77 19.5311 14.77 20.6362V20.9695C14.77 21.7979 14.0984 22.4695 13.27 22.4695H3.27002C2.44159 22.4695 1.77002 21.7979 1.77002 20.9695V20.6362C1.77002 19.5311 2.20901 18.4713 2.99041 17.6899ZM5.93669 15.4695C4.5664 15.4695 3.25224 16.0138 2.2833 16.9828C1.31436 17.9517 0.77002 19.2659 0.77002 20.6362V20.9695C0.77002 22.3502 1.88931 23.4695 3.27002 23.4695H13.27C14.6507 23.4695 15.77 22.3502 15.77 20.9695V20.6362C15.77 19.2659 15.2257 17.9517 14.2567 16.9828C13.2878 16.0138 11.9736 15.4695 10.6034 15.4695H5.93669ZM19.1947 5.39377C19.0822 5.50629 18.9295 5.56951 18.7704 5.56951C18.6113 5.56951 18.4587 5.50629 18.3461 5.39377C18.2336 5.28125 18.1704 5.12864 18.1704 4.96951C18.1704 4.81038 18.2336 4.65776 18.3461 4.54524C18.4587 4.43272 18.6113 4.36951 18.7704 4.36951C18.9295 4.36951 19.0822 4.43272 19.1947 4.54524C19.3072 4.65776 19.3704 4.81038 19.3704 4.96951C19.3704 5.12864 19.3072 5.28125 19.1947 5.39377ZM20.4706 5.56951C20.6297 5.56951 20.7823 5.50629 20.8949 5.39377C21.0074 5.28125 21.0706 5.12864 21.0706 4.96951C21.0706 4.81038 21.0074 4.65776 20.8949 4.54524C20.7823 4.43272 20.6297 4.36951 20.4706 4.36951C20.3115 4.36951 20.1589 4.43272 20.0463 4.54524C19.9338 4.65776 19.8706 4.81038 19.8706 4.96951C19.8706 5.12864 19.9338 5.28125 20.0463 5.39377C20.1589 5.50629 20.3115 5.56951 20.4706 5.56951ZM17.4945 5.39377C17.382 5.50629 17.2293 5.56951 17.0702 5.56951C16.9111 5.56951 16.7585 5.50629 16.646 5.39377C16.5334 5.28125 16.4702 5.12864 16.4702 4.96951C16.4702 4.81038 16.5334 4.65776 16.646 4.54524C16.7585 4.43272 16.9111 4.36951 17.0702 4.36951C17.2293 4.36951 17.382 4.43272 17.4945 4.54524C17.607 4.65776 17.6702 4.81038 17.6702 4.96951C17.6702 5.12864 17.607 5.28125 17.4945 5.39377Z" fill="black"/>
+                      </svg>`,
+        solarboiler: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                          <path fill-rule="evenodd" clip-rule="evenodd" d="M18.934 1.42359C18.0749 1.38511 17.2312 1.65866 16.56 2.19453L16.5599 2.19464C15.8883 2.73039 15.4336 3.49207 15.2815 4.33721C15.1294 5.18257 15.2894 6.05446 15.7323 6.79075C15.7974 6.89896 15.814 7.02954 15.7781 7.15061L15.4222 8.35114L16.7519 8.03305C16.8602 8.00713 16.9744 8.02232 17.0722 8.07569C17.8265 8.48735 18.7046 8.61143 19.5441 8.42442C20.3832 8.23741 21.1253 7.75267 21.6337 7.05961C22.1417 6.36658 22.3807 5.51292 22.3059 4.65775L22.3059 4.65753C22.2314 3.8017 21.8484 3.00244 21.2281 2.40728C20.6084 1.81291 19.7931 1.46357 18.934 1.42359ZM15.9986 1.49108C16.8408 0.818755 17.8986 0.476205 18.9747 0.524512L18.9754 0.524543C20.0515 0.574517 21.0737 1.01208 21.8511 1.75778L21.8511 1.75779C22.6287 2.50377 23.1091 3.50602 23.2025 4.57952C23.2963 5.65255 22.9963 6.72309 22.3595 7.59182L22.3594 7.59196C21.722 8.46073 20.7917 9.06847 19.7398 9.30288L19.7398 9.30289C18.7452 9.52444 17.7073 9.39766 16.7981 8.9474L14.874 9.40766C14.7177 9.44505 14.5533 9.39624 14.4428 9.2796C14.3322 9.16295 14.2922 8.99619 14.3379 8.8421L14.8607 7.07882C14.382 6.19412 14.217 5.1713 14.3957 4.17783C14.5865 3.11766 15.1567 2.16277 15.9985 1.49119L15.9986 1.49108ZM8.27002 5.46948C7.07655 5.46948 5.93195 5.94359 5.08804 6.7875C4.24413 7.63142 3.77002 8.77601 3.77002 9.96948C3.77002 11.163 4.24413 12.3075 5.08804 13.1515C5.93195 13.9954 7.07655 14.4695 8.27002 14.4695C9.46349 14.4695 10.6081 13.9954 11.452 13.1515C12.2959 12.3075 12.77 11.163 12.77 9.96948C12.77 8.77601 12.2959 7.63142 11.452 6.7875C10.6081 5.94359 9.46349 5.46948 8.27002 5.46948ZM5.79515 7.49461C6.45152 6.83823 7.34176 6.46948 8.27002 6.46948C9.19828 6.46948 10.0885 6.83823 10.7449 7.49461C11.4013 8.15099 11.77 9.04122 11.77 9.96948C11.77 10.8977 11.4013 11.788 10.7449 12.4444C10.0885 13.1007 9.19828 13.4695 8.27002 13.4695C7.34176 13.4695 6.45152 13.1007 5.79515 12.4444C5.13877 11.788 4.77002 10.8977 4.77002 9.96948C4.77002 9.04122 5.13877 8.15099 5.79515 7.49461ZM2.99041 17.6899C3.77181 16.9085 4.83162 16.4695 5.93669 16.4695H10.6034C11.7084 16.4695 12.7682 16.9085 13.5496 17.6899C14.331 18.4713 14.77 19.5311 14.77 20.6362V20.9695C14.77 21.7979 14.0984 22.4695 13.27 22.4695H3.27002C2.44159 22.4695 1.77002 21.7979 1.77002 20.9695V20.6362C1.77002 19.5311 2.20901 18.4713 2.99041 17.6899ZM5.93669 15.4695C4.5664 15.4695 3.25224 16.0138 2.2833 16.9828C1.31436 17.9517 0.77002 19.2659 0.77002 20.6362V20.9695C0.77002 22.3502 1.88931 23.4695 3.27002 23.4695H13.27C14.6507 23.4695 15.77 22.3502 15.77 20.9695V20.6362C15.77 19.2659 15.2257 17.9517 14.2567 16.9828C13.2878 16.0138 11.9736 15.4695 10.6034 15.4695H5.93669ZM19.1947 5.39377C19.0822 5.50629 18.9295 5.56951 18.7704 5.56951C18.6113 5.56951 18.4587 5.50629 18.3461 5.39377C18.2336 5.28125 18.1704 5.12864 18.1704 4.96951C18.1704 4.81038 18.2336 4.65776 18.3461 4.54524C18.4587 4.43272 18.6113 4.36951 18.7704 4.36951C18.9295 4.36951 19.0822 4.43272 19.1947 4.54524C19.3072 4.65776 19.3704 4.81038 19.3704 4.96951C19.3704 5.12864 19.3072 5.28125 19.1947 5.39377ZM20.4706 5.56951C20.6297 5.56951 20.7823 5.50629 20.8949 5.39377C21.0074 5.28125 21.0706 5.12864 21.0706 4.96951C21.0706 4.81038 21.0074 4.65776 20.8949 4.54524C20.7823 4.43272 20.6297 4.36951 20.4706 4.36951C20.3115 4.36951 20.1589 4.43272 20.0463 4.54524C19.9338 4.65776 19.8706 4.81038 19.8706 4.96951C19.8706 5.12864 19.9338 5.28125 20.0463 5.39377C20.1589 5.50629 20.3115 5.56951 20.4706 5.56951ZM17.4945 5.39377C17.382 5.50629 17.2293 5.56951 17.0702 5.56951C16.9111 5.56951 16.7585 5.50629 16.646 5.39377C16.5334 5.28125 16.4702 5.12864 16.4702 4.96951C16.4702 4.81038 16.5334 4.65776 16.646 4.54524C16.7585 4.43272 16.9111 4.36951 17.0702 4.36951C17.2293 4.36951 17.382 4.43272 17.4945 4.54524C17.607 4.65776 17.6702 4.81038 17.6702 4.96951C17.6702 5.12864 17.607 5.28125 17.4945 5.39377Z" fill="black"/>
+                      </svg>`,
     };
 
     // Add translations for international address fields
@@ -66,6 +72,8 @@
             emailLabel: "E-mail",
             dropdownLabel: "Make a choice",
             dropdownPlaceholder: "Make a choice",
+            addressLabel: "Address",
+            addressPlaceholder: "Start typing your address...",
             validation: {
                 city: "Please enter a city.",
                 zipcode: "Please enter a valid zipcode.",
@@ -76,6 +84,7 @@
                 email: "Please enter a valid e-mail address.",
                 emailRequired: "Please enter an e-mail address.",
                 dropdown: "Please select an option.",
+                address: "Please enter a valid address.",
             },
         },
         nl: {
@@ -91,6 +100,8 @@
             emailLabel: "E-mail",
             dropdownLabel: "Maak een keuze",
             dropdownPlaceholder: "Maak een keuze",
+            addressLabel: "Adres",
+            addressPlaceholder: "Begin met typen van het adres...",
             validation: {
                 city: "Vul een stad in.",
                 zipcode: "Vul een geldige postcode in.",
@@ -101,6 +112,7 @@
                 email: "Vul een geldig e-mailadres in.",
                 emailRequired: "Vul een e-mailadres in.",
                 dropdown: "Selecteer een maatregel.",
+                address: "Vul een geldig adres in.",
             },
         },
         fr: {
@@ -116,6 +128,8 @@
             emailLabel: "E-mail",
             dropdownLabel: "Faites un choix",
             dropdownPlaceholder: "Faites un choix",
+            addressLabel: "Adresse",
+            addressPlaceholder: "Commencez à taper votre adresse...",
             validation: {
                 city: "Veuillez entrer une ville.",
                 zipcode: "Veuillez entrer un code postal valide.",
@@ -126,6 +140,7 @@
                 email: "Veuillez entrer une adresse e-mail valide.",
                 emailRequired: "Veuillez entrer une adresse e-mail.",
                 dropdown: "Veuillez sélectionner une option.",
+                address: "Veuillez entrer une adresse valide.",
             },
         },
         de: {
@@ -141,6 +156,8 @@
             emailLabel: "E-Mail",
             dropdownLabel: "Treffen Sie eine Wahl",
             dropdownPlaceholder: "Treffen Sie eine Wahl",
+            addressLabel: "Adresse",
+            addressPlaceholder: "Beginnen Sie mit der Eingabe Ihrer Adresse...",
             validation: {
                 city: "Bitte geben Sie eine Stadt ein.",
                 zipcode: "Bitte geben Sie eine gültige Postleitzahl ein.",
@@ -151,6 +168,7 @@
                 email: "Bitte geben Sie eine gültige E-Mail-Adresse ein.",
                 emailRequired: "Bitte geben Sie eine E-Mail-Adresse ein.",
                 dropdown: "Bitte wählen Sie eine Option aus.",
+                address: "Bitte geben Sie eine gültige Adresse ein.",
             },
         },
         // Default dutch validation messages for existing fields
@@ -166,6 +184,788 @@
         },
     };
 
+    // Rate limiting for Google Places API
+    const rateLimiter = {
+        requests: [],
+        maxRequests: 50, // Max requests per minute
+        timeWindow: 60000, // 1 minute in milliseconds
+
+        canMakeRequest: function () {
+            const now = Date.now();
+            // Remove old requests outside time window
+            this.requests = this.requests.filter(
+                (time) => now - time < this.timeWindow
+            );
+
+            if (this.requests.length >= this.maxRequests) {
+                return false;
+            }
+
+            this.requests.push(now);
+            return true;
+        },
+    };
+
+    // Google Places API loading and management
+    let googleApiPromise = null;
+    const GOOGLE_API_KEY = "AIzaSyAGOPVG4UinlU37eP7p-Jim3eigcWwLwsA";
+
+    function loadGooglePlacesAPI() {
+        if (googleApiPromise) {
+            return googleApiPromise;
+        }
+
+        googleApiPromise = new Promise((resolve, reject) => {
+            if (
+                window.google &&
+                window.google.maps &&
+                window.google.maps.places
+            ) {
+                console.log("Google Places API already loaded");
+                resolve(window.google);
+                return;
+            }
+
+            console.log("Loading Google Places API...");
+            const script = document.createElement("script");
+            script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_API_KEY}&libraries=places&loading=async`;
+            script.async = true;
+            script.defer = true;
+
+            script.onload = () => {
+                console.log("Google API script loaded successfully");
+                // Add a small delay to ensure the API is fully initialized
+                setTimeout(() => {
+                    if (
+                        window.google &&
+                        window.google.maps &&
+                        window.google.maps.places
+                    ) {
+                        console.log(
+                            "Google Places API initialized successfully"
+                        );
+                        resolve(window.google);
+                    } else {
+                        const errorMsg = `Google Places API failed to initialize. Available: google=${!!window.google}, maps=${!!(
+                            window.google && window.google.maps
+                        )}, places=${!!(
+                            window.google &&
+                            window.google.maps &&
+                            window.google.maps.places
+                        )}`;
+                        console.error(errorMsg);
+                        reject(new Error(errorMsg));
+                    }
+                }, 100);
+            };
+
+            script.onerror = (event) => {
+                const errorMsg = `Failed to load Google Places API script. Error: ${
+                    event.error ||
+                    event.message ||
+                    "Unknown script loading error"
+                }. URL: ${script.src}`;
+                console.error(errorMsg, event);
+                reject(new Error(errorMsg));
+            };
+
+            document.head.appendChild(script);
+        });
+
+        return googleApiPromise;
+    }
+
+    // Parse address manually if Google API fails or user enters text directly
+    function parseAddressManually(addressText, addressFormat, country) {
+        if (!addressText || typeof addressText !== "string") {
+            return null;
+        }
+
+        const address = addressText.trim();
+
+        if (addressFormat === "dutch") {
+            // Dutch address patterns: be flexible with spacing and formatting
+            // Try to extract Dutch postcode pattern - handle various formats: "1234AB", "1234 AB", etc.
+            const postcodeMatch = address.match(
+                /\b([1-9]\d{3}\s*[A-Za-z]{2})\b/
+            );
+            if (!postcodeMatch) {
+                return null; // No valid Dutch postcode found
+            }
+
+            const postcode = postcodeMatch[1].replace(/\s+/g, "").toUpperCase();
+            const postcodeIndex = address.indexOf(postcodeMatch[1]);
+
+            // Extract house number - be more flexible, look for any number pattern before postcode
+            const beforePostcode = address.substring(0, postcodeIndex).trim();
+
+            // Try multiple patterns for house number extraction
+            let houseNumberMatch = beforePostcode.match(
+                /(\d+\s*[A-Za-z]*)\s*,?\s*$/
+            ); // Standard: "123A"
+            if (!houseNumberMatch) {
+                // Try alternative patterns - number anywhere in the string
+                houseNumberMatch = beforePostcode.match(/.*?(\d+\s*[A-Za-z]*)/);
+            }
+
+            if (!houseNumberMatch) {
+                return null; // No house number found
+            }
+
+            const fullHouseNumber = houseNumberMatch[1].trim();
+            const houseNumberOnly = fullHouseNumber.match(/^\d+/);
+            const addition = fullHouseNumber.replace(/^\d+\s*/, "") || "";
+
+            if (!houseNumberOnly) {
+                return null;
+            }
+
+            return {
+                valid: true,
+                postcode: postcode,
+                huisnummer: houseNumberOnly[0],
+                toevoeging: addition,
+            };
+        } else {
+            // International address parsing - be flexible with different formats
+            // Handle both comma-separated and space-separated addresses
+            let lines;
+            if (address.includes(",")) {
+                lines = address.split(",").map((line) => line.trim());
+            } else {
+                // For addresses without commas, try to split smartly
+                // Look for postal code patterns to split the address
+                const zipMatch = address.match(
+                    /\b(\d{4,5}|[A-Za-z]{1,2}\d{1,2}\s*\d[A-Za-z]{2})\s+([A-Za-z\s]+)$/
+                );
+                if (zipMatch) {
+                    const beforeZip = address
+                        .substring(0, address.indexOf(zipMatch[0]))
+                        .trim();
+                    const zipAndCity = zipMatch[0];
+                    lines = [beforeZip, zipAndCity];
+                } else {
+                    // Fallback: treat as single line
+                    lines = [address];
+                }
+            }
+
+            if (lines.length < 1) {
+                return null;
+            }
+
+            // Try to extract postal code and city from the last part
+            let zipcode = "";
+            let city = "";
+
+            const lastLine = lines[lines.length - 1];
+
+            // More flexible postal code patterns
+            const zipPatterns = [
+                /\b(\d{4,5})\s+([A-Za-z\s]+)$/, // Germany, Netherlands: "12345 Berlin"
+                /\b(\d{5})\s+([A-Za-z\s]+)$/, // France, Spain: "75001 Paris"
+                /\b([A-Za-z]{1,2}\d{1,2}\s*\d[A-Za-z]{2})\s+([A-Za-z\s]+)$/, // UK: "SW1A 0AA London"
+                /\b(\d{4,6})\s*([A-Za-z\s]+)$/, // Generic: any 4-6 digit code
+            ];
+
+            for (const pattern of zipPatterns) {
+                const match = lastLine.match(pattern);
+                if (match) {
+                    zipcode = match[1].replace(/\s+/g, "").trim();
+                    city = match[2].trim();
+                    break;
+                }
+            }
+
+            if (!zipcode || !city) {
+                // More flexible fallback - try to find any number sequence as zipcode
+                const words = lastLine.split(/\s+/);
+                if (words.length >= 2) {
+                    // Look for a word that contains mostly digits
+                    for (let i = 0; i < words.length - 1; i++) {
+                        if (words[i].match(/\d{3,}/)) {
+                            zipcode = words[i];
+                            city = words.slice(i + 1).join(" ");
+                            break;
+                        }
+                    }
+                }
+
+                // Final fallback
+                if (!zipcode && words.length >= 1) {
+                    city = words[words.length - 1];
+                    const zipMatch = lastLine.match(/\d{3,}/);
+                    zipcode = zipMatch ? zipMatch[0] : "";
+                }
+            }
+
+            // Extract street and house number from first line (or combined if single line)
+            let street = "";
+            let housenumber = "";
+
+            const firstLine = lines[0];
+
+            // More flexible house number extraction
+            let streetMatch = firstLine.match(/^(.+?)\s+(\d+\s*[A-Za-z]*)\s*$/); // Standard: "Street 123A"
+            if (!streetMatch) {
+                streetMatch = firstLine.match(/^(.+?)(\d+[A-Za-z]*)\s*$/); // No space: "Street123A"
+            }
+            if (!streetMatch) {
+                streetMatch = firstLine.match(/^(.+?)\s+(\d+)/); // Just number: "Street 123"
+            }
+
+            if (streetMatch) {
+                street = streetMatch[1].trim();
+                housenumber = streetMatch[2].trim();
+            } else {
+                // Final fallback: treat entire first line as street, extract any number
+                street = firstLine.replace(/\s*\d+.*$/, "").trim(); // Remove number part
+                const numberMatch = firstLine.match(/\d+/);
+                housenumber = numberMatch ? numberMatch[0] : "1";
+
+                // If we removed too much, keep the original
+                if (!street) {
+                    street = firstLine;
+                }
+            }
+
+            // More lenient validation - we need at least street and either zipcode or city
+            if (!street || (!zipcode && !city)) {
+                return null;
+            }
+
+            // Provide defaults for missing values
+            if (!housenumber) housenumber = "1";
+            if (!zipcode) zipcode = "";
+            if (!city) city = "";
+
+            return {
+                valid: true,
+                street: street,
+                housenumber: housenumber,
+                zipcode: zipcode,
+                city: city,
+            };
+        }
+    }
+
+    // Setup Google Places Autocomplete with custom dropdown
+    function setupGoogleAutocomplete(
+        input,
+        country,
+        addressFormat,
+        form,
+        language
+    ) {
+        if (!rateLimiter.canMakeRequest()) {
+            console.warn("Rate limit exceeded for Google Places API");
+            return;
+        }
+
+        // Map language codes to proper locale formats
+        const languageMap = {
+            nl: "nl-NL",
+            en: "en-US",
+            fr: "fr-FR",
+            de: "de-DE",
+        };
+
+        const locale = languageMap[language] || "en-US";
+
+        loadGooglePlacesAPI()
+            .then((google) => {
+                console.log(
+                    "Google API loaded, setting up custom autocomplete"
+                );
+
+                // Store the original parent and next sibling for proper insertion
+                const originalParent = input.parentNode;
+                const nextSibling = input.nextSibling;
+
+                // Create custom dropdown structure
+                const container = document.createElement("div");
+                container.className = "custom-dropdown address-autocomplete";
+
+                const inputWrapper = document.createElement("div");
+                inputWrapper.className = "address-input-wrapper";
+
+                // Update the input styling
+                input.className =
+                    "embed-input-field address-autocomplete-input";
+                input.setAttribute("autocomplete", "off");
+
+                const dropdownIcon = document.createElement("div");
+                dropdownIcon.className = "dropdown-icon";
+                dropdownIcon.innerHTML = `
+                    <svg class="search-icon" viewBox="0 0 24 24" width="16px" height="16px" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" fill="currentColor"/>
+                        </svg>
+                    `;
+
+                const dropdown = document.createElement("div");
+                dropdown.className = "dropdown-options address-dropdown";
+
+                // First remove the input from its current parent
+                originalParent.removeChild(input);
+
+                // Build the new structure
+                inputWrapper.appendChild(input);
+                inputWrapper.appendChild(dropdownIcon);
+                container.appendChild(inputWrapper);
+                container.appendChild(dropdown);
+
+                // Insert the container where the input was
+                if (nextSibling) {
+                    originalParent.insertBefore(container, nextSibling);
+                } else {
+                    originalParent.appendChild(container);
+                }
+
+                // Store references and state
+                let currentPredictions = [];
+                let selectedIndex = -1;
+                let isDropdownOpen = false;
+                let searchTimeout;
+                let sessionToken;
+
+                // Store address data on the container
+                container._addressData = null;
+                container.setAttribute("data-selected-place", "false");
+
+                // Initialize session token
+                function refreshSessionToken() {
+                    sessionToken =
+                        new google.maps.places.AutocompleteSessionToken();
+                }
+                refreshSessionToken();
+
+                function showDropdown() {
+                    dropdown.classList.add("show");
+                    isDropdownOpen = true;
+                }
+
+                function hideDropdown() {
+                    dropdown.classList.remove("show");
+                    isDropdownOpen = false;
+                    selectedIndex = -1;
+                }
+
+                // Helper function to determine if a suggestion is likely a street address
+                function isLikelyStreetAddress(placePrediction) {
+                    const mainText = placePrediction.mainText.text;
+                    const fullText = placePrediction.text.text;
+                    
+                    // Check if it contains numbers (likely street number)
+                    const hasNumbers = /\d+/.test(mainText);
+                    
+                    // Check if it looks like a street address pattern
+                    const streetPatterns = [
+                        /^\d+\s+\w+/,  // Starts with number + street name
+                        /\d+.*\s+(street|st|avenue|ave|road|rd|drive|dr|lane|ln|way|blvd|boulevard|circle|cir|court|ct|place|pl)\b/i,
+                        /\d+.*\s+(straat|laan|weg|gracht|kade|plein|singel)\b/i  // Dutch street types
+                    ];
+                    
+                    const matchesStreetPattern = streetPatterns.some(pattern => 
+                        pattern.test(mainText) || pattern.test(fullText)
+                    );
+                    
+                    // Check if place types indicate it's a street address (if available)
+                    const types = placePrediction.types || [];
+                    const hasStreetAddressType = types.includes('street_address') || 
+                                               types.includes('premise') ||
+                                               types.includes('subpremise');
+                    
+                    // Exclude obvious non-addresses
+                    const excludePatterns = [
+                        /^(city|town|village|municipality)\s+of\s+/i,
+                        /^(province|state|region|county)\s+of\s+/i,
+                        /\b(airport|station|hospital|university|school|mall|center|centre)\b/i
+                    ];
+                    
+                    const isExcluded = excludePatterns.some(pattern => 
+                        pattern.test(mainText) || pattern.test(fullText)
+                    );
+                    
+                    return (hasNumbers || matchesStreetPattern || hasStreetAddressType) && !isExcluded;
+                }
+
+                function updateDropdown(suggestions) {
+                    dropdown.innerHTML = "";
+                    
+                    // Filter suggestions to only show likely street addresses
+                    const streetAddresses = suggestions.filter((suggestion) => 
+                        isLikelyStreetAddress(suggestion.placePrediction)
+                    );
+                    
+                    currentPredictions = streetAddresses;
+
+                    if (streetAddresses.length === 0) {
+                        hideDropdown();
+                        return;
+                    }
+
+                    streetAddresses.forEach((suggestion, index) => {
+                        const placePrediction = suggestion.placePrediction;
+                        const option = document.createElement("div");
+                        option.className = "dropdown-option address-option";
+                        option.innerHTML = `
+                            <svg class="location-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="currentColor"/>
+                            </svg>
+                            <div class="option-content">
+                                <div class="prediction-main">${placePrediction.mainText.text.toString()}</div>
+                                <div class="prediction-secondary">${
+                                    placePrediction.secondaryText?.text.toString() ||
+                                    ""
+                                }</div>
+                            </div>
+                        `;
+
+                        option.addEventListener("click", () => {
+                            selectPrediction(placePrediction, index);
+                        });
+
+                        dropdown.appendChild(option);
+                    });
+
+                    showDropdown();
+                }
+
+                async function selectPrediction(placePrediction, index) {
+                    if (!rateLimiter.canMakeRequest()) {
+                        console.warn("Rate limit exceeded for place details");
+                        return;
+                    }
+
+                    // Update the input value
+                    input.value = placePrediction.text.text;
+                    hideDropdown();
+
+                    // Mark as selected
+                    container.setAttribute("data-selected-place", "true");
+
+                    try {
+                        // Convert prediction to place and get details
+                        const place = placePrediction.toPlace();
+                        await place.fetchFields({
+                            fields: ["addressComponents", "formattedAddress"],
+                        });
+
+                        if (
+                            place.addressComponents &&
+                            place.addressComponents.length > 0
+                        ) {
+                            const addressData = extractAddressComponents(
+                                place.addressComponents,
+                                addressFormat
+                            );
+
+                            // Store the extracted data
+                            container._addressData = addressData;
+
+                            // Clear any validation messages
+                            const validationMessage =
+                                container.nextElementSibling;
+                            if (
+                                validationMessage &&
+                                validationMessage.classList.contains(
+                                    "embed-validation-message"
+                                )
+                            ) {
+                                validationMessage.remove();
+                            }
+                            input.style.borderColor = "";
+
+                            // Refresh session token after successful selection
+                            refreshSessionToken();
+                        } else {
+                            console.error(
+                                "No address components found in place"
+                            );
+                        }
+                    } catch (error) {
+                        console.error("Error getting place details:", error);
+                    }
+                }
+
+                function highlightOption(index) {
+                    const options =
+                        dropdown.querySelectorAll(".address-option");
+                    options.forEach((option, i) => {
+                        option.classList.toggle("highlighted", i === index);
+                    });
+                }
+
+                // Input event handlers
+                input.addEventListener("input", (e) => {
+                    const value = e.target.value.trim();
+
+                    // Reset selection state
+                    container.setAttribute("data-selected-place", "false");
+                    container._addressData = null;
+                    selectedIndex = -1;
+
+                    // Clear any validation messages
+                    const validationMessage = container.nextElementSibling;
+                    if (
+                        validationMessage &&
+                        validationMessage.classList.contains(
+                            "embed-validation-message"
+                        )
+                    ) {
+                        validationMessage.remove();
+                    }
+                    input.style.borderColor = "";
+
+                    // Clear previous timeout
+                    if (searchTimeout) {
+                        clearTimeout(searchTimeout);
+                    }
+
+                    if (value.length < 2) {
+                        hideDropdown();
+                        return;
+                    }
+
+                    // Debounce the search
+                    searchTimeout = setTimeout(async () => {
+                        if (!rateLimiter.canMakeRequest()) {
+                            console.warn(
+                                "Rate limit exceeded for autocomplete search"
+                            );
+                            return;
+                        }
+
+                        try {
+                            const request = {
+                                input: value,
+                                sessionToken: sessionToken,
+                                language: locale,
+                                includedPrimaryTypes: ["geocode"],
+                                region: country.toLowerCase(),
+                                includedRegionCodes: [country.toLowerCase()],
+                            };
+
+                            const { suggestions } =
+                                await google.maps.places.AutocompleteSuggestion.fetchAutocompleteSuggestions(
+                                    request
+                                );
+
+                            if (suggestions && suggestions.length > 0) {
+                                updateDropdown(suggestions);
+                            } else {
+                                updateDropdown([]);
+                            }
+                        } catch (error) {
+                            console.warn("Autocomplete service error:", error);
+                            hideDropdown();
+                        }
+                    }, 250);
+                });
+
+                // Keyboard navigation
+                input.addEventListener("keydown", (e) => {
+                    if (!isDropdownOpen || currentPredictions.length === 0) {
+                        return;
+                    }
+
+                    switch (e.key) {
+                        case "ArrowDown":
+                            e.preventDefault();
+                            selectedIndex = Math.min(
+                                selectedIndex + 1,
+                                currentPredictions.length - 1
+                            );
+                            highlightOption(selectedIndex);
+                            break;
+                        case "ArrowUp":
+                            e.preventDefault();
+                            selectedIndex = Math.max(selectedIndex - 1, -1);
+                            highlightOption(selectedIndex);
+                            break;
+                        case "Enter":
+                            e.preventDefault();
+                            if (selectedIndex >= 0) {
+                                const suggestion =
+                                    currentPredictions[selectedIndex];
+                                selectPrediction(
+                                    suggestion.placePrediction,
+                                    selectedIndex
+                                );
+                            }
+                            break;
+                        case "Escape":
+                            hideDropdown();
+                            break;
+                    }
+                });
+
+                // Focus handlers
+                input.addEventListener("focus", () => {
+                    if (
+                        input.value.trim().length >= 2 &&
+                        currentPredictions.length > 0
+                    ) {
+                        showDropdown();
+                    }
+                });
+
+                // Click outside to close
+                document.addEventListener("click", (e) => {
+                    if (!container.contains(e.target)) {
+                        hideDropdown();
+                    }
+                });
+
+                // Update the form's Google address input reference
+                if (form.querySelector("#google-address")) {
+                    // Replace the reference to point to our container
+                    Object.defineProperty(container, "value", {
+                        get: () => input.value,
+                        set: (val) => {
+                            input.value = val;
+                        },
+                    });
+
+                    // Store original methods to avoid infinite recursion
+                    const originalGetAttribute =
+                        container.getAttribute.bind(container);
+                    const originalSetAttribute =
+                        container.setAttribute.bind(container);
+
+                    // Add the same methods that might be called on it
+                    container.getAttribute = (attr) => {
+                        if (attr === "data-selected-place") {
+                            return originalGetAttribute("data-selected-place");
+                        }
+                        return input.getAttribute(attr);
+                    };
+                    container.setAttribute = (attr, val) => {
+                        if (attr === "data-selected-place") {
+                            originalSetAttribute("data-selected-place", val);
+                        } else {
+                            input.setAttribute(attr, val);
+                        }
+                    };
+                    container.nextElementSibling = input.nextElementSibling;
+                    container.style = input.style;
+                }
+
+                console.log("Custom Google Places autocomplete setup complete");
+            })
+            .catch((error) => {
+                console.error("Failed to setup Google Places Autocomplete:", {
+                    error: error.message,
+                    stack: error.stack,
+                    country: country,
+                    addressFormat: addressFormat,
+                });
+                console.log("Falling back to manual address parsing");
+            });
+    }
+
+    // Extract address components from Google Places API response
+    function extractAddressComponents(components, addressFormat) {
+        const result = {};
+
+        for (const component of components) {
+            const types = component.types;
+
+            if (types.includes("street_number")) {
+                result.street_number =
+                    component.longText || component.shortText;
+            } else if (types.includes("route")) {
+                result.route = component.longText || component.shortText;
+            } else if (types.includes("locality")) {
+                result.locality = component.longText || component.shortText;
+            } else if (types.includes("administrative_area_level_1")) {
+                result.administrative_area_level_1 =
+                    component.longText || component.shortText;
+            } else if (types.includes("country")) {
+                result.country = component.shortText || component.longText;
+            } else if (types.includes("postal_code")) {
+                result.postal_code = component.longText || component.shortText;
+            }
+        }
+
+        if (addressFormat === "dutch") {
+            return {
+                valid: !!(result.postal_code && result.street_number),
+                postcode: result.postal_code || "",
+                huisnummer: result.street_number || "",
+                toevoeging: "", // Google doesn't provide this
+            };
+        } else {
+            return {
+                valid: !!(
+                    result.route &&
+                    result.street_number &&
+                    result.postal_code &&
+                    result.locality
+                ),
+                street: result.route || "",
+                housenumber: result.street_number || "",
+                zipcode: result.postal_code || "",
+                city: result.locality || "",
+            };
+        }
+    }
+
+    function redirectToUrlWithCheck(url, openNewTab, preopenedWin) {
+        try {
+            const targetUrl = new URL(url);
+            const baseUrl = targetUrl.origin;
+
+            const img = new Image();
+            img.onload = function () {
+                // Server is up, redirect
+                if (openNewTab === "true" && preopenedWin) {
+                    preopenedWin.location.href = url;
+                } else if (openNewTab === "true") {
+                    // Fallback if popup was blocked: navigate in same tab
+                    window.location.href = url;
+                } else {
+                    window.location.href = url;
+                }
+            };
+            img.onerror = function () {
+                // Server is down, redirect to fallback
+                console.error(
+                    `Server ${baseUrl} appears to be offline. Redirecting to fallback.`
+                );
+                const fallbackUrl = new URL(
+                    "https://homezerotech.github.io/files/fallback/offline.html"
+                );
+                fallbackUrl.searchParams.set("referralUrl", url);
+
+                if (openNewTab === "true" && preopenedWin) {
+                    preopenedWin.location.href = fallbackUrl.href;
+                } else if (openNewTab === "true") {
+                    // Fallback if popup was blocked: navigate in same tab
+                    window.location.href = fallbackUrl.href;
+                } else {
+                    window.location.href = fallbackUrl.href;
+                }
+            };
+            // Add a cache buster to avoid cached responses
+            img.src = baseUrl + "/favicon.ico?_=" + Date.now();
+        } catch (e) {
+            console.error(
+                "Invalid URL, cannot perform online check. Redirecting directly.",
+                url,
+                e
+            );
+            if (openNewTab === "true" && preopenedWin) {
+                preopenedWin.location.href = url;
+            } else if (openNewTab === "true") {
+                // Fallback if popup was blocked: navigate in same tab
+                window.location.href = url;
+            } else {
+                window.location.href = url;
+            }
+        }
+    }
+
     function init() {
         // Load the CSS only once
         const cssPromise = new Promise((resolve) => {
@@ -180,7 +980,7 @@
             const link = document.createElement("link");
             link.rel = "stylesheet";
             link.href =
-                "https://homezero.mendixcloud.com/embed/inline/embed-styles.css";
+                "https://configurator.homezero.nl/embed/inline/embed-styles.css";
             link.onload = () => resolve();
             document.head.appendChild(link);
         });
@@ -190,7 +990,7 @@
             const elements = document.querySelectorAll(
                 "hz-embed:not([data-initialized])"
             );
-            const utmParams = getQueryParams();
+            const queryParams = getQueryParams();
 
             elements.forEach(function (element) {
                 // Mark the element as initialized immediately to prevent double initialization
@@ -219,6 +1019,9 @@
                     element.getAttribute("data-phone-required") === "true";
                 const emailRequired =
                     element.getAttribute("data-email-required") === "true";
+                const googleSearch =
+                    element.getAttribute("data-google-search") === "true";
+                const country = element.getAttribute("data-country") || "nl";
                 const title = element.getAttribute("data-title");
                 const subtitle = element.getAttribute("data-subtitle");
                 const addressFormat =
@@ -256,7 +1059,81 @@
                     let url = src || selectedValue;
                     let addressParams = {};
 
-                    if (currentAddressFormat === "dutch") {
+                    // Check if using Google search
+                    const googleAddressInput =
+                        form.querySelector("#google-address");
+
+                    if (googleAddressInput) {
+                        // Handle our custom Google Places autocomplete
+                        const addressText = googleAddressInput.value
+                            ? googleAddressInput.value.trim()
+                            : "";
+
+                        // Check for the attribute on the container (address-autocomplete) or fallback to input
+                        const addressContainer = googleAddressInput.closest(
+                            ".address-autocomplete"
+                        );
+                        const selectedPlace =
+                            addressContainer.getAttribute(
+                                "data-selected-place"
+                            ) === "true";
+
+                        let addressData = null;
+
+                        // Try to use stored Google Places data first - check both container and input for _addressData
+                        const dataSource =
+                            addressContainer || googleAddressInput;
+                        if (selectedPlace && dataSource._addressData) {
+                            addressData = dataSource._addressData;
+                        }
+
+                        // Fallback to manual parsing if Google data not available and there's text
+                        if (
+                            (!addressData || !addressData.valid) &&
+                            addressText
+                        ) {
+                            addressData = parseAddressManually(
+                                addressText,
+                                currentAddressFormat,
+                                country
+                            );
+                        }
+
+                        // Validate: either we have valid address data OR there's manual text input
+                        if (!addressData || !addressData.valid) {
+                            if (!addressText) {
+                                // No text and no valid address data
+                                displayValidationMessage(
+                                    googleAddressInput,
+                                    selectedLang.validation.address
+                                );
+                                isValid = false;
+                            } else {
+                                // There's text but it couldn't be parsed
+                                displayValidationMessage(
+                                    googleAddressInput,
+                                    selectedLang.validation.address
+                                );
+                                isValid = false;
+                            }
+                        } else {
+                            // We have valid address data - map to URL parameters
+                            if (currentAddressFormat === "dutch") {
+                                addressParams = {
+                                    Zipcode: addressData.postcode,
+                                    Housenumber: addressData.huisnummer,
+                                    Addition: addressData.toevoeging || "",
+                                };
+                            } else {
+                                addressParams = {
+                                    City: addressData.city,
+                                    Zipcode: addressData.zipcode,
+                                    Street: addressData.street,
+                                    Housenumber: addressData.housenumber,
+                                };
+                            }
+                        }
+                    } else if (currentAddressFormat === "dutch") {
                         const postcode = form.querySelector("#postcode");
                         const huisnummer = form.querySelector("#huisnummer");
                         const toevoegingElement =
@@ -399,6 +1276,9 @@
 
                     // If the form is valid, proceed with URL construction and navigation
                     if (isValid) {
+                        // Pre-open a window synchronously on user gesture for iOS Safari
+                        const preopenedWin =
+                            openNewTab === "true" ? window.open("about:blank", "_blank") : null;
                         url +=
                             "&ReferralURL=" +
                             encodeURIComponent(window.location.href); // Start with ReferralURL
@@ -427,21 +1307,17 @@
                             url += "&Email=" + encodeURIComponent(email.value);
                         }
 
-                        // Append UTM parameters if present
-                        Object.keys(utmParams).forEach(function (key) {
+                        // Append query parameters if present
+                        Object.keys(queryParams).forEach(function (key) {
                             url +=
                                 "&" +
                                 key +
                                 "=" +
-                                encodeURIComponent(utmParams[key]);
+                                encodeURIComponent(queryParams[key]);
                         });
 
                         // Check if the form should open in a new tab or in the same window
-                        if (openNewTab === "true") {
-                            window.open(url, "_blank");
-                        } else {
-                            window.location.href = url;
-                        }
+                        redirectToUrlWithCheck(url, openNewTab, preopenedWin);
                     }
                 };
 
@@ -514,7 +1390,19 @@
 
                 // Add address input fields based on format
                 let addressFieldsHtml = "";
-                if (addressFormat === "dutch") {
+                if (googleSearch) {
+                    // Use Google Places autocomplete instead of manual fields
+                    addressFieldsHtml += `
+                        <div class="embed-row">
+                            <div class="embed-col">
+                                <div class="embed-form-container">
+                                    <label for="google-address" class="embed-label-bold">${selectedLang.addressLabel}*</label>
+                                    <input type="text" id="google-address" class="embed-input-field" placeholder="${selectedLang.addressPlaceholder}" data-address-format="${addressFormat}" data-country="${country}">
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } else if (addressFormat === "dutch") {
                     // Dutch uses hardcoded labels
                     addressFieldsHtml += `
                         <div class="embed-row">
@@ -669,6 +1557,21 @@
                     setupCustomDropdown(form, element, selectedLang);
                 }
 
+                // Setup Google Places autocomplete if enabled
+                if (googleSearch) {
+                    const googleAddressInput =
+                        form.querySelector("#google-address");
+                    if (googleAddressInput) {
+                        setupGoogleAutocomplete(
+                            googleAddressInput,
+                            country,
+                            addressFormat,
+                            form,
+                            language
+                        );
+                    }
+                }
+
                 element.appendChild(form);
             });
         });
@@ -676,14 +1579,23 @@
 
     function getQueryParams() {
         const params = new URLSearchParams(window.location.search);
-        const utmParams = {};
-        ["utm_campaign", "utm_medium", "utm_source"].forEach(function (param) {
+        const queryParams = {};
+        [
+            "utm_campaign",
+            "utm_medium",
+            "utm_source",
+            "utm_content",
+            "utm_term",
+            "gclid",
+            "gbraid",
+            "wbraid",
+        ].forEach(function (param) {
             const value = params.get(param);
             if (value) {
-                utmParams[param] = value;
+                queryParams[param] = value;
             }
         });
-        return utmParams;
+        return queryParams;
     }
 
     // Function to display a custom validation message
@@ -696,8 +1608,20 @@
         const selected = inputElement
             .closest(".embed-form")
             .querySelector(".dropdown-selected");
+
+        // Check if this is a Google address autocomplete input
+        const addressAutocompleteContainer = inputElement.closest(
+            ".address-autocomplete"
+        );
+
         if (inputElement === selected) {
             inputElement.parentElement.insertAdjacentElement(
+                "afterend",
+                messageElement
+            );
+        } else if (addressAutocompleteContainer) {
+            // For Google address autocomplete, place message after the entire container
+            addressAutocompleteContainer.insertAdjacentElement(
                 "afterend",
                 messageElement
             );
