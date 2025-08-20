@@ -1,0 +1,28 @@
+{
+  "name": "widgetfiles",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build:js:accept": "terser Acceptance/embed.js -o Acceptance/embed.min.js --compress --mangle",
+    "build:js:prod": "terser Production/embed.js -o Production/embed.min.js --compress --mangle",
+    "build:css:accept": "lightningcss Acceptance/embed-styles.css -o Acceptance/embed-styles.min.css --minify",
+    "build:css:prod": "lightningcss Production/embed-styles.css -o Production/embed-styles.min.css --minify",
+    "build": "npm run build:js:accept && npm run build:js:prod && npm run build:css:accept && npm run build:css:prod"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HomeZeroTech/Widget.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/HomeZeroTech/Widget/issues"
+  },
+  "homepage": "https://github.com/HomeZeroTech/Widget#readme",
+  "devDependencies": {
+    "lightningcss-cli": "^1.30.1"
+  }
+}

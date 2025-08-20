@@ -554,49 +554,57 @@
                 function isLikelyStreetAddress(placePrediction) {
                     const mainText = placePrediction.mainText.text;
                     const fullText = placePrediction.text.text;
-                    
+
                     // Check if it contains numbers (likely street number)
                     const hasNumbers = /\d+/.test(mainText);
-                    
+
                     // Check if it looks like a street address pattern
                     const streetPatterns = [
-                        /^\d+\s+\w+/,  // Starts with number + street name
+                        /^\d+\s+\w+/, // Starts with number + street name
                         /\d+.*\s+(street|st|avenue|ave|road|rd|drive|dr|lane|ln|way|blvd|boulevard|circle|cir|court|ct|place|pl)\b/i,
-                        /\d+.*\s+(straat|laan|weg|gracht|kade|plein|singel)\b/i  // Dutch street types
+                        /\d+.*\s+(straat|laan|weg|gracht|kade|plein|singel)\b/i, // Dutch street types
                     ];
-                    
-                    const matchesStreetPattern = streetPatterns.some(pattern => 
-                        pattern.test(mainText) || pattern.test(fullText)
+
+                    const matchesStreetPattern = streetPatterns.some(
+                        (pattern) =>
+                            pattern.test(mainText) || pattern.test(fullText)
                     );
-                    
+
                     // Check if place types indicate it's a street address (if available)
                     const types = placePrediction.types || [];
-                    const hasStreetAddressType = types.includes('street_address') || 
-                                               types.includes('premise') ||
-                                               types.includes('subpremise');
-                    
+                    const hasStreetAddressType =
+                        types.includes("street_address") ||
+                        types.includes("premise") ||
+                        types.includes("subpremise");
+
                     // Exclude obvious non-addresses
                     const excludePatterns = [
                         /^(city|town|village|municipality)\s+of\s+/i,
                         /^(province|state|region|county)\s+of\s+/i,
-                        /\b(airport|station|hospital|university|school|mall|center|centre)\b/i
+                        /\b(airport|station|hospital|university|school|mall|center|centre)\b/i,
                     ];
-                    
-                    const isExcluded = excludePatterns.some(pattern => 
-                        pattern.test(mainText) || pattern.test(fullText)
+
+                    const isExcluded = excludePatterns.some(
+                        (pattern) =>
+                            pattern.test(mainText) || pattern.test(fullText)
                     );
-                    
-                    return (hasNumbers || matchesStreetPattern || hasStreetAddressType) && !isExcluded;
+
+                    return (
+                        (hasNumbers ||
+                            matchesStreetPattern ||
+                            hasStreetAddressType) &&
+                        !isExcluded
+                    );
                 }
 
                 function updateDropdown(suggestions) {
                     dropdown.innerHTML = "";
-                    
+
                     // Filter suggestions to only show likely street addresses
-                    const streetAddresses = suggestions.filter((suggestion) => 
+                    const streetAddresses = suggestions.filter((suggestion) =>
                         isLikelyStreetAddress(suggestion.placePrediction)
                     );
-                    
+
                     currentPredictions = streetAddresses;
 
                     if (streetAddresses.length === 0) {
@@ -969,18 +977,24 @@
     function init() {
         // Load the CSS only once
         const cssPromise = new Promise((resolve) => {
-            const existingLink = document.querySelector(
-                'link[href*="embed-styles.css"]'
-            );
-            if (existingLink) {
-                // Add a small delay even for existing CSS to ensure it's fully applied
+            if (document.querySelector('link[href*="embed-styles"]')) {
                 setTimeout(resolve, 200);
                 return;
             }
+
+            const currentScript =
+                document.currentScript ||
+                (function () {
+                    const scripts = document.getElementsByTagName("script");
+                    return scripts[scripts.length - 1];
+                })();
+
+            const scriptUrl = new URL(currentScript.src);
+            const baseDir = new URL(".", scriptUrl).href;
+
             const link = document.createElement("link");
             link.rel = "stylesheet";
-            link.href =
-                "https://cdn.jsdelivr.net/gh/homezerotech/Widget@main/Production/embed-styles.css";
+            link.href = `${baseDir}embed-styles.min.css`; // always the minified CSS next to your JS
             link.onload = () => resolve();
             document.head.appendChild(link);
         });
@@ -1278,7 +1292,9 @@
                     if (isValid) {
                         // Pre-open a window synchronously on user gesture for iOS Safari
                         const preopenedWin =
-                            openNewTab === "true" ? window.open("about:blank", "_blank") : null;
+                            openNewTab === "true"
+                                ? window.open("about:blank", "_blank")
+                                : null;
                         url +=
                             "&ReferralURL=" +
                             encodeURIComponent(window.location.href); // Start with ReferralURL
