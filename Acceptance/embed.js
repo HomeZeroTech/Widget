@@ -986,7 +986,19 @@
                 document.currentScript ||
                 (function () {
                     const scripts = document.getElementsByTagName("script");
-                    return scripts[scripts.length - 1];
+                    // Look for a script that contains embed.js or embed.min.js in its src
+                    for (let i = scripts.length - 1; i >= 0; i--) {
+                        const script = scripts[i];
+                        if (
+                            script.src &&
+                            (script.src.includes("embed.js") ||
+                                script.src.includes("embed.min.js"))
+                        ) {
+                            return script;
+                        }
+                    }
+                    // No embed script found, throw error
+                    throw new Error("Could not find embed.js script tag");
                 })();
 
             const scriptUrl = new URL(currentScript.src);
@@ -994,7 +1006,32 @@
 
             const link = document.createElement("link");
             link.rel = "stylesheet";
-            link.href = `${baseDir}embed-styles.min.css`; // always the minified CSS next to your JS
+            link.href = `${baseDir}embed-styles.min.css`; // try minified CSS first
+
+            // Fallback to non-minified version if minified fails
+            link.onerror = () => {
+                console.warn(
+                    "Minified CSS failed to load, falling back to non-minified version, you are probably using an old version of the widget, please contact HomeZero for the latest version."
+                );
+                
+                // Remove the failed link and create a new one for the fallback
+                document.head.removeChild(link);
+                
+                const fallbackLink = document.createElement("link");
+                fallbackLink.rel = "stylesheet";
+                fallbackLink.href = `${baseDir}embed-styles.css`;
+                
+                fallbackLink.onerror = () => {
+                    console.error(
+                        "Both minified and non-minified CSS failed to load"
+                    );
+                    resolve(); // Resolve anyway to prevent blocking
+                };
+                
+                fallbackLink.onload = () => resolve();
+                document.head.appendChild(fallbackLink);
+            };
+
             link.onload = () => resolve();
             document.head.appendChild(link);
         });
