@@ -980,7 +980,7 @@
             const link = document.createElement("link");
             link.rel = "stylesheet";
             link.href =
-                "https://configurator-accp.homezero.nl/embed/inline/embed-styles.css";
+                "https://cdn.jsdelivr.net/gh/homezerotech/Widget@main/Acceptance/embed-styles.css";
             link.onload = () => resolve();
             document.head.appendChild(link);
         });
