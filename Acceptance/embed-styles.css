@@ -119,6 +119,7 @@ hz-embed {
 /* Address autocomplete specific styling */
 .address-autocomplete {
     cursor: default;
+    margin-bottom: 0 !important;
 }
 
 .address-input-wrapper {

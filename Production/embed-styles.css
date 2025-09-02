@@ -23,13 +23,13 @@ hz-embed {
 
 .embed-form .embed-flex-container {
     display: flex;
-    gap: 16px;
+    column-gap: 16px;
 }
 
 @container (max-width: 500px) {
     .embed-flex-container {
         flex-direction: column;
-        gap: 0;
+        column-gap: 0;
     }
 }
 
@@ -119,6 +119,7 @@ hz-embed {
 /* Address autocomplete specific styling */
 .address-autocomplete {
     cursor: default;
+    margin-bottom: 0 !important;
 }
 
 .address-input-wrapper {
