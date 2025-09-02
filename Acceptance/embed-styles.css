@@ -23,7 +23,7 @@ hz-embed {
 
 .embed-form .embed-flex-container {
     display: flex;
-    gap: 16px;
+    column-gap: 16px;
 }
 
 @container (max-width: 500px) {
