@@ -29,7 +29,7 @@ hz-embed {
 @container (max-width: 500px) {
     .embed-flex-container {
         flex-direction: column;
-        gap: 0;
+        column-gap: 0;
     }
 }
 
