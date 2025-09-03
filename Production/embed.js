@@ -429,13 +429,13 @@
                 }
             }
 
-            // Validation - we need street, housenumber, and city (zipcode is optional for international addresses)
-            if (!street || !housenumber || !city) {
+            // Strict validation - we need ALL 4 required fields: street, housenumber, zipcode, and city
+            if (!street || !housenumber || !zipcode || !city) {
                 return null;
             }
 
-            // Required fields must be present and non-empty
-            if (street.trim() === "" || housenumber.trim() === "" || city.trim() === "") {
+            // All required fields must be present and non-empty
+            if (street.trim() === "" || housenumber.trim() === "" || zipcode.trim() === "" || city.trim() === "") {
                 return null;
             }
 
@@ -443,7 +443,7 @@
                 valid: true,
                 street: street.trim(),
                 housenumber: housenumber.trim(),
-                zipcode: zipcode ? zipcode.trim() : "",
+                zipcode: zipcode.trim(),
                 city: city.trim(),
             };
         }
@@ -670,6 +670,11 @@
 
                             // Store the extracted data
                             container._addressData = addressData;
+
+                            // Update input value with full formatted address (including zipcode)
+                            if (place.formattedAddress) {
+                                input.value = place.formattedAddress;
+                            }
 
                             // Clear any validation messages
                             const validationMessage =
