@@ -429,22 +429,22 @@
                 }
             }
 
-            // More lenient validation - we need at least street and either zipcode or city
-            if (!street || (!zipcode && !city)) {
+            // Strict validation - we need ALL 4 required fields: street, housenumber, zipcode, and city
+            if (!street || !housenumber || !zipcode || !city) {
                 return null;
             }
 
-            // Provide defaults for missing values
-            if (!housenumber) housenumber = "1";
-            if (!zipcode) zipcode = "";
-            if (!city) city = "";
+            // All required fields must be present and non-empty
+            if (street.trim() === "" || housenumber.trim() === "" || zipcode.trim() === "" || city.trim() === "") {
+                return null;
+            }
 
             return {
                 valid: true,
-                street: street,
-                housenumber: housenumber,
-                zipcode: zipcode,
-                city: city,
+                street: street.trim(),
+                housenumber: housenumber.trim(),
+                zipcode: zipcode.trim(),
+                city: city.trim(),
             };
         }
     }
