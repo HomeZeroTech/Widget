@@ -429,13 +429,13 @@
                 }
             }
 
-            // Strict validation - we need ALL 4 required fields: street, housenumber, zipcode, and city
-            if (!street || !housenumber || !zipcode || !city) {
+            // Validation - we need street, housenumber, and city (zipcode is optional for international addresses)
+            if (!street || !housenumber || !city) {
                 return null;
             }
 
-            // All required fields must be present and non-empty
-            if (street.trim() === "" || housenumber.trim() === "" || zipcode.trim() === "" || city.trim() === "") {
+            // Required fields must be present and non-empty
+            if (street.trim() === "" || housenumber.trim() === "" || city.trim() === "") {
                 return null;
             }
 
@@ -443,7 +443,7 @@
                 valid: true,
                 street: street.trim(),
                 housenumber: housenumber.trim(),
-                zipcode: zipcode.trim(),
+                zipcode: zipcode ? zipcode.trim() : "",
                 city: city.trim(),
             };
         }
