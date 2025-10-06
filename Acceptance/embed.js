@@ -925,64 +925,68 @@
     }
 
     function redirectToUrlWithCheck(url, openNewTab, preopenedWin) {
+        const performRedirect = (targetUrl) => {
+            if (openNewTab === "true" && preopenedWin) {
+                preopenedWin.location.href = targetUrl;
+            } else {
+                // If a new tab was requested but the popup was blocked, preopenedWin will be null.
+                // In that case, or if a new tab wasn't requested, navigate in the current tab.
+                window.location.href = targetUrl;
+            }
+        };
+
+        const redirectToFallback = (reason) => {
+            console.error(reason);
+            const fallbackUrl = new URL(
+                "https://homezerotech.github.io/files/fallback/offline.html"
+            );
+            fallbackUrl.searchParams.set("referralUrl", url);
+            performRedirect(fallbackUrl.href);
+        };
+
         try {
             const targetUrl = new URL(url);
             const baseUrl = targetUrl.origin;
+            // Add a cache buster to the favicon URL to ensure a fresh check.
+            const faviconUrl = `${baseUrl}/favicon.ico?_=${Date.now()}`;
 
-            const performRedirect = (targetUrl) => {
-                if (openNewTab === "true" && preopenedWin) {
-                    preopenedWin.location.href = targetUrl;
-                } else {
-                    window.location.href = targetUrl;
-                }
-            };
+            const controller = new AbortController();
+            // Set a 5-second timeout for the server check.
+            const timeoutId = setTimeout(() => controller.abort(), 5000);
 
-            let isHandled = false;
-            const timeoutId = setTimeout(() => {
-                if (!isHandled) {
-                    isHandled = true;
-                    console.error(
-                        `Server ${baseUrl} did not respond in time. Redirecting to fallback.`
-                    );
-                    const fallbackUrl = new URL(
-                        "https://homezerotech.github.io/files/fallback/offline.html"
-                    );
-                    fallbackUrl.searchParams.set("referralUrl", url);
-                    performRedirect(fallbackUrl.href);
-                }
-            }, 5000); // 5-second timeout
-
-            const primaryCheck = new Image();
-            primaryCheck.onload = function () {
-                if (!isHandled) {
-                    isHandled = true;
+            fetch(faviconUrl, { signal: controller.signal })
+                .then((response) => {
                     clearTimeout(timeoutId);
-                    performRedirect(url);
-                }
-            };
-            primaryCheck.onerror = function () {
-                // Favicon is missing or failed to load, but the server might be online.
-                // Proceed to the normal URL as requested.
-                if (!isHandled) {
-                    isHandled = true;
-                    clearTimeout(timeoutId);
-                    performRedirect(url);
-                }
-            };
+                    const contentType = response.headers.get("content-type");
 
-            // Add a cache buster to avoid cached responses
-            primaryCheck.src = baseUrl + "/favicon.ico?_=" + Date.now();
+                    // The server is considered online if the response is successful and returns an image.
+                    if (response.ok && contentType && contentType.startsWith("image/")) {
+                        performRedirect(url);
+                    } else {
+                        redirectToFallback(
+                            `Server ${baseUrl} is online, but favicon is not a valid image. Redirecting to fallback.`
+                        );
+                    }
+                })
+                .catch((error) => {
+                    clearTimeout(timeoutId);
+                    if (error.name === "AbortError") {
+                        redirectToFallback(
+                            `Server check for ${baseUrl} timed out. Redirecting to fallback.`
+                        );
+                    } else {
+                        redirectToFallback(
+                            `Server ${baseUrl} appears to be offline. Redirecting to fallback.`
+                        );
+                    }
+                });
         } catch (e) {
             console.error(
                 "Invalid URL, cannot perform online check. Redirecting directly.",
                 url,
                 e
             );
-            if (openNewTab === "true" && preopenedWin) {
-                preopenedWin.location.href = url;
-            } else {
-                window.location.href = url;
-            }
+            performRedirect(url);
         }
     }
 
