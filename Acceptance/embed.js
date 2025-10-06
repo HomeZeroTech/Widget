@@ -929,20 +929,15 @@
             const targetUrl = new URL(url);
             const baseUrl = targetUrl.origin;
 
-            const img = new Image();
-            img.onload = function () {
-                // Server is up, redirect
+            const performRedirect = (targetUrl) => {
                 if (openNewTab === "true" && preopenedWin) {
-                    preopenedWin.location.href = url;
-                } else if (openNewTab === "true") {
-                    // Fallback if popup was blocked: navigate in same tab
-                    window.location.href = url;
+                    preopenedWin.location.href = targetUrl;
                 } else {
-                    window.location.href = url;
+                    window.location.href = targetUrl;
                 }
             };
-            img.onerror = function () {
-                // Server is down, redirect to fallback
+
+            const fallbackRedirect = () => {
                 console.error(
                     `Server ${baseUrl} appears to be offline. Redirecting to fallback.`
                 );
@@ -950,18 +945,28 @@
                     "https://homezerotech.github.io/files/fallback/offline.html"
                 );
                 fallbackUrl.searchParams.set("referralUrl", url);
+                performRedirect(fallbackUrl.href);
+            };
 
-                if (openNewTab === "true" && preopenedWin) {
-                    preopenedWin.location.href = fallbackUrl.href;
-                } else if (openNewTab === "true") {
-                    // Fallback if popup was blocked: navigate in same tab
-                    window.location.href = fallbackUrl.href;
-                } else {
-                    window.location.href = fallbackUrl.href;
-                }
+            const primaryCheck = new Image();
+            primaryCheck.onload = function () {
+                // Server is up, redirect
+                performRedirect(url);
+            };
+            primaryCheck.onerror = function () {
+                // Primary check failed, try a more generic secondary check
+                fetch(baseUrl, { method: "HEAD", mode: "no-cors", cache: "no-store" })
+                    .then(() => {
+                        // Secondary check passed, server is likely online
+                        performRedirect(url);
+                    })
+                    .catch(() => {
+                        // Both checks failed, server is likely offline
+                        fallbackRedirect();
+                    });
             };
             // Add a cache buster to avoid cached responses
-            img.src = baseUrl + "/favicon.ico?_=" + Date.now();
+            primaryCheck.src = baseUrl + "/favicon.ico?_=" + Date.now();
         } catch (e) {
             console.error(
                 "Invalid URL, cannot perform online check. Redirecting directly.",
@@ -970,9 +975,6 @@
             );
             if (openNewTab === "true" && preopenedWin) {
                 preopenedWin.location.href = url;
-            } else if (openNewTab === "true") {
-                // Fallback if popup was blocked: navigate in same tab
-                window.location.href = url;
             } else {
                 window.location.href = url;
             }
