@@ -929,8 +929,6 @@
             if (openNewTab === "true" && preopenedWin) {
                 preopenedWin.location.href = targetUrl;
             } else {
-                // If a new tab was requested but the popup was blocked, preopenedWin will be null.
-                // In that case, or if a new tab wasn't requested, navigate in the current tab.
                 window.location.href = targetUrl;
             }
         };
@@ -947,24 +945,19 @@
         try {
             const targetUrl = new URL(url);
             const baseUrl = targetUrl.origin;
-            // Add a cache buster to the favicon URL to ensure a fresh check.
-            const faviconUrl = `${baseUrl}/favicon.ico?_=${Date.now()}`;
+            const pingUrl = `${baseUrl}/ping/v1/ping`;
 
             const controller = new AbortController();
-            // Set a 5-second timeout for the server check.
-            const timeoutId = setTimeout(() => controller.abort(), 5000);
+            const timeoutId = setTimeout(() => controller.abort(), 5000); // 5-second timeout
 
-            fetch(faviconUrl, { signal: controller.signal })
+            fetch(pingUrl, { method: "HEAD", signal: controller.signal })
                 .then((response) => {
                     clearTimeout(timeoutId);
-                    const contentType = response.headers.get("content-type");
-
-                    // The server is considered online if the response is successful and returns an image.
-                    if (response.ok && contentType && contentType.startsWith("image/")) {
+                    if (response.ok) {
                         performRedirect(url);
                     } else {
                         redirectToFallback(
-                            `Server ${baseUrl} is online, but favicon is not a valid image. Redirecting to fallback.`
+                            `Server ${baseUrl} is online, but ping endpoint returned status ${response.status}. Redirecting to fallback.`
                         );
                     }
                 })
@@ -972,7 +965,7 @@
                     clearTimeout(timeoutId);
                     if (error.name === "AbortError") {
                         redirectToFallback(
-                            `Server check for ${baseUrl} timed out. Redirecting to fallback.`
+                            `Server ping for ${baseUrl} timed out. Redirecting to fallback.`
                         );
                     } else {
                         redirectToFallback(
