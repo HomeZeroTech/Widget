@@ -937,34 +937,39 @@
                 }
             };
 
-            const fallbackRedirect = () => {
-                console.error(
-                    `Server ${baseUrl} appears to be offline. Redirecting to fallback.`
-                );
-                const fallbackUrl = new URL(
-                    "https://homezerotech.github.io/files/fallback/offline.html"
-                );
-                fallbackUrl.searchParams.set("referralUrl", url);
-                performRedirect(fallbackUrl.href);
-            };
+            let isHandled = false;
+            const timeoutId = setTimeout(() => {
+                if (!isHandled) {
+                    isHandled = true;
+                    console.error(
+                        `Server ${baseUrl} did not respond in time. Redirecting to fallback.`
+                    );
+                    const fallbackUrl = new URL(
+                        "https://homezerotech.github.io/files/fallback/offline.html"
+                    );
+                    fallbackUrl.searchParams.set("referralUrl", url);
+                    performRedirect(fallbackUrl.href);
+                }
+            }, 5000); // 5-second timeout
 
             const primaryCheck = new Image();
             primaryCheck.onload = function () {
-                // Server is up, redirect
-                performRedirect(url);
+                if (!isHandled) {
+                    isHandled = true;
+                    clearTimeout(timeoutId);
+                    performRedirect(url);
+                }
             };
             primaryCheck.onerror = function () {
-                // Primary check failed, try a more generic secondary check
-                fetch(baseUrl, { method: "HEAD", mode: "no-cors", cache: "no-store" })
-                    .then(() => {
-                        // Secondary check passed, server is likely online
-                        performRedirect(url);
-                    })
-                    .catch(() => {
-                        // Both checks failed, server is likely offline
-                        fallbackRedirect();
-                    });
+                // Favicon is missing or failed to load, but the server might be online.
+                // Proceed to the normal URL as requested.
+                if (!isHandled) {
+                    isHandled = true;
+                    clearTimeout(timeoutId);
+                    performRedirect(url);
+                }
             };
+
             // Add a cache buster to avoid cached responses
             primaryCheck.src = baseUrl + "/favicon.ico?_=" + Date.now();
         } catch (e) {
