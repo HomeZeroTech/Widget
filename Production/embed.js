@@ -925,57 +925,61 @@
     }
 
     function redirectToUrlWithCheck(url, openNewTab, preopenedWin) {
+        const performRedirect = (targetUrl) => {
+            if (openNewTab === "true" && preopenedWin) {
+                preopenedWin.location.href = targetUrl;
+            } else {
+                window.location.href = targetUrl;
+            }
+        };
+
+        const redirectToFallback = (reason) => {
+            console.error(reason);
+            const fallbackUrl = new URL(
+                "https://homezerotech.github.io/files/fallback/offline.html"
+            );
+            fallbackUrl.searchParams.set("referralUrl", url);
+            performRedirect(fallbackUrl.href);
+        };
+
         try {
             const targetUrl = new URL(url);
             const baseUrl = targetUrl.origin;
+            const pingUrl = `${baseUrl}/ping/v1/ping`;
 
-            const img = new Image();
-            img.onload = function () {
-                // Server is up, redirect
-                if (openNewTab === "true" && preopenedWin) {
-                    preopenedWin.location.href = url;
-                } else if (openNewTab === "true") {
-                    // Fallback if popup was blocked: navigate in same tab
-                    window.location.href = url;
-                } else {
-                    window.location.href = url;
-                }
-            };
-            img.onerror = function () {
-                // Server is down, redirect to fallback
-                console.error(
-                    `Server ${baseUrl} appears to be offline. Redirecting to fallback.`
-                );
-                const fallbackUrl = new URL(
-                    "https://homezerotech.github.io/files/fallback/offline.html"
-                );
-                fallbackUrl.searchParams.set("referralUrl", url);
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 5000); // 5-second timeout
 
-                if (openNewTab === "true" && preopenedWin) {
-                    preopenedWin.location.href = fallbackUrl.href;
-                } else if (openNewTab === "true") {
-                    // Fallback if popup was blocked: navigate in same tab
-                    window.location.href = fallbackUrl.href;
-                } else {
-                    window.location.href = fallbackUrl.href;
-                }
-            };
-            // Add a cache buster to avoid cached responses
-            img.src = baseUrl + "/favicon.ico?_=" + Date.now();
+            fetch(pingUrl, { method: "HEAD", signal: controller.signal })
+                .then((response) => {
+                    clearTimeout(timeoutId);
+                    if (response.ok) {
+                        performRedirect(url);
+                    } else {
+                        redirectToFallback(
+                            `Server ${baseUrl} is online, but ping endpoint returned status ${response.status}. Redirecting to fallback.`
+                        );
+                    }
+                })
+                .catch((error) => {
+                    clearTimeout(timeoutId);
+                    if (error.name === "AbortError") {
+                        redirectToFallback(
+                            `Server ping for ${baseUrl} timed out. Redirecting to fallback.`
+                        );
+                    } else {
+                        redirectToFallback(
+                            `Server ${baseUrl} appears to be offline. Redirecting to fallback.`
+                        );
+                    }
+                });
         } catch (e) {
             console.error(
                 "Invalid URL, cannot perform online check. Redirecting directly.",
                 url,
                 e
             );
-            if (openNewTab === "true" && preopenedWin) {
-                preopenedWin.location.href = url;
-            } else if (openNewTab === "true") {
-                // Fallback if popup was blocked: navigate in same tab
-                window.location.href = url;
-            } else {
-                window.location.href = url;
-            }
+            performRedirect(url);
         }
     }
 
