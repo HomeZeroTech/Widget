@@ -1762,7 +1762,7 @@
                 option.classList.add("selected");
 
                 // Update selected content with icon and text inside a flex container
-                const svgElement = option.querySelector("svg");
+                const svgElement = option.querySelector(".option-content svg");
                 const iconHtml = svgElement ? svgElement.outerHTML : '';
                 const iconSpan = svgElement ? `<span class="selected-icon">${iconHtml}</span>` : '';
 
@@ -1788,7 +1788,7 @@
                 const value = option.getAttribute("data-value");
                 if (value && value.includes(preselectedId)) {
                     option.classList.add("selected");
-                    const svgElement = option.querySelector("svg");
+                    const svgElement = option.querySelector(".option-content svg");
                     const iconHtml = svgElement ? svgElement.outerHTML : '';
                     const iconSpan = svgElement ? `<span class="selected-icon">${iconHtml}</span>` : '';
 
