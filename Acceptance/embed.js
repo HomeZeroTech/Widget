@@ -260,11 +260,10 @@
             };
 
             script.onerror = (event) => {
-                const errorMsg = `Failed to load Google Places API script. Error: ${
-                    event.error ||
+                const errorMsg = `Failed to load Google Places API script. Error: ${event.error ||
                     event.message ||
                     "Unknown script loading error"
-                }. URL: ${script.src}`;
+                    }. URL: ${script.src}`;
                 console.error(errorMsg, event);
                 reject(new Error(errorMsg));
             };
@@ -622,10 +621,9 @@
                             </svg>
                             <div class="option-content">
                                 <div class="prediction-main">${placePrediction.mainText.text.toString()}</div>
-                                <div class="prediction-secondary">${
-                                    placePrediction.secondaryText?.text.toString() ||
-                                    ""
-                                }</div>
+                                <div class="prediction-secondary">${placePrediction.secondaryText?.text.toString() ||
+                            ""
+                            }</div>
                             </div>
                         `;
 
@@ -1022,21 +1020,21 @@
                 console.warn(
                     "Minified CSS failed to load, falling back to non-minified version, you are probably using an old version of the widget, please contact HomeZero for the latest version."
                 );
-                
+
                 // Remove the failed link and create a new one for the fallback
                 document.head.removeChild(link);
-                
+
                 const fallbackLink = document.createElement("link");
                 fallbackLink.rel = "stylesheet";
                 fallbackLink.href = `${baseDir}embed-styles.css`;
-                
+
                 fallbackLink.onerror = () => {
                     console.error(
                         "Both minified and non-minified CSS failed to load"
                     );
                     resolve(); // Resolve anyway to prevent blocking
                 };
-                
+
                 fallbackLink.onload = () => resolve();
                 document.head.appendChild(fallbackLink);
             };
@@ -1424,24 +1422,22 @@
                         <div class="embed-row">
                             <div class="embed-col">
                                 <div class="embed-form-container">
-                                    <label class="embed-label-bold">${
-                                        selectedLang.dropdownLabel
-                                    }*</label>
+                                    <label class="embed-label-bold">${selectedLang.dropdownLabel
+                        }*</label>
                                     <div class="custom-dropdown">
-                                        <div class="dropdown-selected" tabindex="0">${
-                                            selectedLang.dropdownPlaceholder
-                                        }</div>
+                                        <div class="dropdown-selected" tabindex="0">${selectedLang.dropdownPlaceholder
+                        }</div>
                                         <div class="dropdown-options">
                                             ${measurementOptions
-                                                .map(
-                                                    (option) => `
+                            .map(
+                                (option) => `
                                                 <div class="dropdown-option" data-value="${option.url}">
                                                     ${option.icon}
                                                     <span>${option.title}</span>
                                                 </div>
                                             `
-                                                )
-                                                .join("")}
+                            )
+                            .join("")}
                                         </div>
                                     </div>
                                 </div>
@@ -1529,19 +1525,15 @@
                             <div class="embed-col">
                                 <div class="embed-flex-container">
                                     <div class="embed-form-container">
-                                        <label for="telefoon" class="embed-label-bold">${
-                                            selectedLang.phoneLabel
-                                        }${
-                        phoneRequired ? `<span>*</span>` : ""
-                    }</label>
+                                        <label for="telefoon" class="embed-label-bold">${selectedLang.phoneLabel
+                        }${phoneRequired ? `<span>*</span>` : ""
+                        }</label>
                                         <input type="tel" id="telefoon" class="embed-input-field" placeholder="0612345678" maxlength="20">
                                     </div>
                                     <div class="embed-form-container">
-                                        <label for="email" class="embed-label-bold">${
-                                            selectedLang.emailLabel
-                                        }${
-                        emailRequired ? `<span>*</span>` : ""
-                    }</label>
+                                        <label for="email" class="embed-label-bold">${selectedLang.emailLabel
+                        }${emailRequired ? `<span>*</span>` : ""
+                        }</label>
                                         <input type="email" id="email" class="embed-input-field" placeholder="jandevries@gmail.com" maxlength="100">
                                     </div>
                                 </div>
@@ -1553,11 +1545,9 @@
                         <div class="embed-row">
                             <div class="embed-col">
                                 <div class="embed-form-container">
-                                    <label for="telefoon" class="embed-label-bold">${
-                                        selectedLang.phoneLabel
-                                    }${
-                        phoneRequired ? `<span>*</span>` : ""
-                    }</label>
+                                    <label for="telefoon" class="embed-label-bold">${selectedLang.phoneLabel
+                        }${phoneRequired ? `<span>*</span>` : ""
+                        }</label>
                                     <input type="tel" id="telefoon" class="embed-input-field" placeholder="0612345678" maxlength="20">
                                 </div>
                             </div>
@@ -1568,11 +1558,9 @@
                         <div class="embed-row">
                             <div class="embed-col">
                                 <div class="embed-form-container">
-                                    <label for="email" class="embed-label-bold">${
-                                        selectedLang.emailLabel
-                                    }${
-                        emailRequired ? `<span>*</span>` : ""
-                    }</label>
+                                    <label for="email" class="embed-label-bold">${selectedLang.emailLabel
+                        }${emailRequired ? `<span>*</span>` : ""
+                        }</label>
                                     <input type="email" id="email" class="embed-input-field" placeholder="jandevries@gmail.com" maxlength="100">
                                 </div>
                             </div>
@@ -1774,11 +1762,12 @@
                 option.classList.add("selected");
 
                 // Update selected content with icon and text inside a flex container
+                const svgElement = option.querySelector("svg");
+                const iconHtml = svgElement ? svgElement.outerHTML : '';
+
                 selected.innerHTML = `
                     <div class="selected-content">
-                        <span class="selected-icon">${
-                            option.querySelector("svg").outerHTML
-                        }</span>
+                        <span class="selected-icon">${iconHtml}</span>
                         <span>${option.textContent.trim()}</span>
                     </div>
                     <svg class="chevron-icon" viewBox="5 7 14 10" width="14px" height="14px" xmlns="http://www.w3.org/2000/svg">
@@ -1798,11 +1787,12 @@
                 const value = option.getAttribute("data-value");
                 if (value && value.includes(preselectedId)) {
                     option.classList.add("selected");
+                    const svgElement = option.querySelector("svg");
+                    const iconHtml = svgElement ? svgElement.outerHTML : '';
+
                     selected.innerHTML = `
                         <div class="selected-content">
-                            <span class="selected-icon">${
-                                option.querySelector("svg").outerHTML
-                            }</span>
+                            <span class="selected-icon">${iconHtml}</span>
                             <span>${option.textContent.trim()}</span>
                         </div>
                         <svg class="chevron-icon" viewBox="5 7 14 10" width="14px" height="14px" xmlns="http://www.w3.org/2000/svg">
