@@ -1764,10 +1764,11 @@
                 // Update selected content with icon and text inside a flex container
                 const svgElement = option.querySelector("svg");
                 const iconHtml = svgElement ? svgElement.outerHTML : '';
+                const iconSpan = svgElement ? `<span class="selected-icon">${iconHtml}</span>` : '';
 
                 selected.innerHTML = `
                     <div class="selected-content">
-                        <span class="selected-icon">${iconHtml}</span>
+                        ${iconSpan}
                         <span>${option.textContent.trim()}</span>
                     </div>
                     <svg class="chevron-icon" viewBox="5 7 14 10" width="14px" height="14px" xmlns="http://www.w3.org/2000/svg">
@@ -1789,10 +1790,11 @@
                     option.classList.add("selected");
                     const svgElement = option.querySelector("svg");
                     const iconHtml = svgElement ? svgElement.outerHTML : '';
+                    const iconSpan = svgElement ? `<span class="selected-icon">${iconHtml}</span>` : '';
 
                     selected.innerHTML = `
                         <div class="selected-content">
-                            <span class="selected-icon">${iconHtml}</span>
+                            ${iconSpan}
                             <span>${option.textContent.trim()}</span>
                         </div>
                         <svg class="chevron-icon" viewBox="5 7 14 10" width="14px" height="14px" xmlns="http://www.w3.org/2000/svg">
