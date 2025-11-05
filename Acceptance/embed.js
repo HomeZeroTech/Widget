@@ -948,12 +948,36 @@
             }
         };
 
-        const redirectToFallback = (reason) => {
-            console.error(reason);
+        const redirectToFallback = (reason, context) => {
+            if (context) {
+                console.error(reason, context);
+            } else {
+                console.error(reason);
+            }
             const fallbackUrl = new URL(
                 "https://homezerotech.github.io/files/fallback/offline.html"
             );
             fallbackUrl.searchParams.set("referralUrl", url);
+            const reasonSnippet = (reason || "").slice(0, 300);
+            if (reasonSnippet) {
+                fallbackUrl.searchParams.set("reason", reasonSnippet);
+            }
+            if (context) {
+                try {
+                    const contextEncoded = JSON.stringify(context).slice(0, 600);
+                    if (contextEncoded) {
+                        fallbackUrl.searchParams.set(
+                            "context",
+                            contextEncoded
+                        );
+                    }
+                } catch (stringifyError) {
+                    console.warn(
+                        "Failed to serialize fallback context",
+                        stringifyError
+                    );
+                }
+            }
             performRedirect(fallbackUrl.href);
         };
 
@@ -963,16 +987,37 @@
             const pingUrl = `${baseUrl}/ping/v1/ping`;
 
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 5000); // 5-second timeout
+            const pingStartedAt = Date.now();
+            const timeoutId = setTimeout(() => {
+                console.warn(
+                    `Ping to ${pingUrl} exceeded 5000ms timeout. Aborting request.`,
+                    { baseUrl, pingUrl }
+                );
+                controller.abort();
+            }, 5000); // 5-second timeout
+
+            console.info("Checking server availability", { baseUrl, pingUrl });
 
             fetch(pingUrl, { method: "HEAD", signal: controller.signal })
                 .then((response) => {
                     clearTimeout(timeoutId);
                     if (response.ok) {
+                        console.info("Ping succeeded", {
+                            baseUrl,
+                            pingUrl,
+                            status: response.status,
+                            elapsedMs: Date.now() - pingStartedAt,
+                        });
                         performRedirect(url);
                     } else {
                         redirectToFallback(
-                            `Server ${baseUrl} is online, but ping endpoint returned status ${response.status}. Redirecting to fallback.`
+                            `Server ${baseUrl} is online, but ping endpoint returned status ${response.status}. Redirecting to fallback.`,
+                            {
+                                baseUrl,
+                                pingUrl,
+                                status: response.status,
+                                elapsedMs: Date.now() - pingStartedAt,
+                            }
                         );
                     }
                 })
@@ -980,11 +1025,23 @@
                     clearTimeout(timeoutId);
                     if (error.name === "AbortError") {
                         redirectToFallback(
-                            `Server ping for ${baseUrl} timed out. Redirecting to fallback.`
+                            `Server ping for ${baseUrl} timed out after ${Date.now() - pingStartedAt}ms. Redirecting to fallback.`,
+                            {
+                                baseUrl,
+                                pingUrl,
+                                elapsedMs: Date.now() - pingStartedAt,
+                            }
                         );
                     } else {
                         redirectToFallback(
-                            `Server ${baseUrl} appears to be offline. Redirecting to fallback.`
+                            `Server ${baseUrl} appears to be offline. Redirecting to fallback.`,
+                            {
+                                baseUrl,
+                                pingUrl,
+                                elapsedMs: Date.now() - pingStartedAt,
+                                errorName: error.name,
+                                errorMessage: error.message,
+                            }
                         );
                     }
                 });
