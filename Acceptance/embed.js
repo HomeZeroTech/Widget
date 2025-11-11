@@ -948,6 +948,35 @@
             }
         };
 
+        const captureClientContext = () => {
+            const connection =
+                navigator.connection ||
+                navigator.mozConnection ||
+                navigator.webkitConnection;
+            return {
+                pageUrl: window.location.href,
+                referrer: document.referrer || undefined,
+                userAgent: navigator.userAgent,
+                language: navigator.language,
+                platform: navigator.platform,
+                timezone:
+                    typeof Intl !== "undefined" &&
+                    Intl.DateTimeFormat &&
+                    Intl.DateTimeFormat().resolvedOptions
+                        ? Intl.DateTimeFormat().resolvedOptions().timeZone
+                        : undefined,
+                connection: connection
+                    ? {
+                          effectiveType: connection.effectiveType,
+                          downlink: connection.downlink,
+                          rtt: connection.rtt,
+                          saveData: connection.saveData,
+                      }
+                    : undefined,
+                visibility: document.visibilityState,
+            };
+        };
+
         const redirectToFallback = (reason, context) => {
             if (context) {
                 console.error(reason, context);
@@ -962,9 +991,15 @@
             if (reasonSnippet) {
                 fallbackUrl.searchParams.set("reason", reasonSnippet);
             }
-            if (context) {
+            const combinedContext = {
+                ...captureClientContext(),
+                ...(context || {}),
+            };
+            if (combinedContext) {
                 try {
-                    const contextEncoded = JSON.stringify(context).slice(0, 600);
+                    const contextEncoded = JSON.stringify(
+                        combinedContext
+                    ).slice(0, 900);
                     if (contextEncoded) {
                         fallbackUrl.searchParams.set(
                             "context",
@@ -991,12 +1026,20 @@
             const timeoutId = setTimeout(() => {
                 console.warn(
                     `Ping to ${pingUrl} exceeded 5000ms timeout. Aborting request.`,
-                    { baseUrl, pingUrl }
+                    {
+                        baseUrl,
+                        pingUrl,
+                        ...captureClientContext(),
+                    }
                 );
                 controller.abort();
             }, 5000); // 5-second timeout
 
-            console.info("Checking server availability", { baseUrl, pingUrl });
+            console.info("Checking server availability", {
+                baseUrl,
+                pingUrl,
+                ...captureClientContext(),
+            });
 
             fetch(pingUrl, { method: "HEAD", signal: controller.signal })
                 .then((response) => {
@@ -1007,6 +1050,7 @@
                             pingUrl,
                             status: response.status,
                             elapsedMs: Date.now() - pingStartedAt,
+                            ...captureClientContext(),
                         });
                         performRedirect(url);
                     } else {
@@ -1017,6 +1061,7 @@
                                 pingUrl,
                                 status: response.status,
                                 elapsedMs: Date.now() - pingStartedAt,
+                                responseType: response.type,
                             }
                         );
                     }
@@ -1030,6 +1075,7 @@
                                 baseUrl,
                                 pingUrl,
                                 elapsedMs: Date.now() - pingStartedAt,
+                                wasTimeout: true,
                             }
                         );
                     } else {
@@ -1041,6 +1087,7 @@
                                 elapsedMs: Date.now() - pingStartedAt,
                                 errorName: error.name,
                                 errorMessage: error.message,
+                                errorStack: error.stack,
                             }
                         );
                     }
