@@ -270,11 +270,10 @@
             };
 
             script.onerror = (event) => {
-                const errorMsg = `Failed to load Google Places API script. Error: ${
-                    event.error ||
+                const errorMsg = `Failed to load Google Places API script. Error: ${event.error ||
                     event.message ||
                     "Unknown script loading error"
-                }. URL: ${script.src}`;
+                    }. URL: ${script.src}`;
                 console.error(errorMsg, event);
                 reject(new Error(errorMsg));
             };
@@ -637,10 +636,9 @@
                             </svg>
                             <div class="option-content">
                                 <div class="prediction-main">${placePrediction.mainText.text.toString()}</div>
-                                <div class="prediction-secondary">${
-                                    placePrediction.secondaryText?.text.toString() ||
-                                    ""
-                                }</div>
+                                <div class="prediction-secondary">${placePrediction.secondaryText?.text.toString() ||
+                            ""
+                            }</div>
                             </div>
                         `;
 
@@ -961,17 +959,17 @@
                 platform: navigator.platform,
                 timezone:
                     typeof Intl !== "undefined" &&
-                    Intl.DateTimeFormat &&
-                    Intl.DateTimeFormat().resolvedOptions
+                        Intl.DateTimeFormat &&
+                        Intl.DateTimeFormat().resolvedOptions
                         ? Intl.DateTimeFormat().resolvedOptions().timeZone
                         : undefined,
                 connection: connection
                     ? {
-                          effectiveType: connection.effectiveType,
-                          downlink: connection.downlink,
-                          rtt: connection.rtt,
-                          saveData: connection.saveData,
-                      }
+                        effectiveType: connection.effectiveType,
+                        downlink: connection.downlink,
+                        rtt: connection.rtt,
+                        saveData: connection.saveData,
+                    }
                     : undefined,
                 visibility: document.visibilityState,
             };
@@ -1103,15 +1101,15 @@
     }
 
     function init() {
-		// Diagnostics: log init timing
-		try {
-			console.info("[HZ-Widget] init start", {
-				readyState: document.readyState,
-				time: new Date().toISOString(),
-			});
-		} catch (e) {}
+        // Diagnostics: log init timing
+        try {
+            console.info("[HZ-Widget] init start", {
+                readyState: document.readyState,
+                time: new Date().toISOString(),
+            });
+        } catch (e) { }
 
-		// Load the CSS only once
+        // Load the CSS only once
         const cssPromise = new Promise((resolve) => {
             if (document.querySelector('link[href*="embed-styles"]')) {
                 setTimeout(resolve, 200);
@@ -1174,28 +1172,54 @@
 
         // Wait for CSS to load before initializing the form
         cssPromise.then(() => {
-			try {
-				console.info("[HZ-Widget] css loaded", {
-					readyState: document.readyState,
-				});
-			} catch (e) {}
-
             const elements = document.querySelectorAll(
                 "hz-embed:not([data-initialized])"
             );
 
-			try {
-				const count = elements.length || 0;
-				console.info("[HZ-Widget] scan for hz-embed", {
-					count,
-					readyState: document.readyState,
-				});
-				if (count === 0) {
-					console.warn(
-						"[HZ-Widget] No <hz-embed> found at init. If this is a React/SPA page, the widget may be initializing before the app renders the tag."
-					);
-				}
-			} catch (e) {}
+            try {
+                const count = elements.length || 0;
+                if (count === 0) {
+                    console.warn(
+                        "[HZ-Widget] No <hz-embed> found at init."
+                    );
+
+                    // Graceful SPA fallback: wait briefly for hz-embed to appear, then initialize
+                    try {
+                        const waiterFlag = "__hzWidgetWaiterActive";
+                        if (!document.documentElement[waiterFlag]) {
+                            document.documentElement[waiterFlag] = true;
+                            const observer = new MutationObserver(() => {
+                                const found = document.querySelector(
+                                    "hz-embed:not([data-initialized])"
+                                );
+                                if (found) {
+                                    try {
+                                        console.info(
+                                            "[HZ-Widget] <hz-embed> detected shortly after init, re-initializing."
+                                        );
+                                    } catch (e) { }
+                                    observer.disconnect();
+                                    document.documentElement[waiterFlag] = false;
+                                    init();
+                                }
+                            });
+                            observer.observe(document.documentElement, {
+                                childList: true,
+                                subtree: true,
+                            });
+                            setTimeout(() => {
+                                try {
+                                    console.warn(
+                                        "[HZ-Widget] Stopped waiting for <hz-embed> after 5000ms."
+                                    );
+                                } catch (e) { }
+                                observer.disconnect();
+                                document.documentElement[waiterFlag] = false;
+                            }, 5000);
+                        }
+                    } catch (e) { }
+                }
+            } catch (e) { }
 
             const queryParams = getQueryParams();
 
@@ -1571,24 +1595,22 @@
                         <div class="embed-row">
                             <div class="embed-col">
                                 <div class="embed-form-container">
-                                    <label class="embed-label-bold">${
-                                        selectedLang.dropdownLabel
-                                    }*</label>
+                                    <label class="embed-label-bold">${selectedLang.dropdownLabel
+                        }*</label>
                                     <div class="custom-dropdown">
-                                        <div class="dropdown-selected" tabindex="0">${
-                                            selectedLang.dropdownPlaceholder
-                                        }</div>
+                                        <div class="dropdown-selected" tabindex="0">${selectedLang.dropdownPlaceholder
+                        }</div>
                                         <div class="dropdown-options">
                                             ${measurementOptions
-                                                .map(
-                                                    (option) => `
+                            .map(
+                                (option) => `
                                                 <div class="dropdown-option" data-value="${option.url}">
                                                     ${option.icon}
                                                     <span>${option.title}</span>
                                                 </div>
                                             `
-                                                )
-                                                .join("")}
+                            )
+                            .join("")}
                                         </div>
                                     </div>
                                 </div>
@@ -1676,19 +1698,15 @@
                             <div class="embed-col">
                                 <div class="embed-flex-container">
                                     <div class="embed-form-container">
-                                        <label for="telefoon" class="embed-label-bold">${
-                                            selectedLang.phoneLabel
-                                        }${
-                        phoneRequired ? `<span>*</span>` : ""
-                    }</label>
+                                        <label for="telefoon" class="embed-label-bold">${selectedLang.phoneLabel
+                        }${phoneRequired ? `<span>*</span>` : ""
+                        }</label>
                                         <input type="tel" id="telefoon" class="embed-input-field" placeholder="0612345678" maxlength="20">
                                     </div>
                                     <div class="embed-form-container">
-                                        <label for="email" class="embed-label-bold">${
-                                            selectedLang.emailLabel
-                                        }${
-                        emailRequired ? `<span>*</span>` : ""
-                    }</label>
+                                        <label for="email" class="embed-label-bold">${selectedLang.emailLabel
+                        }${emailRequired ? `<span>*</span>` : ""
+                        }</label>
                                         <input type="email" id="email" class="embed-input-field" placeholder="jandevries@gmail.com" maxlength="100">
                                     </div>
                                 </div>
@@ -1700,11 +1718,9 @@
                         <div class="embed-row">
                             <div class="embed-col">
                                 <div class="embed-form-container">
-                                    <label for="telefoon" class="embed-label-bold">${
-                                        selectedLang.phoneLabel
-                                    }${
-                        phoneRequired ? `<span>*</span>` : ""
-                    }</label>
+                                    <label for="telefoon" class="embed-label-bold">${selectedLang.phoneLabel
+                        }${phoneRequired ? `<span>*</span>` : ""
+                        }</label>
                                     <input type="tel" id="telefoon" class="embed-input-field" placeholder="0612345678" maxlength="20">
                                 </div>
                             </div>
@@ -1715,11 +1731,9 @@
                         <div class="embed-row">
                             <div class="embed-col">
                                 <div class="embed-form-container">
-                                    <label for="email" class="embed-label-bold">${
-                                        selectedLang.emailLabel
-                                    }${
-                        emailRequired ? `<span>*</span>` : ""
-                    }</label>
+                                    <label for="email" class="embed-label-bold">${selectedLang.emailLabel
+                        }${emailRequired ? `<span>*</span>` : ""
+                        }</label>
                                     <input type="email" id="email" class="embed-input-field" placeholder="jandevries@gmail.com" maxlength="100">
                                 </div>
                             </div>
