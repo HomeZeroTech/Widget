@@ -1770,6 +1770,11 @@
             "gclid",
             "gbraid",
             "wbraid",
+            "dclid",
+            "ttclid",
+            "fbclid",
+            "li_fat_id",
+            "ad_id",
         ].forEach(function (param) {
             const value = params.get(param);
             if (value) {
