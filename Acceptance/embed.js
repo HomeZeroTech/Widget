@@ -1103,7 +1103,15 @@
     }
 
     function init() {
-        // Load the CSS only once
+		// Diagnostics: log init timing
+		try {
+			console.info("[HZ-Widget] init start", {
+				readyState: document.readyState,
+				time: new Date().toISOString(),
+			});
+		} catch (e) {}
+
+		// Load the CSS only once
         const cssPromise = new Promise((resolve) => {
             if (document.querySelector('link[href*="embed-styles"]')) {
                 setTimeout(resolve, 200);
@@ -1166,9 +1174,29 @@
 
         // Wait for CSS to load before initializing the form
         cssPromise.then(() => {
+			try {
+				console.info("[HZ-Widget] css loaded", {
+					readyState: document.readyState,
+				});
+			} catch (e) {}
+
             const elements = document.querySelectorAll(
                 "hz-embed:not([data-initialized])"
             );
+
+			try {
+				const count = elements.length || 0;
+				console.info("[HZ-Widget] scan for hz-embed", {
+					count,
+					readyState: document.readyState,
+				});
+				if (count === 0) {
+					console.warn(
+						"[HZ-Widget] No <hz-embed> found at init. If this is a React/SPA page, the widget may be initializing before the app renders the tag."
+					);
+				}
+			} catch (e) {}
+
             const queryParams = getQueryParams();
 
             elements.forEach(function (element) {
