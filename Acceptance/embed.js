@@ -447,6 +447,7 @@
             if (
                 street.trim() === "" ||
                 housenumber.trim() === "" ||
+                !/[a-zA-Z0-9]/.test(housenumber.trim()) ||
                 zipcode.trim() === "" ||
                 city.trim() === ""
             ) {
@@ -1436,7 +1437,7 @@
                             );
                             isValid = false;
                         }
-                        if (!housenumber.value) {
+                        if (!housenumber.value || !/[a-zA-Z0-9]/.test(housenumber.value)) {
                             displayValidationMessage(
                                 housenumber,
                                 selectedLang.validation.housenumber
