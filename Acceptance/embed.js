@@ -1394,7 +1394,7 @@
                         }
 
                         // Huisnummer validation
-                        if (!huisnummer.value) {
+                        if (!huisnummer.value || !/[a-zA-Z0-9]/.test(huisnummer.value)) {
                             displayValidationMessage(
                                 huisnummer,
                                 dutchValidationMessages.huisnummer
