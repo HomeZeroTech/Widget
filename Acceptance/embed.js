@@ -983,11 +983,6 @@
                 console.error("[FALLBACK CONTEXT]", JSON.stringify(context, null, 2));
             }
             
-            // Close the pre-opened blank window if it exists
-            if (openNewTab === "true" && preopenedWin && !preopenedWin.closed) {
-                preopenedWin.close();
-            }
-            
             const fallbackUrl = new URL(
                 "https://homezerotech.github.io/files/fallback/offline.html"
             );
@@ -1018,13 +1013,7 @@
                     );
                 }
             }
-            
-            // For fallback, always open in new tab if requested (fresh window)
-            if (openNewTab === "true") {
-                window.open(fallbackUrl.href, "_blank");
-            } else {
-                window.location.href = fallbackUrl.href;
-            }
+            performRedirect(fallbackUrl.href);
         };
 
         // Ping function with retry capability
@@ -1568,6 +1557,68 @@
                             openNewTab === "true"
                                 ? window.open("about:blank", "_blank")
                                 : null;
+                        
+                        // Write loading content to the pre-opened window
+                        if (preopenedWin) {
+                            preopenedWin.document.write(`
+                                <!DOCTYPE html>
+                                <html>
+                                <head>
+                                    <meta charset="utf-8">
+                                    <meta name="viewport" content="width=device-width, initial-scale=1">
+                                    <title>Loading...</title>
+                                    <style>
+                                        body {
+                                            margin: 0;
+                                            padding: 0;
+                                            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+                                            display: flex;
+                                            justify-content: center;
+                                            align-items: center;
+                                            min-height: 100vh;
+                                            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                                        }
+                                        .loader-container {
+                                            text-align: center;
+                                            color: white;
+                                        }
+                                        .spinner {
+                                            border: 4px solid rgba(255, 255, 255, 0.3);
+                                            border-radius: 50%;
+                                            border-top: 4px solid white;
+                                            width: 50px;
+                                            height: 50px;
+                                            animation: spin 1s linear infinite;
+                                            margin: 0 auto 20px;
+                                        }
+                                        @keyframes spin {
+                                            0% { transform: rotate(0deg); }
+                                            100% { transform: rotate(360deg); }
+                                        }
+                                        h2 {
+                                            margin: 0 0 10px 0;
+                                            font-size: 24px;
+                                            font-weight: 600;
+                                        }
+                                        p {
+                                            margin: 0;
+                                            font-size: 16px;
+                                            opacity: 0.9;
+                                        }
+                                    </style>
+                                </head>
+                                <body>
+                                    <div class="loader-container">
+                                        <div class="spinner"></div>
+                                        <h2>Even geduld...</h2>
+                                        <p>We controleren de beschikbaarheid van de server</p>
+                                    </div>
+                                </body>
+                                </html>
+                            `);
+                            preopenedWin.document.close();
+                        }
+                        
                         url +=
                             "&ReferralURL=" +
                             encodeURIComponent(window.location.href); // Start with ReferralURL
