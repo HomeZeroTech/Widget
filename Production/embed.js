@@ -977,11 +977,12 @@
         };
 
         const redirectToFallback = (reason, context) => {
+            // Log separately to avoid truncation issues
+            console.error("[FALLBACK REDIRECT]", reason);
             if (context) {
-                console.error(reason, context);
-            } else {
-                console.error(reason);
+                console.error("[FALLBACK CONTEXT]", JSON.stringify(context, null, 2));
             }
+            
             const fallbackUrl = new URL(
                 "https://homezerotech.github.io/files/fallback/offline.html"
             );
@@ -1015,90 +1016,133 @@
             performRedirect(fallbackUrl.href);
         };
 
-        try {
-            const targetUrl = new URL(url);
-            const baseUrl = targetUrl.origin;
-            const pingUrl = `${baseUrl}/ping/v1/ping`;
+        // Ping function with retry capability
+        const performPing = (retryCount = 0) => {
+            try {
+                const targetUrl = new URL(url);
+                const baseUrl = targetUrl.origin;
+                const pingUrl = `${baseUrl}/ping/v1/ping`;
 
-            const controller = new AbortController();
-            const pingStartedAt = Date.now();
-            const timeoutId = setTimeout(() => {
-                console.warn(
-                    `Ping to ${pingUrl} exceeded 5000ms timeout. Aborting request.`,
-                    {
-                        baseUrl,
-                        pingUrl,
-                        ...captureClientContext(),
-                    }
-                );
-                controller.abort();
-            }, 5000); // 5-second timeout
-
-            console.info("Checking server availability", {
-                baseUrl,
-                pingUrl,
-                ...captureClientContext(),
-            });
-
-            fetch(pingUrl, { method: "HEAD", signal: controller.signal })
-                .then((response) => {
-                    clearTimeout(timeoutId);
-                    if (response.ok) {
-                        console.info("Ping succeeded", {
+                const controller = new AbortController();
+                const pingStartedAt = Date.now();
+                const timeoutId = setTimeout(() => {
+                    console.warn(
+                        `Ping to ${pingUrl} exceeded 5000ms timeout. Aborting request.`,
+                        {
                             baseUrl,
                             pingUrl,
-                            status: response.status,
-                            elapsedMs: Date.now() - pingStartedAt,
+                            retryCount,
                             ...captureClientContext(),
-                        });
-                        performRedirect(url);
-                    } else {
-                        redirectToFallback(
-                            `Server ${baseUrl} is online, but ping endpoint returned status ${response.status}. Redirecting to fallback.`,
-                            {
+                        }
+                    );
+                    controller.abort();
+                }, 5000); // 5-second timeout
+
+                console.info("Checking server availability", {
+                    baseUrl,
+                    pingUrl,
+                    retryCount,
+                    ...captureClientContext(),
+                });
+
+                fetch(pingUrl, { method: "HEAD", signal: controller.signal })
+                    .then((response) => {
+                        clearTimeout(timeoutId);
+                        if (response.ok) {
+                            console.info("Ping succeeded", {
                                 baseUrl,
                                 pingUrl,
                                 status: response.status,
                                 elapsedMs: Date.now() - pingStartedAt,
-                                responseType: response.type,
+                                retryCount,
+                                ...captureClientContext(),
+                            });
+                            performRedirect(url);
+                        } else {
+                            // Non-200 response - retry once before falling back
+                            if (retryCount < 2) {
+                                console.warn(
+                                    `Ping returned non-OK status ${response.status}, retrying in 500ms...`,
+                                    {
+                                        baseUrl,
+                                        pingUrl,
+                                        status: response.status,
+                                        retryCount,
+                                    }
+                                );
+                                setTimeout(() => performPing(retryCount + 1), 500);
+                            } else {
+                                redirectToFallback(
+                                    `Server ${baseUrl} is online, but ping endpoint returned status ${response.status} after ${retryCount} retries. Redirecting to fallback.`,
+                                    {
+                                        baseUrl,
+                                        pingUrl,
+                                        status: response.status,
+                                        elapsedMs: Date.now() - pingStartedAt,
+                                        responseType: response.type,
+                                        retryCount,
+                                    }
+                                );
                             }
-                        );
-                    }
-                })
-                .catch((error) => {
-                    clearTimeout(timeoutId);
-                    if (error.name === "AbortError") {
-                        redirectToFallback(
-                            `Server ping for ${baseUrl} timed out after ${Date.now() - pingStartedAt}ms. Redirecting to fallback.`,
-                            {
-                                baseUrl,
-                                pingUrl,
-                                elapsedMs: Date.now() - pingStartedAt,
-                                wasTimeout: true,
-                            }
-                        );
-                    } else {
-                        redirectToFallback(
-                            `Server ${baseUrl} appears to be offline. Redirecting to fallback.`,
-                            {
-                                baseUrl,
-                                pingUrl,
-                                elapsedMs: Date.now() - pingStartedAt,
-                                errorName: error.name,
-                                errorMessage: error.message,
-                                errorStack: error.stack,
-                            }
-                        );
-                    }
-                });
-        } catch (e) {
-            console.error(
-                "Invalid URL, cannot perform online check. Redirecting directly.",
-                url,
-                e
-            );
-            performRedirect(url);
-        }
+                        }
+                    })
+                    .catch((error) => {
+                        clearTimeout(timeoutId);
+                        
+                        // Retry on network errors (but not timeout)
+                        if (retryCount < 2 && error.name !== "AbortError") {
+                            console.warn(
+                                `Ping failed with error, retrying in 500ms...`,
+                                {
+                                    baseUrl,
+                                    pingUrl,
+                                    errorName: error.name,
+                                    errorMessage: error.message,
+                                    retryCount,
+                                }
+                            );
+                            setTimeout(() => performPing(retryCount + 1), 500);
+                            return;
+                        }
+                        
+                        if (error.name === "AbortError") {
+                            redirectToFallback(
+                                `Server ping for ${baseUrl} timed out after ${Date.now() - pingStartedAt}ms. Redirecting to fallback.`,
+                                {
+                                    baseUrl,
+                                    pingUrl,
+                                    elapsedMs: Date.now() - pingStartedAt,
+                                    wasTimeout: true,
+                                    retryCount,
+                                }
+                            );
+                        } else {
+                            redirectToFallback(
+                                `Server ${baseUrl} appears to be offline after ${retryCount} retries. Redirecting to fallback.`,
+                                {
+                                    baseUrl,
+                                    pingUrl,
+                                    elapsedMs: Date.now() - pingStartedAt,
+                                    errorName: error.name,
+                                    errorMessage: error.message,
+                                    errorStack: error.stack,
+                                    retryCount,
+                                }
+                            );
+                        }
+                    });
+            } catch (e) {
+                console.error(
+                    "Invalid URL, cannot perform online check. Redirecting directly.",
+                    url,
+                    e
+                );
+                performRedirect(url);
+            }
+        };
+        
+        // Start the ping process
+        performPing();
     }
 
     function init() {
