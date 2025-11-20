@@ -983,6 +983,11 @@
                 console.error("[FALLBACK CONTEXT]", JSON.stringify(context, null, 2));
             }
             
+            // Close the pre-opened blank window if it exists
+            if (openNewTab === "true" && preopenedWin && !preopenedWin.closed) {
+                preopenedWin.close();
+            }
+            
             const fallbackUrl = new URL(
                 "https://homezerotech.github.io/files/fallback/offline.html"
             );
@@ -1013,7 +1018,13 @@
                     );
                 }
             }
-            performRedirect(fallbackUrl.href);
+            
+            // For fallback, always open in new tab if requested (fresh window)
+            if (openNewTab === "true") {
+                window.open(fallbackUrl.href, "_blank");
+            } else {
+                window.location.href = fallbackUrl.href;
+            }
         };
 
         // Ping function with retry capability
