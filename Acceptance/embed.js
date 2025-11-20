@@ -938,7 +938,7 @@
         }
     }
 
-    function redirectToUrlWithCheck(url, openNewTab, preopenedWin) {
+    function redirectToUrlWithCheck(url, openNewTab, preopenedWin, primaryColor) {
         const performRedirect = (targetUrl) => {
             if (openNewTab === "true" && preopenedWin) {
                 preopenedWin.location.href = targetUrl;
@@ -1688,7 +1688,7 @@
                         });
 
                         // Check if the form should open in a new tab or in the same window
-                        redirectToUrlWithCheck(url, openNewTab, preopenedWin);
+                        redirectToUrlWithCheck(url, openNewTab, preopenedWin, primaryColor);
                     }
                 };
 
