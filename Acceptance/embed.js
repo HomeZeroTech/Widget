@@ -1020,63 +1020,77 @@
         const showLoaderInWindow = () => {
             if (preopenedWin && !preopenedWin.closed) {
                 try {
-                    preopenedWin.document.write(`
-                        <!DOCTYPE html>
-                        <html>
-                        <head>
-                            <meta charset="utf-8">
-                            <meta name="viewport" content="width=device-width, initial-scale=1">
-                            <title>Loading...</title>
-                            <style>
-                                body {
-                                    margin: 0;
-                                    padding: 0;
-                                    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-                                    display: flex;
-                                    justify-content: center;
-                                    align-items: center;
-                                    min-height: 100vh;
-                                    background: ${primaryColor};
-                                }
-                                .loader-container {
-                                    text-align: center;
-                                    color: white;
-                                }
-                                .spinner {
-                                    border: 4px solid rgba(255, 255, 255, 0.3);
-                                    border-radius: 50%;
-                                    border-top: 4px solid white;
-                                    width: 50px;
-                                    height: 50px;
-                                    animation: spin 1s linear infinite;
-                                    margin: 0 auto 20px;
-                                }
-                                @keyframes spin {
-                                    0% { transform: rotate(0deg); }
-                                    100% { transform: rotate(360deg); }
-                                }
-                                h2 {
-                                    margin: 0 0 10px 0;
-                                    font-size: 24px;
-                                    font-weight: 600;
-                                }
-                                p {
-                                    margin: 0;
-                                    font-size: 16px;
-                                    opacity: 0.9;
-                                }
-                            </style>
-                        </head>
-                        <body>
-                            <div class="loader-container">
-                                <div class="spinner"></div>
-                                <h2>Even geduld...</h2>
-                                <p>We controleren de beschikbaarheid van de server</p>
-                            </div>
-                        </body>
-                        </html>
-                    `);
-                    preopenedWin.document.close();
+                    const doc = preopenedWin.document;
+                    
+                    // Clear any existing content
+                    doc.open();
+                    doc.write('<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Loading...</title></head><body></body></html>');
+                    doc.close();
+                    
+                    // Create style element
+                    const style = doc.createElement('style');
+                    style.textContent = `
+                        body {
+                            margin: 0;
+                            padding: 0;
+                            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            min-height: 100vh;
+                            background: ${primaryColor};
+                        }
+                        .loader-container {
+                            text-align: center;
+                            color: white;
+                        }
+                        .spinner {
+                            border: 4px solid rgba(255, 255, 255, 0.3);
+                            border-radius: 50%;
+                            border-top: 4px solid white;
+                            width: 50px;
+                            height: 50px;
+                            animation: spin 1s linear infinite;
+                            margin: 0 auto 20px;
+                        }
+                        @keyframes spin {
+                            0% { transform: rotate(0deg); }
+                            100% { transform: rotate(360deg); }
+                        }
+                        h2 {
+                            margin: 0 0 10px 0;
+                            font-size: 24px;
+                            font-weight: 600;
+                        }
+                        p {
+                            margin: 0;
+                            font-size: 16px;
+                            opacity: 0.9;
+                        }
+                    `;
+                    doc.head.appendChild(style);
+                    
+                    // Create loader container
+                    const container = doc.createElement('div');
+                    container.className = 'loader-container';
+                    
+                    // Create spinner
+                    const spinner = doc.createElement('div');
+                    spinner.className = 'spinner';
+                    container.appendChild(spinner);
+                    
+                    // Create heading
+                    const heading = doc.createElement('h2');
+                    heading.textContent = 'Even geduld...';
+                    container.appendChild(heading);
+                    
+                    // Create paragraph
+                    const paragraph = doc.createElement('p');
+                    paragraph.textContent = 'We controleren de beschikbaarheid van de server';
+                    container.appendChild(paragraph);
+                    
+                    // Add to body
+                    doc.body.appendChild(container);
                 } catch (e) {
                     console.warn("Could not write loader to pre-opened window", e);
                 }
