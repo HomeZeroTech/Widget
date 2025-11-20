@@ -1016,16 +1016,17 @@
             performRedirect(fallbackUrl.href);
         };
 
+        // Flag to track if loader has been shown
+        let loaderShown = false;
+        
         // Helper function to show loader in the pre-opened window
         const showLoaderInWindow = () => {
-            if (preopenedWin && !preopenedWin.closed) {
+            if (preopenedWin && !preopenedWin.closed && !loaderShown) {
                 try {
                     const doc = preopenedWin.document;
                     
-                    // Check if loader already exists
-                    if (doc.querySelector('.loader-container')) {
-                        return; // Loader already shown, don't add another one
-                    }
+                    // Mark loader as shown immediately to prevent duplicates
+                    loaderShown = true;
                     
                     // Add viewport meta tag if not present
                     if (!doc.querySelector('meta[name="viewport"]')) {
