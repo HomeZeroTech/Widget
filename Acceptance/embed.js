@@ -1022,12 +1022,18 @@
                 try {
                     const doc = preopenedWin.document;
                     
-                    // Clear any existing content
-                    doc.open();
-                    doc.write('<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Loading...</title></head><body></body></html>');
-                    doc.close();
+                    // Add viewport meta tag if not present
+                    if (!doc.querySelector('meta[name="viewport"]')) {
+                        const viewport = doc.createElement('meta');
+                        viewport.name = 'viewport';
+                        viewport.content = 'width=device-width, initial-scale=1';
+                        doc.head.appendChild(viewport);
+                    }
                     
-                    // Create style element
+                    // Set title
+                    doc.title = 'Loading...';
+                    
+                    // Create and add style element
                     const style = doc.createElement('style');
                     style.textContent = `
                         body {
