@@ -1022,6 +1022,11 @@
                 try {
                     const doc = preopenedWin.document;
                     
+                    // Check if loader already exists
+                    if (doc.querySelector('.loader-container')) {
+                        return; // Loader already shown, don't add another one
+                    }
+                    
                     // Add viewport meta tag if not present
                     if (!doc.querySelector('meta[name="viewport"]')) {
                         const viewport = doc.createElement('meta');
