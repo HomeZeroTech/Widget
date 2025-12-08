@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>Service Temporarily Unavailable</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <!-- Google tag (gtag.js) -->
+        <script
+            async
+            src="https://www.googletagmanager.com/gtag/js?id=G-DYDGVKNMG7"
+        ></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag() {
+                dataLayer.push(arguments);
+            }
+            gtag("js", new Date());
+            gtag("config", "G-DYDGVKNMG7");
+        </script>
+        <style type="text/css">
+            :root {
+                --primary-color: #495057;
+            }
+            * {
+                box-sizing: border-box;
+            }
+            body {
+                margin: 0;
+                padding: 20px;
+                background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+                    Roboto, sans-serif;
+                line-height: 1.6;
+                color: #333;
+                min-height: 100vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .container {
+                background: white;
+                border-radius: 12px;
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+                max-width: 800px;
+                width: 100%;
+                padding: 28px;
+                text-align: center;
+            }
+            .icon {
+                width: 64px;
+                height: 64px;
+                margin: 0 auto 16px;
+                background: #f8f9fa;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 28px;
+                color: #6c757d;
+            }
+            h1 {
+                font-size: 26px;
+                font-weight: 600;
+                color: #2c3e50;
+                margin: 0 0 12px 0;
+            }
+            .subtitle {
+                font-size: 17px;
+                color: #6c757d;
+                margin: 0 0 20px 0;
+                font-weight: 400;
+            }
+            .description {
+                font-size: 15px;
+                color: #5a6c7d;
+                margin: 0 0 24px 0;
+                line-height: 1.6;
+            }
+            .form-container {
+                background: #f8f9fa;
+                border-radius: 8px;
+                padding: 20px;
+                margin: 20px 0;
+                text-align: left;
+            }
+            .form-title {
+                font-size: 19px;
+                font-weight: 600;
+                color: #2c3e50;
+                margin: 0 0 16px 0;
+                text-align: center;
+            }
+            .form-group {
+                margin-bottom: 12px;
+            }
+            label {
+                display: block;
+                font-weight: 500;
+                color: #495057;
+                margin-bottom: 4px;
+                font-size: 14px;
+            }
+            input[type="text"],
+            input[type="email"],
+            input[type="tel"] {
+                width: 100%;
+                padding: 8px 12px;
+                border: 2px solid #e9ecef;
+                border-radius: 6px;
+                font-size: 15px;
+                transition: border-color 0.2s, box-shadow 0.2s;
+                background: white;
+            }
+            input[type="text"]:focus,
+            input[type="email"]:focus,
+            input[type="tel"]:focus {
+                outline: none;
+                border-color: var(--primary-color);
+                box-shadow: 0 0 0 2px rgba(108, 117, 125, 0.08);
+            }
+            textarea {
+                width: 100%;
+                padding: 12px 16px;
+                border: 2px solid #e9ecef;
+                border-radius: 6px;
+                font-size: 16px;
+                resize: vertical;
+                transition: border-color 0.2s, box-shadow 0.2s;
+                background: white;
+            }
+            textarea:focus {
+                outline: none;
+                border-color: var(--primary-color);
+                box-shadow: 0 0 0 2px rgba(108, 117, 125, 0.08);
+            }
+            .submit-btn {
+                width: 100%;
+                background: var(--primary-color);
+                color: white;
+                border: none;
+                padding: 10px 18px;
+                border-radius: 6px;
+                font-size: 15px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: background-color 0.2s, transform 0.1s;
+                margin-top: 6px;
+            }
+            .submit-btn:hover {
+                opacity: 0.9;
+                transform: translateY(-1px);
+            }
+            .submit-btn:active {
+                transform: translateY(0);
+            }
+            .success-message {
+                display: none;
+                background: #d4edda;
+                border: 1px solid #c3e6cb;
+                color: #155724;
+                padding: 8px 12px;
+                border-radius: 6px;
+                margin-top: 10px;
+                text-align: center;
+                font-weight: 500;
+            }
+            .refresh-info {
+                margin-top: 18px;
+                padding: 10px;
+                background: #e3f2fd;
+                border-radius: 6px;
+                font-size: 13px;
+                color: #1565c0;
+            }
+            .form-row {
+                display: flex;
+                gap: 12px;
+            }
+            .form-row .form-group {
+                flex: 1;
+                margin-bottom: 12px;
+            }
+            @media (max-width: 600px) {
+                body {
+                    padding: 10px;
+                }
+                .container {
+                    padding: 14px;
+                }
+                .form-container {
+                    padding: 12px;
+                }
+                h1 {
+                    font-size: 22px;
+                }
+                .subtitle {
+                    font-size: 15px;
+                }
+                .form-row {
+                    flex-direction: column;
+                    gap: 0;
+                }
+            }
+        </style>
+        <script>
+            // Apply primary color from URL if present
+            try {
+                const params = new URLSearchParams(window.location.search);
+                const color = params.get('primaryColor');
+                if (color) {
+                    document.documentElement.style.setProperty('--primary-color', color);
+                }
+            } catch (e) {
+                console.error('Error setting primary color', e);
+            }
+        </script>
+    </head>
+    <body>
+        <div class="container">
+            <div class="icon">🚨</div>
+            <h1 data-translate-key="mainTitle">
+                Service Temporarily Unavailable
+            </h1>
+            <p class="subtitle" data-translate-key="subtitle">
+                We're working hard to restore service
+            </p>
+            <p class="description" data-translate-key="description1">
+                Our application is currently undergoing maintenance or
+                experiencing technical difficulties. We apologize for any
+                inconvenience and are working to resolve this as quickly as
+                possible.
+            </p>
+            <p class="description" data-translate-key="description2">
+                You can still submit a request below and we'll contact you once
+                service is restored.
+            </p>
+
+            <div class="form-container">
+                <h2 class="form-title" data-translate-key="formTitle">
+                    Submit Request
+                </h2>
+                <form id="fallbackForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label
+                                for="firstname"
+                                data-translate-key="labelFirstname"
+                                >Firstname</label
+                            >
+                            <input
+                                type="text"
+                                id="firstname"
+                                name="firstname"
+                                required
+                            />
+                        </div>
+                        <div class="form-group">
+                            <label
+                                for="lastname"
+                                data-translate-key="labelLastname"
+                                >Lastname</label
+                            >
+                            <input
+                                type="text"
+                                id="lastname"
+                                name="lastname"
+                                required
+                            />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="address" data-translate-key="labelAddress"
+                            >Address</label
+                        >
+                        <input
+                            type="text"
+                            id="address"
+                            name="address"
+                            required
+                        />
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="email" data-translate-key="labelEmail"
+                                >Email</label
+                            >
+                            <input type="email" id="email" name="email" />
+                        </div>
+                        <div class="form-group">
+                            <label
+                                for="phonenumber"
+                                data-translate-key="labelPhone"
+                                >Phone Number</label
+                            >
+                            <input
+                                type="tel"
+                                id="phonenumber"
+                                name="phonenumber"
+                            />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="remarks" data-translate-key="labelRemarks"
+                            >Remarks</label
+                        >
+                        <textarea
+                            id="remarks"
+                            name="remarks"
+                            rows="3"
+                        ></textarea>
+                    </div>
+                    <button
+                        type="submit"
+                        class="submit-btn"
+                        data-translate-key="submitButton"
+                    >
+                        Submit request
+                    </button>
+                </form>
+                <div
+                    id="formSuccess"
+                    class="success-message"
+                    data-translate-key="formSuccess"
+                >
+                    Your request has been submitted successfully!
+                </div>
+                <div
+                    id="formError"
+                    class="error-message"
+                    style="
+                        display: none;
+                        background: #f8d7da;
+                        border: 1px solid #f5c6cb;
+                        color: #721c24;
+                        padding: 12px 16px;
+                        border-radius: 6px;
+                        margin-top: 16px;
+                        text-align: center;
+                    "
+                >
+                    Failed to submit request. Please try again or contact us
+                    directly.
+                </div>
+            </div>
+
+            <div class="refresh-info">
+                <strong data-translate-key="tip">💡 Tip:</strong>
+                <span data-translate-key="refreshText"
+                    >This page automatically checks every 30 seconds if the
+                    service is back online and will refresh automatically.</span
+                >
+            </div>
+        </div>
+
+        <script type="text/javascript">
+            const translations = {
+                pageTitle: {
+                    en: "Service Temporarily Unavailable",
+                    nl: "Dienst Tijdelijk Onbeschikbaar",
+                },
+                mainTitle: {
+                    en: "Service Temporarily Unavailable",
+                    nl: "Dienst Tijdelijk Onbeschikbaar",
+                },
+                subtitle: {
+                    en: "We're working hard to restore service",
+                    nl: "We werken er hard aan om de service te herstellen",
+                },
+                description1: {
+                    en: "Our application is currently undergoing maintenance or experiencing technical difficulties. We apologize for any inconvenience and are working to resolve this as quickly as possible.",
+                    nl: "Onze applicatie ondergaat momenteel onderhoud of ondervindt technische problemen. Onze excuses voor het ongemak, we werken aan een zo snel mogelijke oplossing.",
+                },
+                description2: {
+                    en: "You can still submit a request below and we'll contact you once service is restored.",
+                    nl: "U kunt hieronder alsnog een aanvraag indienen en we nemen contact met u op zodra de service is hersteld.",
+                },
+                formTitle: {
+                    en: "Submit Request",
+                    nl: "Aanvraag Indienen",
+                },
+                labelFirstname: { en: "Firstname", nl: "Voornaam" },
+                labelLastname: { en: "Lastname", nl: "Achternaam" },
+                labelAddress: { en: "Address", nl: "Adres" },
+                labelEmail: { en: "Email", nl: "E-mail" },
+                labelPhone: { en: "Phone Number", nl: "Telefoonnummer" },
+                labelRemarks: { en: "Remarks", nl: "Opmerkingen" },
+                submitButton: { en: "Submit request", nl: "Verstuur aanvraag" },
+                formSuccess: {
+                    en: "Your request has been submitted successfully!",
+                    nl: "Uw aanvraag is succesvol ingediend!",
+                },
+                formErrorDefault: {
+                    en: "Failed to submit request. Please try again or contact us directly.",
+                    nl: "Het is niet gelukt de aanvraag in te dienen. Probeer het opnieuw of neem rechtstreeks contact met ons op.",
+                },
+                tip: { en: "💡 Tip:", nl: "💡 Tip:" },
+                refreshText: {
+                    en: "This page automatically checks every 30 seconds if the service is back online and will refresh automatically.",
+                    nl: "Deze pagina controleert elke 30 seconden of de service weer online is en wordt automatisch vernieuwd.",
+                },
+                validationErrorRequired: {
+                    en: "Please fill out Firstname, Lastname, and Address.",
+                    nl: "Vul alstublieft Voornaam, Achternaam en Adres in.",
+                },
+                validationErrorContact: {
+                    en: "Please provide either an Email or a Phone Number.",
+                    nl: "Geef alstublieft een e-mailadres of een telefoonnummer op.",
+                },
+            };
+
+            let currentLang = "en";
+
+            function getTranslation(key) {
+                if (translations[key] && translations[key][currentLang]) {
+                    return translations[key][currentLang];
+                }
+                console.warn(
+                    `Translation not found for key: ${key} and lang: ${currentLang}`
+                );
+                return translations[key] ? translations[key]["en"] : "";
+            }
+        </script>
+        <script type="text/javascript">
+            let referralParams = {};
+
+            function applyTranslations() {
+                const userLang = (
+                    navigator.language || navigator.userLanguage
+                ).slice(0, 2);
+                currentLang = userLang === "nl" ? "nl" : "en";
+
+                document.title = getTranslation("pageTitle");
+
+                document
+                    .querySelectorAll("[data-translate-key]")
+                    .forEach((element) => {
+                        const key = element.getAttribute("data-translate-key");
+                        const translation = getTranslation(key);
+
+                        if (element.tagName === "STRONG" && key === "tip") {
+                            element.innerText = translation;
+                        } else if (
+                            element.tagName === "SPAN" &&
+                            key === "refreshText"
+                        ) {
+                            element.innerText = " " + translation;
+                        } else {
+                            element.innerText = translation;
+                        }
+                    });
+
+                document.getElementById("formSuccess").innerText =
+                    getTranslation("formSuccess");
+                const formError = document.getElementById("formError");
+                formError.innerText = getTranslation("formErrorDefault");
+            }
+
+            function prefillFormAndStoreParams() {
+                const pageUrlParams = new URLSearchParams(
+                    window.location.search
+                );
+                // "targetUrl" is the Homezero flow URL we want to reach.
+                // "referralUrl" is the client website where the user came from.
+                const targetUrlString = pageUrlParams.get("targetUrl");
+                const referralUrlString = pageUrlParams.get("referralUrl"); // Old param name kept for backward compat if needed, or used as actual referrer
+                
+                // Prefer targetUrl if present, otherwise fallback to referralUrl (old behavior)
+                const urlToParse = targetUrlString || referralUrlString;
+
+                const contextParam = pageUrlParams.get("context");
+                const reasonParam = pageUrlParams.get("reason");
+
+                if (contextParam) {
+                    referralParams.context = contextParam;
+                }
+
+                if (reasonParam) {
+                    referralParams.reason = reasonParam;
+                }
+
+                if (urlToParse) {
+                    try {
+                        const parsedUrl = new URL(urlToParse);
+                        const params = parsedUrl.searchParams;
+
+                        params.forEach((value, key) => {
+                            referralParams[key] = value;
+                        });
+
+                        const fieldMapping = {
+                            Firstname: "firstname",
+                            Lastname: "lastname",
+                            Email: "email",
+                            Phone: "phonenumber",
+                        };
+
+                        for (const [param, fieldId] of Object.entries(
+                            fieldMapping
+                        )) {
+                            if (params.has(param)) {
+                                const value = params.get(param);
+                                const element =
+                                    document.getElementById(fieldId);
+                                if (element) {
+                                    element.value = value;
+                                }
+                            }
+                        }
+
+                        const street = params.get("Street") || "";
+                        const housenumber = params.get("Housenumber") || "";
+                        const addition = params.get("Addition") || "";
+                        const zipcode = params.get("Zipcode") || "";
+                        const city = params.get("City") || "";
+
+                        let streetAndNumber = [];
+                        if (street) streetAndNumber.push(street);
+                        if (housenumber) streetAndNumber.push(housenumber);
+                        if (addition) streetAndNumber.push(addition);
+                        let line1 = streetAndNumber.join(" ");
+
+                        let line2parts = [];
+                        if (zipcode) line2parts.push(zipcode);
+                        if (city) line2parts.push(city);
+                        let line2 = line2parts.join(" ");
+
+                        let fullAddress = [line1, line2]
+                            .filter(Boolean)
+                            .join(", ");
+
+                        if (fullAddress) {
+                            document.getElementById("address").value =
+                                fullAddress;
+                        }
+                    } catch (e) {
+                        console.error(
+                            "Invalid targetUrl for prefilling",
+                            urlToParse,
+                            e
+                        );
+                    }
+                }
+            }
+
+            document.addEventListener(
+                "DOMContentLoaded",
+                prefillFormAndStoreParams
+            );
+            document.addEventListener("DOMContentLoaded", applyTranslations);
+
+            // Check if server is back online every 30 seconds
+            function checkServerStatus() {
+                const urlParams = new URLSearchParams(window.location.search);
+                // We check availability of the *target* URL (the Homezero app)
+                const targetUrlString = urlParams.get("targetUrl") || urlParams.get("referralUrl");
+
+                if (targetUrlString) {
+                    try {
+                        const targetUrl = new URL(targetUrlString);
+                        const baseUrl = targetUrl.origin;
+
+                        const img = new Image();
+                        img.onload = function () {
+                            // Server is up, redirect to the target flow
+                            window.location.href = targetUrlString;
+                        };
+                        img.onerror = function () {
+                            // Server is still down, try again in 30 seconds
+                            console.log(
+                                `Target server ${baseUrl} still offline, checking again in 30 seconds...`
+                            );
+                        };
+                        // Add a cache buster to avoid cached responses
+                        img.src = baseUrl + "/favicon.ico?_=" + Date.now();
+                    } catch (e) {
+                        console.error("Invalid targetUrl", targetUrlString);
+                    }
+                }
+            }
+            
+            // Check immediately on load
+            checkServerStatus();
+
+            // Start checking server status every 30 seconds
+            const statusCheckInterval = setInterval(checkServerStatus, 30000);
+
+            // Handle form submission
+            document
+                .getElementById("fallbackForm")
+                .addEventListener("submit", function (e) {
+                    e.preventDefault();
+
+                    const firstname = document
+                        .getElementById("firstname")
+                        .value.trim();
+                    const lastname = document
+                        .getElementById("lastname")
+                        .value.trim();
+                    const address = document
+                        .getElementById("address")
+                        .value.trim();
+                    const email = document.getElementById("email").value.trim();
+                    const phone = document
+                        .getElementById("phonenumber")
+                        .value.trim();
+                    const remarks = document
+                        .getElementById("remarks")
+                        .value.trim();
+                    const formError = document.getElementById("formError");
+                    const formSuccess = document.getElementById("formSuccess");
+
+                    let errorMessage = "";
+
+                    if (firstname === "" || lastname === "" || address === "") {
+                        errorMessage = getTranslation(
+                            "validationErrorRequired"
+                        );
+                    } else if (email === "" && phone === "") {
+                        errorMessage = getTranslation("validationErrorContact");
+                    }
+
+                    if (errorMessage) {
+                        formError.textContent = errorMessage;
+                        formError.style.display = "block";
+                        formSuccess.style.display = "none";
+                    } else {
+                        formError.style.display = "none";
+                        // Reset to default message in case it was changed by validation
+                        formError.textContent =
+                            getTranslation("formErrorDefault");
+                        submitViaWebhook(e);
+                    }
+                });
+
+            function submitViaWebhook(event) {
+                event.preventDefault();
+
+                const formData = {
+                    firstname: document
+                        .getElementById("firstname")
+                        .value.trim(),
+                    lastname: document.getElementById("lastname").value.trim(),
+                    address: document.getElementById("address").value.trim(),
+                    email: document.getElementById("email").value.trim(),
+                    phonenumber: document
+                        .getElementById("phonenumber")
+                        .value.trim(),
+                    remarks: document.getElementById("remarks").value.trim(),
+                };
+
+                const payload = {
+                    form_data: formData,
+                    referral_params: referralParams,
+                };
+
+                fetch(
+                    "https://hook.eu2.make.com/675g8dqas9j5llw2pp5xxfemjeh4t2ev",
+                    {
+                        method: "POST",
+                        body: JSON.stringify(payload),
+                        headers: {
+                            "Content-Type": "application/json",
+                            "x-make-apikey": "offline-homezero-page",
+                        },
+                    }
+                )
+                    .then((response) => {
+                        if (response.ok) {
+                            const formContainer =
+                                document.querySelector(".form-container");
+                            const formSuccess =
+                                document.getElementById("formSuccess");
+
+                            formContainer.innerHTML = "";
+                            formSuccess.innerText =
+                                getTranslation("formSuccess");
+                            formSuccess.style.display = "block";
+                            formSuccess.style.textAlign = "center";
+                            formContainer.appendChild(formSuccess);
+
+                            const duration = 5 * 1000;
+                            const animationEnd = Date.now() + duration;
+                            const defaults = {
+                                startVelocity: 30,
+                                spread: 360,
+                                ticks: 60,
+                                zIndex: 0,
+                            };
+
+                            function randomInRange(min, max) {
+                                return Math.random() * (max - min) + min;
+                            }
+
+                            const interval = setInterval(function () {
+                                const timeLeft = animationEnd - Date.now();
+
+                                if (timeLeft <= 0) {
+                                    return clearInterval(interval);
+                                }
+
+                                const particleCount =
+                                    50 * (timeLeft / duration);
+                                confetti(
+                                    Object.assign({}, defaults, {
+                                        particleCount,
+                                        origin: {
+                                            x: randomInRange(0.1, 0.3),
+                                            y: Math.random() - 0.2,
+                                        },
+                                    })
+                                );
+                                confetti(
+                                    Object.assign({}, defaults, {
+                                        particleCount,
+                                        origin: {
+                                            x: randomInRange(0.7, 0.9),
+                                            y: Math.random() - 0.2,
+                                        },
+                                    })
+                                );
+                            }, 250);
+                        } else {
+                            throw new Error("Submission failed");
+                        }
+                    })
+                    .catch((error) => {
+                        const formError = document.getElementById("formError");
+                        formError.innerText =
+                            getTranslation("formErrorDefault");
+                        formError.style.display = "block";
+                        document.getElementById("formSuccess").style.display =
+                            "none";
+                    });
+            }
+        </script>
+        <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    </body>
+</html>
+
