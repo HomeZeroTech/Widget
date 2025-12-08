@@ -938,6 +938,213 @@
         }
     }
 
+    function getOfflineHtml(referralUrl, reason, context, primaryColor) {
+        const safe = (str) => (str || "").replace(/"/g, '&quot;');
+        const safeJson = (obj) => JSON.stringify(obj || {}).replace(/</g, '\\u003c');
+        const color = primaryColor || '#495057';
+        
+        return `<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Service Temporarily Unavailable</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-DYDGVKNMG7"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag("js", new Date());
+        gtag("config", "G-DYDGVKNMG7");
+    </script>
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; padding: 20px; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; line-height: 1.6; color: #333; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+        .container { background: white; border-radius: 12px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); max-width: 800px; width: 100%; padding: 28px; text-align: center; }
+        .icon { width: 64px; height: 64px; margin: 0 auto 16px; background: #f8f9fa; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; color: #6c757d; }
+        h1 { font-size: 26px; font-weight: 600; color: #2c3e50; margin: 0 0 12px 0; }
+        .subtitle { font-size: 17px; color: #6c757d; margin: 0 0 20px 0; font-weight: 400; }
+        .description { font-size: 15px; color: #5a6c7d; margin: 0 0 24px 0; line-height: 1.6; }
+        .form-container { background: #f8f9fa; border-radius: 8px; padding: 20px; margin: 20px 0; text-align: left; }
+        .form-title { font-size: 19px; font-weight: 600; color: #2c3e50; margin: 0 0 16px 0; text-align: center; }
+        .form-group { margin-bottom: 12px; }
+        label { display: block; font-weight: 500; color: #495057; margin-bottom: 4px; font-size: 14px; }
+        input[type="text"], input[type="email"], input[type="tel"], textarea { width: 100%; padding: 8px 12px; border: 2px solid #e9ecef; border-radius: 6px; font-size: 15px; transition: border-color 0.2s, box-shadow 0.2s; background: white; }
+        input:focus, textarea:focus { outline: none; border-color: ${color}; box-shadow: 0 0 0 2px rgba(108, 117, 125, 0.08); }
+        .submit-btn { width: 100%; background: ${color}; color: white; border: none; padding: 10px 18px; border-radius: 6px; font-size: 15px; font-weight: 600; cursor: pointer; transition: opacity 0.2s, transform 0.1s; margin-top: 6px; }
+        .submit-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+        .submit-btn:active { transform: translateY(0); }
+        .success-message { display: none; background: #d4edda; border: 1px solid #c3e6cb; color: #155724; padding: 8px 12px; border-radius: 6px; margin-top: 10px; text-align: center; font-weight: 500; }
+        .refresh-info { margin-top: 18px; padding: 10px; background: #e3f2fd; border-radius: 6px; font-size: 13px; color: #1565c0; }
+        .form-row { display: flex; gap: 12px; }
+        .form-row .form-group { flex: 1; margin-bottom: 12px; }
+        @media (max-width: 600px) { body { padding: 10px; } .container { padding: 14px; } .form-container { padding: 12px; } h1 { font-size: 22px; } .subtitle { font-size: 15px; } .form-row { flex-direction: column; gap: 0; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">🚨</div>
+        <h1 data-translate-key="mainTitle">Service Temporarily Unavailable</h1>
+        <p class="subtitle" data-translate-key="subtitle">We're working hard to restore service</p>
+        <p class="description" data-translate-key="description1">Our application is currently undergoing maintenance or experiencing technical difficulties. We apologize for any inconvenience and are working to resolve this as quickly as possible.</p>
+        <p class="description" data-translate-key="description2">You can still submit a request below and we'll contact you once service is restored.</p>
+        <div class="form-container">
+            <h2 class="form-title" data-translate-key="formTitle">Submit Request</h2>
+            <form id="fallbackForm">
+                <div class="form-row">
+                    <div class="form-group"><label for="firstname" data-translate-key="labelFirstname">Firstname</label><input type="text" id="firstname" name="firstname" required /></div>
+                    <div class="form-group"><label for="lastname" data-translate-key="labelLastname">Lastname</label><input type="text" id="lastname" name="lastname" required /></div>
+                </div>
+                <div class="form-group"><label for="address" data-translate-key="labelAddress">Address</label><input type="text" id="address" name="address" required /></div>
+                <div class="form-row">
+                    <div class="form-group"><label for="email" data-translate-key="labelEmail">Email</label><input type="email" id="email" name="email" /></div>
+                    <div class="form-group"><label for="phonenumber" data-translate-key="labelPhone">Phone Number</label><input type="tel" id="phonenumber" name="phonenumber" /></div>
+                </div>
+                <div class="form-group"><label for="remarks" data-translate-key="labelRemarks">Remarks</label><textarea id="remarks" name="remarks" rows="3"></textarea></div>
+                <button type="submit" class="submit-btn" data-translate-key="submitButton">Submit request</button>
+            </form>
+            <div id="formSuccess" class="success-message" data-translate-key="formSuccess">Your request has been submitted successfully!</div>
+            <div id="formError" class="error-message" style="display: none; background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; padding: 12px 16px; border-radius: 6px; margin-top: 16px; text-align: center;">Failed to submit request. Please try again or contact us directly.</div>
+        </div>
+        <div class="refresh-info">
+            <strong data-translate-key="tip">💡 Tip:</strong><span data-translate-key="refreshText">This page automatically checks every 30 seconds if the service is back online and will refresh automatically.</span>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script>
+        const referralUrl = "${safe(referralUrl)}";
+        const reason = "${safe(reason)}";
+        const context = ${safeJson(context)};
+        let referralParams = { reason, context };
+        if (referralUrl) {
+            try {
+                const urlObj = new URL(referralUrl);
+                urlObj.searchParams.forEach((value, key) => { referralParams[key] = value; });
+                const fieldMapping = { Firstname: "firstname", Lastname: "lastname", Email: "email", Phone: "phonenumber" };
+                for (const [param, fieldId] of Object.entries(fieldMapping)) {
+                    if (urlObj.searchParams.has(param)) {
+                        const val = urlObj.searchParams.get(param);
+                        const el = document.getElementById(fieldId);
+                        if (el) el.value = val;
+                    }
+                }
+                const street = urlObj.searchParams.get("Street") || "";
+                const housenumber = urlObj.searchParams.get("Housenumber") || "";
+                const addition = urlObj.searchParams.get("Addition") || "";
+                const zipcode = urlObj.searchParams.get("Zipcode") || "";
+                const city = urlObj.searchParams.get("City") || "";
+                let fullAddress = [[street, housenumber, addition].filter(Boolean).join(" "), [zipcode, city].filter(Boolean).join(" ")].filter(Boolean).join(", ");
+                if (fullAddress && document.getElementById("address")) document.getElementById("address").value = fullAddress;
+            } catch (e) { console.error("Error parsing referralUrl", e); }
+        }
+        const translations = {
+            pageTitle: { en: "Service Temporarily Unavailable", nl: "Dienst Tijdelijk Onbeschikbaar" },
+            mainTitle: { en: "Service Temporarily Unavailable", nl: "Dienst Tijdelijk Onbeschikbaar" },
+            subtitle: { en: "We're working hard to restore service", nl: "We werken er hard aan om de service te herstellen" },
+            description1: { en: "Our application is currently undergoing maintenance or experiencing technical difficulties. We apologize for any inconvenience and are working to resolve this as quickly as possible.", nl: "Onze applicatie ondergaat momenteel onderhoud of ondervindt technische problemen. Onze excuses voor het ongemak, we werken aan een zo snel mogelijke oplossing." },
+            description2: { en: "You can still submit a request below and we'll contact you once service is restored.", nl: "U kunt hieronder alsnog een aanvraag indienen en we nemen contact met u op zodra de service is hersteld." },
+            formTitle: { en: "Submit Request", nl: "Aanvraag Indienen" },
+            labelFirstname: { en: "Firstname", nl: "Voornaam" },
+            labelLastname: { en: "Lastname", nl: "Achternaam" },
+            labelAddress: { en: "Address", nl: "Adres" },
+            labelEmail: { en: "Email", nl: "E-mail" },
+            labelPhone: { en: "Phone Number", nl: "Telefoonnummer" },
+            labelRemarks: { en: "Remarks", nl: "Opmerkingen" },
+            submitButton: { en: "Submit request", nl: "Verstuur aanvraag" },
+            formSuccess: { en: "Your request has been submitted successfully!", nl: "Uw aanvraag is succesvol ingediend!" },
+            formErrorDefault: { en: "Failed to submit request. Please try again or contact us directly.", nl: "Het is niet gelukt de aanvraag in te dienen. Probeer het opnieuw of neem rechtstreeks contact met ons op." },
+            tip: { en: "💡 Tip:", nl: "💡 Tip:" },
+            refreshText: { en: "This page automatically checks every 30 seconds if the service is back online and will refresh automatically.", nl: "Deze pagina controleert elke 30 seconden of de service weer online is en wordt automatisch vernieuwd." },
+            validationErrorRequired: { en: "Please fill out Firstname, Lastname, and Address.", nl: "Vul alstublieft Voornaam, Achternaam en Adres in." },
+            validationErrorContact: { en: "Please provide either an Email or a Phone Number.", nl: "Geef alstublieft een e-mailadres of een telefoonnummer op." }
+        };
+        let currentLang = "en";
+        function getTranslation(key) { return (translations[key] && translations[key][currentLang]) ? translations[key][currentLang] : (translations[key] ? translations[key]["en"] : ""); }
+        function applyTranslations() {
+            const userLang = (navigator.language || navigator.userLanguage).slice(0, 2);
+            currentLang = userLang === "nl" ? "nl" : "en";
+            document.title = getTranslation("pageTitle");
+            document.querySelectorAll("[data-translate-key]").forEach(element => {
+                const key = element.getAttribute("data-translate-key");
+                const translation = getTranslation(key);
+                if (element.tagName === "STRONG" && key === "tip") element.innerText = translation;
+                else if (element.tagName === "SPAN" && key === "refreshText") element.innerText = " " + translation;
+                else element.innerText = translation;
+            });
+            document.getElementById("formSuccess").innerText = getTranslation("formSuccess");
+            document.getElementById("formError").innerText = getTranslation("formErrorDefault");
+        }
+        function checkServerStatus() {
+            if (referralUrl) {
+                try {
+                    const targetUrl = new URL(referralUrl);
+                    const baseUrl = targetUrl.origin;
+                    const img = new Image();
+                    img.onload = function () { window.location.href = referralUrl; };
+                    img.onerror = function () { console.log("Server still offline..."); };
+                    img.src = baseUrl + "/favicon.ico?_=" + Date.now();
+                } catch (e) { console.error("Invalid referralUrl", referralUrl); }
+            }
+        }
+        document.addEventListener("DOMContentLoaded", applyTranslations);
+        setInterval(checkServerStatus, 30000);
+        document.getElementById("fallbackForm").addEventListener("submit", function (e) {
+            e.preventDefault();
+            const firstname = document.getElementById("firstname").value.trim();
+            const lastname = document.getElementById("lastname").value.trim();
+            const address = document.getElementById("address").value.trim();
+            const email = document.getElementById("email").value.trim();
+            const phone = document.getElementById("phonenumber").value.trim();
+            const remarks = document.getElementById("remarks").value.trim();
+            const formError = document.getElementById("formError");
+            const formSuccess = document.getElementById("formSuccess");
+            let errorMessage = "";
+            if (firstname === "" || lastname === "" || address === "") errorMessage = getTranslation("validationErrorRequired");
+            else if (email === "" && phone === "") errorMessage = getTranslation("validationErrorContact");
+            if (errorMessage) {
+                formError.textContent = errorMessage;
+                formError.style.display = "block";
+                formSuccess.style.display = "none";
+            } else {
+                formError.style.display = "none";
+                const payload = { form_data: { firstname, lastname, address, email, phonenumber: phone, remarks }, referral_params: referralParams };
+                fetch("https://hook.eu2.make.com/675g8dqas9j5llw2pp5xxfemjeh4t2ev", {
+                    method: "POST",
+                    body: JSON.stringify(payload),
+                    headers: { "Content-Type": "application/json", "x-make-apikey": "offline-homezero-page" }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        const formContainer = document.querySelector(".form-container");
+                        formContainer.innerHTML = "";
+                        formSuccess.innerText = getTranslation("formSuccess");
+                        formSuccess.style.display = "block";
+                        formSuccess.style.textAlign = "center";
+                        formContainer.appendChild(formSuccess);
+                        const duration = 5 * 1000;
+                        const animationEnd = Date.now() + duration;
+                        const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+                        function randomInRange(min, max) { return Math.random() * (max - min) + min; }
+                        const interval = setInterval(function () {
+                            const timeLeft = animationEnd - Date.now();
+                            if (timeLeft <= 0) return clearInterval(interval);
+                            const particleCount = 50 * (timeLeft / duration);
+                            confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+                            confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
+                        }, 250);
+                    } else { throw new Error("Submission failed"); }
+                })
+                .catch(error => {
+                    formError.innerText = getTranslation("formErrorDefault");
+                    formError.style.display = "block";
+                    document.getElementById("formSuccess").style.display = "none";
+                });
+            }
+        });
+    </script>
+</body>
+</html>`;
+    }
+
     function redirectToUrlWithCheck(url, openNewTab, preopenedWin, primaryColor) {
         const performRedirect = (targetUrl) => {
             if (openNewTab === "true" && preopenedWin) {
@@ -983,37 +1190,27 @@
                 console.error("[FALLBACK CONTEXT]", JSON.stringify(context, null, 2));
             }
             
-            const fallbackUrl = new URL(
-                "https://homezerotech.github.io/files/fallback/offline.html"
-            );
-            fallbackUrl.searchParams.set("referralUrl", url);
             const reasonSnippet = (reason || "").slice(0, 300);
-            if (reasonSnippet) {
-                fallbackUrl.searchParams.set("reason", reasonSnippet);
-            }
             const combinedContext = {
                 ...captureClientContext(),
                 ...(context || {}),
             };
-            if (combinedContext) {
+
+            const offlineHtml = getOfflineHtml(url, reasonSnippet, combinedContext, primaryColor);
+            
+            if (openNewTab === "true" && preopenedWin) {
                 try {
-                    const contextEncoded = JSON.stringify(
-                        combinedContext
-                    ).slice(0, 900);
-                    if (contextEncoded) {
-                        fallbackUrl.searchParams.set(
-                            "context",
-                            contextEncoded
-                        );
-                    }
-                } catch (stringifyError) {
-                    console.warn(
-                        "Failed to serialize fallback context",
-                        stringifyError
-                    );
+                    preopenedWin.document.open();
+                    preopenedWin.document.write(offlineHtml);
+                    preopenedWin.document.close();
+                } catch (e) {
+                    console.warn("Could not write offline content to preopened window", e);
                 }
+            } else {
+                 document.open();
+                 document.write(offlineHtml);
+                 document.close();
             }
-            performRedirect(fallbackUrl.href);
         };
 
         // Flag to track if loader has been shown
