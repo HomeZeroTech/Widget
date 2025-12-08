@@ -32,6 +32,8 @@
                 --input-background: #f9fafb; /* Slightly gray */
                 --input-border: #e5e7eb;
                 --focus-ring: rgba(0, 0, 0, 0.1);
+                --destructive: #ef4444;
+                --destructive-ring: rgba(239, 68, 68, 0.2);
             }
             * {
                 box-sizing: border-box;
@@ -97,6 +99,17 @@
             .form-group {
                 margin-bottom: 20px;
                 position: relative;
+            }
+            .field-error {
+                color: var(--destructive);
+                font-size: 13px;
+                font-weight: 300;
+                margin-top: 6px;
+                display: none;
+            }
+            input.error, textarea.error {
+                border-color: var(--destructive) !important;
+                box-shadow: 0 0 0 4px var(--destructive-ring) !important;
             }
             .form-group label {
                 display: flex;
@@ -272,7 +285,7 @@
             </p>
 
             <div class="form-container">
-                <form id="fallbackForm">
+                <form id="fallbackForm" novalidate>
                     <div class="form-row">
                         <div class="form-group">
                             <label for="firstname">
@@ -282,6 +295,7 @@
                             <div class="input-wrapper">
                                 <input type="text" id="firstname" name="firstname" required placeholder="Jan" />
                             </div>
+                            <p class="field-error" id="error-firstname"></p>
                         </div>
                         <div class="form-group">
                             <label for="lastname">
@@ -291,6 +305,7 @@
                             <div class="input-wrapper">
                                 <input type="text" id="lastname" name="lastname" required placeholder="de Vries" />
                             </div>
+                            <p class="field-error" id="error-lastname"></p>
                         </div>
                     </div>
                     <div class="form-row">
@@ -300,8 +315,9 @@
                                 <span class="label-text" data-translate-key="labelEmail">E-mailadres *</span>
                             </label>
                             <div class="input-wrapper">
-                                <input type="email" id="email" name="email" placeholder="jan@email.nl" required />
+                                <input type="email" id="email" name="email" placeholder="jan@email.nl" />
                             </div>
+                            <p class="field-error" id="error-email"></p>
                         </div>
                     </div>
                     <div class="form-row">
@@ -311,8 +327,9 @@
                                 <span class="label-text" data-translate-key="labelPhone">Telefoonnummer *</span>
                             </label>
                             <div class="input-wrapper">
-                                <input type="tel" id="phonenumber" name="phonenumber" placeholder="06 12345678" required />
+                                <input type="tel" id="phonenumber" name="phonenumber" placeholder="06 12345678" />
                             </div>
+                            <p class="field-error" id="error-phonenumber"></p>
                         </div>
                     </div>
                     <div class="form-group">
@@ -323,6 +340,7 @@
                         <div class="input-wrapper">
                             <input type="text" id="address" name="address" required placeholder="Hoofdstraat 123, Amsterdam" />
                         </div>
+                        <p class="field-error" id="error-address"></p>
                     </div>
                     <div class="form-group">
                         <label for="remarks">
@@ -421,6 +439,22 @@
                 validationErrorContact: {
                     en: "Please provide either an Email or a Phone Number.",
                     nl: "Geef alstublieft een e-mailadres of een telefoonnummer op.",
+                },
+                errorFirstname: {
+                    en: "Firstname is required.",
+                    nl: "Voornaam is verplicht.",
+                },
+                errorLastname: {
+                    en: "Lastname is required.",
+                    nl: "Achternaam is verplicht.",
+                },
+                errorAddress: {
+                    en: "Address is required.",
+                    nl: "Adres is verplicht.",
+                },
+                errorContact: {
+                    en: "Please enter an email or phone number.",
+                    nl: "Vul een e-mailadres of telefoonnummer in.",
                 },
             };
 
@@ -605,48 +639,100 @@
                 .getElementById("fallbackForm")
                 .addEventListener("submit", function (e) {
                     e.preventDefault();
-
-                    const firstname = document
-                        .getElementById("firstname")
-                        .value.trim();
-                    const lastname = document
-                        .getElementById("lastname")
-                        .value.trim();
-                    const address = document
-                        .getElementById("address")
-                        .value.trim();
-                    const email = document.getElementById("email").value.trim();
-                    const phone = document
-                        .getElementById("phonenumber")
-                        .value.trim();
-                    const remarks = document
-                        .getElementById("remarks")
-                        .value.trim();
-                    const formError = document.getElementById("formError");
-                    const formSuccess = document.getElementById("formSuccess");
-
-                    let errorMessage = "";
-
-                    if (firstname === "" || lastname === "" || address === "") {
-                        errorMessage = getTranslation(
-                            "validationErrorRequired"
-                        );
-                    } else if (email === "" && phone === "") {
-                        errorMessage = getTranslation("validationErrorContact");
-                    }
-
-                    if (errorMessage) {
-                        formError.textContent = errorMessage;
-                        formError.style.display = "block";
-                        formSuccess.style.display = "none";
-                    } else {
-                        formError.style.display = "none";
-                        // Reset to default message in case it was changed by validation
-                        formError.textContent =
-                            getTranslation("formErrorDefault");
+                    
+                    if (validateForm()) {
                         submitViaWebhook(e);
                     }
                 });
+
+            const fields = ["firstname", "lastname", "address", "email", "phonenumber"];
+            fields.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener("input", () => validateField(id));
+                    el.addEventListener("blur", () => validateField(id));
+                }
+            });
+
+            function validateField(id) {
+                const el = document.getElementById(id);
+                const value = el.value.trim();
+                let errorKey = null;
+
+                // Basic required checks
+                if (id === "firstname" && !value) errorKey = "errorFirstname";
+                if (id === "lastname" && !value) errorKey = "errorLastname";
+                if (id === "address" && !value) errorKey = "errorAddress";
+
+                // Contact check: if one is filled, clear errors for both unless invalid format (future)
+                if (id === "email" || id === "phonenumber") {
+                     const emailVal = document.getElementById("email").value.trim();
+                     const phoneVal = document.getElementById("phonenumber").value.trim();
+                     
+                     if (!emailVal && !phoneVal) {
+                         // Only show error on the field being interacted with if both empty
+                         // But usually we show error on both or one. Let's show on both if try to submit.
+                         // For live validation, maybe just clear if one is valid.
+                     } else {
+                         // If we have at least one, clear contact errors
+                         showError("email", null);
+                         showError("phonenumber", null);
+                     }
+                }
+
+                if (errorKey) {
+                    showError(id, getTranslation(errorKey));
+                    return false;
+                } else {
+                    // For non-contact fields, clear error if valid
+                    if (id !== "email" && id !== "phonenumber") {
+                        showError(id, null);
+                    }
+                    return true;
+                }
+            }
+
+            function validateForm() {
+                let isValid = true;
+                const firstname = document.getElementById("firstname").value.trim();
+                const lastname = document.getElementById("lastname").value.trim();
+                const address = document.getElementById("address").value.trim();
+                const email = document.getElementById("email").value.trim();
+                const phone = document.getElementById("phonenumber").value.trim();
+
+                if (!firstname) { showError("firstname", getTranslation("errorFirstname")); isValid = false; }
+                if (!lastname) { showError("lastname", getTranslation("errorLastname")); isValid = false; }
+                if (!address) { showError("address", getTranslation("errorAddress")); isValid = false; }
+
+                if (!email && !phone) {
+                    showError("email", getTranslation("errorContact"));
+                    showError("phonenumber", getTranslation("errorContact"));
+                    isValid = false;
+                } else {
+                    showError("email", null);
+                    showError("phonenumber", null);
+                }
+
+                return isValid;
+            }
+
+            function showError(id, message) {
+                const el = document.getElementById(id);
+                const errorEl = document.getElementById("error-" + id);
+                if (message) {
+                    el.classList.add("error");
+                    if (errorEl) {
+                        errorEl.innerText = message;
+                        errorEl.style.display = "block";
+                    }
+                } else {
+                    el.classList.remove("error");
+                    if (errorEl) {
+                        errorEl.style.display = "none";
+                        errorEl.innerText = "";
+                    }
+                }
+            }
 
             function submitViaWebhook(event) {
                 event.preventDefault();
