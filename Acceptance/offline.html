@@ -113,11 +113,18 @@
                 position: relative;
             }
             .form-group label {
-                display: block;
+                display: flex;
+                align-items: center;
                 font-weight: 500;
                 color: var(--text-primary);
                 margin-bottom: 8px;
                 font-size: 14px;
+            }
+            .form-group label svg {
+                margin-right: 8px;
+                color: var(--primary-color);
+                width: 16px;
+                height: 16px;
             }
             .input-wrapper {
                 position: relative;
@@ -137,7 +144,7 @@
             input[type="email"],
             input[type="tel"] {
                 width: 100%;
-                padding: 10px 14px 10px 40px; /* Left padding for icon */
+                padding: 10px 14px;
                 border: 1px solid var(--input-border);
                 border-radius: 8px;
                 font-size: 14px;
