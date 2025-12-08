@@ -986,7 +986,7 @@
             // Construct the fallback URL pointing to the external GitHub Pages file
             // NOTE: Ensure this URL matches your actual deployment path
             const fallbackUrl = new URL(
-                "https://homezerotech.github.io/WidgetFiles/Acceptance/offline.html"
+                "https://homezerotech.github.io/Widget/Acceptance/offline.html"
             );
             
             // "url" here is the *target* URL (the homezero app flow URL), not the *referrer* (the client site).
