@@ -194,6 +194,40 @@
         },
     };
 
+    // Helper function to get the base directory of the current script
+    function getScriptBaseDir() {
+        const currentScript =
+            document.currentScript ||
+            (function () {
+                const scripts = document.getElementsByTagName("script");
+                // Look for a script that contains embed.js or embed.min.js in its src
+                for (let i = scripts.length - 1; i >= 0; i--) {
+                    const script = scripts[i];
+                    if (
+                        script.src &&
+                        (script.src.includes("embed.js") ||
+                            script.src.includes("embed.min.js"))
+                    ) {
+                        return script;
+                    }
+                }
+                return null;
+            })();
+
+        if (!currentScript) {
+            // Fallback default if script tag can't be found
+            return "https://homezerotech.github.io/Widget/Acceptance/";
+        }
+
+        try {
+            const scriptUrl = new URL(currentScript.src);
+            return new URL(".", scriptUrl).href;
+        } catch (e) {
+            console.warn("Could not determine script base directory", e);
+            return "https://homezerotech.github.io/Widget/Acceptance/";
+        }
+    }
+
     // Rate limiting for Google Places API
     const rateLimiter = {
         requests: [],
@@ -985,8 +1019,10 @@
             
             // Construct the fallback URL pointing to the external GitHub Pages file
             // NOTE: Ensure this URL matches your actual deployment path
+            // We use the script's base directory to locate the offline.html file dynamically
             const fallbackUrl = new URL(
-                "https://homezerotech.github.io/Widget/Acceptance/offline.html"
+                "offline.html",
+                getScriptBaseDir()
             );
             
             // "url" here is the *target* URL (the homezero app flow URL), not the *referrer* (the client site).
@@ -1271,27 +1307,7 @@
                 return;
             }
 
-            const currentScript =
-                document.currentScript ||
-                (function () {
-                    const scripts = document.getElementsByTagName("script");
-                    // Look for a script that contains embed.js or embed.min.js in its src
-                    for (let i = scripts.length - 1; i >= 0; i--) {
-                        const script = scripts[i];
-                        if (
-                            script.src &&
-                            (script.src.includes("embed.js") ||
-                                script.src.includes("embed.min.js"))
-                        ) {
-                            return script;
-                        }
-                    }
-                    // No embed script found, throw error
-                    throw new Error("Could not find embed.js script tag");
-                })();
-
-            const scriptUrl = new URL(currentScript.src);
-            const baseDir = new URL(".", scriptUrl).href;
+            const baseDir = getScriptBaseDir();
 
             const link = document.createElement("link");
             link.rel = "stylesheet";
