@@ -4,6 +4,9 @@
         <meta charset="utf-8" />
         <title>Service Temporarily Unavailable</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
         <!-- Google tag (gtag.js) -->
         <script
             async
@@ -19,182 +22,208 @@
         </script>
         <style type="text/css">
             :root {
-                --primary-color: #495057;
+                --primary-color: #000000;
+                --background-color: #f3f4f6;
+                --card-background: #ffffff;
+                --text-primary: #111827;
+                --text-secondary: #4b5563;
+                --text-muted: #6b7280;
+                --border-color: #e5e7eb;
+                --input-background: #ffffff;
+                --input-border: #d1d5db;
+                --focus-ring: rgba(0, 0, 0, 0.1);
             }
             * {
                 box-sizing: border-box;
             }
             body {
                 margin: 0;
-                padding: 20px;
-                background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
-                    Roboto, sans-serif;
-                line-height: 1.6;
-                color: #333;
+                padding: 16px;
+                background-color: var(--background-color);
+                font-family: 'Poppins', sans-serif;
+                line-height: 1.5;
+                color: var(--text-primary);
                 min-height: 100vh;
                 display: flex;
                 align-items: center;
                 justify-content: center;
+                -webkit-font-smoothing: antialiased;
+                -moz-osx-font-smoothing: grayscale;
             }
             .container {
-                background: white;
+                background: var(--card-background);
                 border-radius: 12px;
-                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-                max-width: 800px;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+                max-width: 600px;
                 width: 100%;
-                padding: 28px;
+                padding: 40px;
                 text-align: center;
             }
             .icon {
                 width: 64px;
                 height: 64px;
-                margin: 0 auto 16px;
-                background: #f8f9fa;
+                margin: 0 auto 24px;
+                background: #f3f4f6;
                 border-radius: 50%;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                font-size: 28px;
-                color: #6c757d;
+                font-size: 32px;
+                color: var(--text-muted);
             }
             h1 {
-                font-size: 26px;
-                font-weight: 600;
-                color: #2c3e50;
-                margin: 0 0 12px 0;
+                font-size: 24px;
+                font-weight: 700;
+                color: var(--text-primary);
+                margin: 0 0 8px 0;
+                letter-spacing: -0.025em;
             }
             .subtitle {
-                font-size: 17px;
-                color: #6c757d;
-                margin: 0 0 20px 0;
+                font-size: 16px;
+                color: var(--text-muted);
+                margin: 0 0 24px 0;
                 font-weight: 400;
             }
             .description {
-                font-size: 15px;
-                color: #5a6c7d;
+                font-size: 14px;
+                color: var(--text-secondary);
                 margin: 0 0 24px 0;
                 line-height: 1.6;
+                max-width: 480px;
+                margin-left: auto;
+                margin-right: auto;
             }
             .form-container {
-                background: #f8f9fa;
-                border-radius: 8px;
-                padding: 20px;
-                margin: 20px 0;
+                background: transparent;
+                padding: 0;
+                margin: 32px 0 0;
                 text-align: left;
             }
             .form-title {
-                font-size: 19px;
+                font-size: 18px;
                 font-weight: 600;
-                color: #2c3e50;
-                margin: 0 0 16px 0;
-                text-align: center;
+                color: var(--text-primary);
+                margin: 0 0 20px 0;
+                text-align: left;
+                letter-spacing: -0.01em;
             }
             .form-group {
-                margin-bottom: 12px;
+                margin-bottom: 16px;
             }
             label {
                 display: block;
                 font-weight: 500;
-                color: #495057;
-                margin-bottom: 4px;
+                color: var(--text-primary);
+                margin-bottom: 6px;
                 font-size: 14px;
             }
             input[type="text"],
             input[type="email"],
             input[type="tel"] {
                 width: 100%;
-                padding: 8px 12px;
-                border: 2px solid #e9ecef;
-                border-radius: 6px;
-                font-size: 15px;
-                transition: border-color 0.2s, box-shadow 0.2s;
-                background: white;
+                padding: 10px 14px;
+                border: 1px solid var(--input-border);
+                border-radius: 8px;
+                font-size: 14px;
+                transition: all 0.2s ease;
+                background: var(--input-background);
+                color: var(--text-primary);
+                font-family: inherit;
             }
             input[type="text"]:focus,
             input[type="email"]:focus,
             input[type="tel"]:focus {
                 outline: none;
                 border-color: var(--primary-color);
-                box-shadow: 0 0 0 2px rgba(108, 117, 125, 0.08);
+                box-shadow: 0 0 0 4px var(--focus-ring);
+            }
+            input::placeholder {
+                color: #9ca3af;
             }
             textarea {
                 width: 100%;
-                padding: 12px 16px;
-                border: 2px solid #e9ecef;
-                border-radius: 6px;
-                font-size: 16px;
+                padding: 10px 14px;
+                border: 1px solid var(--input-border);
+                border-radius: 8px;
+                font-size: 14px;
                 resize: vertical;
-                transition: border-color 0.2s, box-shadow 0.2s;
-                background: white;
+                transition: all 0.2s ease;
+                background: var(--input-background);
+                color: var(--text-primary);
+                font-family: inherit;
             }
             textarea:focus {
                 outline: none;
                 border-color: var(--primary-color);
-                box-shadow: 0 0 0 2px rgba(108, 117, 125, 0.08);
+                box-shadow: 0 0 0 4px var(--focus-ring);
             }
             .submit-btn {
                 width: 100%;
                 background: var(--primary-color);
                 color: white;
                 border: none;
-                padding: 10px 18px;
-                border-radius: 6px;
-                font-size: 15px;
+                padding: 12px 20px;
+                border-radius: 8px;
+                font-size: 14px;
                 font-weight: 600;
                 cursor: pointer;
-                transition: background-color 0.2s, transform 0.1s;
-                margin-top: 6px;
+                transition: all 0.2s ease;
+                margin-top: 8px;
+                letter-spacing: 0.01em;
             }
             .submit-btn:hover {
                 opacity: 0.9;
                 transform: translateY(-1px);
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
             }
             .submit-btn:active {
                 transform: translateY(0);
+                box-shadow: none;
             }
             .success-message {
                 display: none;
-                background: #d4edda;
-                border: 1px solid #c3e6cb;
-                color: #155724;
-                padding: 8px 12px;
-                border-radius: 6px;
-                margin-top: 10px;
+                background: #ecfdf5;
+                border: 1px solid #d1fae5;
+                color: #047857;
+                padding: 12px 16px;
+                border-radius: 8px;
+                margin-top: 16px;
                 text-align: center;
                 font-weight: 500;
+                font-size: 14px;
             }
             .refresh-info {
-                margin-top: 18px;
-                padding: 10px;
-                background: #e3f2fd;
-                border-radius: 6px;
+                margin-top: 32px;
+                padding: 16px;
+                background: #f0f9ff;
+                border: 1px solid #e0f2fe;
+                border-radius: 12px;
                 font-size: 13px;
-                color: #1565c0;
+                color: #0369a1;
+                line-height: 1.5;
             }
             .form-row {
                 display: flex;
-                gap: 12px;
+                gap: 16px;
             }
             .form-row .form-group {
                 flex: 1;
-                margin-bottom: 12px;
+                margin-bottom: 16px;
             }
             @media (max-width: 600px) {
                 body {
-                    padding: 10px;
+                    padding: 0;
+                    background: white;
                 }
                 .container {
-                    padding: 14px;
+                    box-shadow: none;
+                    padding: 24px;
                 }
                 .form-container {
-                    padding: 12px;
+                    margin-top: 24px;
                 }
                 h1 {
-                    font-size: 22px;
-                }
-                .subtitle {
-                    font-size: 15px;
+                    font-size: 20px;
                 }
                 .form-row {
                     flex-direction: column;
