@@ -79,12 +79,6 @@
                 margin: 0 0 8px 0;
                 letter-spacing: -0.025em;
             }
-            .subtitle {
-                font-size: 16px;
-                color: var(--text-muted);
-                margin: 0 0 24px 0;
-                font-weight: 400;
-            }
             .description {
                 font-size: 14px;
                 color: var(--text-secondary);
@@ -99,14 +93,6 @@
                 padding: 0;
                 margin: 32px 0 0;
                 text-align: left;
-            }
-            .form-title {
-                font-size: 18px;
-                font-weight: 600;
-                color: var(--text-primary);
-                margin: 0 0 20px 0;
-                text-align: left;
-                letter-spacing: -0.01em;
             }
             .form-group {
                 margin-bottom: 20px;
@@ -130,10 +116,6 @@
                 position: relative;
                 display: flex;
                 align-items: center;
-            }
-            /* Ensure input icon containers are gone */
-            .input-icon {
-                display: none;
             }
             
             /* Ensure SVG in labels are visible and colored correctly */
@@ -283,38 +265,28 @@
                 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
             </div>
             <h1 data-translate-key="mainTitle">
-                Laat je contactgegevens achter
+                Leave your contact details
             </h1>
-            <p class="subtitle" data-translate-key="subtitle" style="display: none;">
-                We're working hard to restore service
-            </p>
             <p class="description" data-translate-key="description1">
-                Ons reguliere aanvraag proces is helaas niet beschikbaar. Laat je contactgegevens achter en we nemen zo spoedig mogelijk contact op!
-            </p>
-            <p class="description" data-translate-key="description2" style="display: none;">
-                You can still submit a request below and we'll contact you once
-                service is restored.
+                Our regular application process is currently unavailable. Please leave your contact details and we will contact you as soon as possible!
             </p>
 
             <div class="form-container">
-                <h2 class="form-title" data-translate-key="formTitle" style="display: none;">
-                    Submit Request
-                </h2>
                 <form id="fallbackForm">
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="firstname" data-translate-key="labelFirstname">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right: 4px; color: var(--primary-color);"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                                <span class="label-text">Voornaam *</span>
+                            <label for="firstname">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right: 8px; color: var(--primary-color);"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                                <span class="label-text" data-translate-key="labelFirstname">Voornaam *</span>
                             </label>
                             <div class="input-wrapper">
                                 <input type="text" id="firstname" name="firstname" required placeholder="Jan" />
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="lastname" data-translate-key="labelLastname">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right: 4px; color: var(--primary-color);"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                                <span class="label-text">Achternaam *</span>
+                            <label for="lastname">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right: 8px; color: var(--primary-color);"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                                <span class="label-text" data-translate-key="labelLastname">Achternaam *</span>
                             </label>
                             <div class="input-wrapper">
                                 <input type="text" id="lastname" name="lastname" required placeholder="de Vries" />
@@ -323,9 +295,9 @@
                     </div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="email" data-translate-key="labelEmail">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right: 4px; color: var(--primary-color);"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-                                <span class="label-text">E-mailadres *</span>
+                            <label for="email">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right: 8px; color: var(--primary-color);"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                                <span class="label-text" data-translate-key="labelEmail">E-mailadres *</span>
                             </label>
                             <div class="input-wrapper">
                                 <input type="email" id="email" name="email" placeholder="jan@email.nl" required />
@@ -334,9 +306,9 @@
                     </div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="phonenumber" data-translate-key="labelPhone">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right: 4px; color: var(--primary-color);"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-                                <span class="label-text">Telefoonnummer *</span>
+                            <label for="phonenumber">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right: 8px; color: var(--primary-color);"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                                <span class="label-text" data-translate-key="labelPhone">Telefoonnummer *</span>
                             </label>
                             <div class="input-wrapper">
                                 <input type="tel" id="phonenumber" name="phonenumber" placeholder="06 12345678" required />
@@ -344,18 +316,18 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="address" data-translate-key="labelAddress">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right: 4px; color: var(--primary-color);"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-                            <span class="label-text">Adres *</span>
+                        <label for="address">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right: 8px; color: var(--primary-color);"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                            <span class="label-text" data-translate-key="labelAddress">Adres *</span>
                         </label>
                         <div class="input-wrapper">
                             <input type="text" id="address" name="address" required placeholder="Hoofdstraat 123, Amsterdam" />
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="remarks" data-translate-key="labelRemarks">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right: 4px; color: var(--primary-color);"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                            <span class="label-text">Opmerkingen (optioneel)</span>
+                        <label for="remarks">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right: 8px; color: var(--primary-color);"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                            <span class="label-text" data-translate-key="labelRemarks">Opmerkingen (optioneel)</span>
                         </label>
                         <textarea
                             id="remarks"
@@ -367,10 +339,9 @@
                     <button
                         type="submit"
                         class="submit-btn"
-                        data-translate-key="submitButton"
                         style="display: flex; align-items: center; justify-content: center; gap: 8px;"
                     >
-                        <span>Verstuur nu</span>
+                        <span data-translate-key="submitButton">Verstuur nu</span>
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
                     </button>
                 </form>
@@ -416,30 +387,18 @@
                     nl: "Dienst Tijdelijk Onbeschikbaar",
                 },
                 mainTitle: {
-                    en: "Service Temporarily Unavailable",
-                    nl: "Dienst Tijdelijk Onbeschikbaar",
-                },
-                subtitle: {
-                    en: "We're working hard to restore service",
-                    nl: "We werken er hard aan om de service te herstellen",
+                    en: "Leave your contact details",
+                    nl: "Laat je contactgegevens achter",
                 },
                 description1: {
-                    en: "Our application is currently undergoing maintenance or experiencing technical difficulties. We apologize for any inconvenience and are working to resolve this as quickly as possible.",
-                    nl: "Onze applicatie ondergaat momenteel onderhoud of ondervindt technische problemen. Onze excuses voor het ongemak, we werken aan een zo snel mogelijke oplossing.",
+                    en: "Our regular application process is currently unavailable. Please leave your contact details and we will contact you as soon as possible!",
+                    nl: "Ons reguliere aanvraag proces is helaas niet beschikbaar. Laat je contactgegevens achter en we nemen zo spoedig mogelijk contact op!",
                 },
-                description2: {
-                    en: "You can still submit a request below and we'll contact you once service is restored.",
-                    nl: "U kunt hieronder alsnog een aanvraag indienen en we nemen contact met u op zodra de service is hersteld.",
-                },
-                formTitle: {
-                    en: "Submit Request",
-                    nl: "Aanvraag Indienen",
-                },
-                labelFirstname: { en: "Firstname", nl: "Voornaam" },
-                labelLastname: { en: "Lastname", nl: "Achternaam" },
-                labelAddress: { en: "Address", nl: "Adres" },
-                labelEmail: { en: "Email", nl: "E-mail" },
-                labelPhone: { en: "Phone Number", nl: "Telefoonnummer" },
+                labelFirstname: { en: "Firstname *", nl: "Voornaam *" },
+                labelLastname: { en: "Lastname *", nl: "Achternaam *" },
+                labelAddress: { en: "Address *", nl: "Adres *" },
+                labelEmail: { en: "Email *", nl: "E-mail *" },
+                labelPhone: { en: "Phone Number *", nl: "Telefoonnummer *" },
                 labelRemarks: { en: "Remarks", nl: "Opmerkingen" },
                 submitButton: { en: "Submit request", nl: "Verstuur aanvraag" },
                 formSuccess: {
