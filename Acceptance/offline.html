@@ -472,7 +472,6 @@
         </script>
         <script type="text/javascript">
             let referralParams = {};
-            let flowId = "";
 
             function applyTranslations() {
                 const userLang = (
@@ -536,9 +535,6 @@
 
                         params.forEach((value, key) => {
                             referralParams[key] = value;
-                            if (key.toLowerCase() === "flowid") {
-                                flowId = value;
-                            }
                         });
 
                         const fieldMapping = {
@@ -757,7 +753,6 @@
                 const payload = {
                     form_data: formData,
                     referral_params: referralParams,
-                    flow_id: flowId,
                 };
 
                 fetch(
