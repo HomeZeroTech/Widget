@@ -194,6 +194,40 @@
         },
     };
 
+    // Helper function to get the base directory of the current script
+    function getScriptBaseDir() {
+        const currentScript =
+            document.currentScript ||
+            (function () {
+                const scripts = document.getElementsByTagName("script");
+                // Look for a script that contains embed.js or embed.min.js in its src
+                for (let i = scripts.length - 1; i >= 0; i--) {
+                    const script = scripts[i];
+                    if (
+                        script.src &&
+                        (script.src.includes("embed.js") ||
+                            script.src.includes("embed.min.js"))
+                    ) {
+                        return script;
+                    }
+                }
+                return null;
+            })();
+
+        if (!currentScript) {
+            // Fallback default if script tag can't be found
+            return "https://homezerotech.github.io/Widget/Acceptance/";
+        }
+
+        try {
+            const scriptUrl = new URL(currentScript.src);
+            return new URL(".", scriptUrl).href;
+        } catch (e) {
+            console.warn("Could not determine script base directory", e);
+            return "https://homezerotech.github.io/Widget/Acceptance/";
+        }
+    }
+
     // Rate limiting for Google Places API
     const rateLimiter = {
         requests: [],
@@ -983,18 +1017,33 @@
                 console.error("[FALLBACK CONTEXT]", JSON.stringify(context, null, 2));
             }
             
+            // Construct the fallback URL pointing to the external GitHub Pages file
+            // NOTE: Ensure this URL matches your actual deployment path
+            // We use the script's base directory to locate the offline.html file dynamically
             const fallbackUrl = new URL(
-                "https://homezerotech.github.io/files/fallback/offline.html"
+                "offline.html",
+                getScriptBaseDir()
             );
-            fallbackUrl.searchParams.set("referralUrl", url);
+            
+            // "url" here is the *target* URL (the homezero app flow URL), not the *referrer* (the client site).
+            // So we should name it targetUrl to avoid confusion in the fallback page.
+            fallbackUrl.searchParams.set("targetUrl", url);
+            fallbackUrl.searchParams.set("referralUrl", window.location.href); // This is the original site URL
+            
+            if (primaryColor) {
+                fallbackUrl.searchParams.set("primaryColor", primaryColor);
+            }
+            
             const reasonSnippet = (reason || "").slice(0, 300);
             if (reasonSnippet) {
                 fallbackUrl.searchParams.set("reason", reasonSnippet);
             }
+            
             const combinedContext = {
                 ...captureClientContext(),
                 ...(context || {}),
             };
+            
             if (combinedContext) {
                 try {
                     const contextEncoded = JSON.stringify(
@@ -1013,9 +1062,9 @@
                     );
                 }
             }
+            
             performRedirect(fallbackUrl.href);
         };
-
         // Flag to track if loader has been shown
         let loaderShown = false;
         
@@ -1258,27 +1307,7 @@
                 return;
             }
 
-            const currentScript =
-                document.currentScript ||
-                (function () {
-                    const scripts = document.getElementsByTagName("script");
-                    // Look for a script that contains embed.js or embed.min.js in its src
-                    for (let i = scripts.length - 1; i >= 0; i--) {
-                        const script = scripts[i];
-                        if (
-                            script.src &&
-                            (script.src.includes("embed.js") ||
-                                script.src.includes("embed.min.js"))
-                        ) {
-                            return script;
-                        }
-                    }
-                    // No embed script found, throw error
-                    throw new Error("Could not find embed.js script tag");
-                })();
-
-            const scriptUrl = new URL(currentScript.src);
-            const baseDir = new URL(".", scriptUrl).href;
+            const baseDir = getScriptBaseDir();
 
             const link = document.createElement("link");
             link.rel = "stylesheet";
