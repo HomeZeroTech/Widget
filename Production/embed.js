@@ -65,6 +65,9 @@
                         </clipPath>
                         </defs>
                       </svg>`,
+        gasboiler: `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="21" viewBox="0 0 22 21" fill="none">
+                        <path d="M9.71771 0.414932C10.2974 -0.138289 11.2104 -0.138333 11.79 0.414932L21.1963 9.39443C21.8485 10.0174 21.4078 11.117 20.5059 11.1171H19.2539V18.6171C19.2538 19.4454 18.5822 20.117 17.7539 20.1171H3.75381C2.92544 20.1171 2.25388 19.4454 2.2538 18.6171V11.1171H1.00185C0.0997649 11.1171 -0.340905 10.0174 0.311412 9.39443L9.71771 0.414932ZM11.0996 1.13759C10.9065 0.953347 10.6024 0.953687 10.4091 1.13759L1.00185 10.1171H2.2538C2.80592 10.1172 3.2537 10.565 3.25381 11.1171V18.6171C3.25388 18.8932 3.47773 19.1171 3.75381 19.1171H17.7539C18.0299 19.117 18.2538 18.8931 18.2539 18.6171V11.1171C18.254 10.5649 18.7017 10.1171 19.2539 10.1171H20.5059L11.0996 1.13759ZM16.2539 17.1171C16.5299 17.1172 16.7538 17.3411 16.7539 17.6171C16.7538 17.8931 16.5299 18.117 16.2539 18.1171H5.25382C4.97773 18.1171 4.75388 17.8932 4.75382 17.6171C4.75393 17.3411 4.97776 17.1171 5.25382 17.1171H16.2539ZM11.039 8.14052C11.1571 8.06826 11.3029 8.17535 11.2724 8.31435C10.8519 10.194 12.5937 10.2644 13.083 11.5575C13.4318 12.4069 13.1945 13.3832 12.5468 13.995C11.9581 14.5433 11.1387 14.686 10.3818 14.5878C9.85195 14.5179 8.37809 13.973 8.25969 12.1981C8.25974 11.3963 8.47562 10.8637 8.68743 10.5341C8.77776 10.3983 8.98774 10.4772 8.96966 10.6415C8.9199 11.0884 8.98037 11.7132 9.54388 12.1474C9.66533 12.242 9.83319 12.1055 9.77728 11.9599C9.09555 10.1788 9.90845 8.81887 11.039 8.14052ZM10.9052 10.8065C10.6345 11.5225 11.0349 11.9668 10.9326 12.4198C10.8702 12.7112 10.6403 13.0411 10.1923 13.1522C11.0954 13.906 11.9474 13.2186 11.9228 12.4169C11.9222 11.7707 11.0083 11.3989 10.9052 10.8065Z" fill="#132039"/>
+                    </svg>`,
     };
 
     // Add translations for international address fields
@@ -304,10 +307,11 @@
             };
 
             script.onerror = (event) => {
-                const errorMsg = `Failed to load Google Places API script. Error: ${event.error ||
+                const errorMsg = `Failed to load Google Places API script. Error: ${
+                    event.error ||
                     event.message ||
                     "Unknown script loading error"
-                    }. URL: ${script.src}`;
+                }. URL: ${script.src}`;
                 console.error(errorMsg, event);
                 reject(new Error(errorMsg));
             };
@@ -671,9 +675,10 @@
                             </svg>
                             <div class="option-content">
                                 <div class="prediction-main">${placePrediction.mainText.text.toString()}</div>
-                                <div class="prediction-secondary">${placePrediction.secondaryText?.text.toString() ||
-                            ""
-                            }</div>
+                                <div class="prediction-secondary">${
+                                    placePrediction.secondaryText?.text.toString() ||
+                                    ""
+                                }</div>
                             </div>
                         `;
 
@@ -972,7 +977,12 @@
         }
     }
 
-    function redirectToUrlWithCheck(url, openNewTab, preopenedWin, primaryColor) {
+    function redirectToUrlWithCheck(
+        url,
+        openNewTab,
+        preopenedWin,
+        primaryColor
+    ) {
         const performRedirect = (targetUrl) => {
             if (openNewTab === "true" && preopenedWin) {
                 preopenedWin.location.href = targetUrl;
@@ -994,17 +1004,17 @@
                 platform: navigator.platform,
                 timezone:
                     typeof Intl !== "undefined" &&
-                        Intl.DateTimeFormat &&
-                        Intl.DateTimeFormat().resolvedOptions
+                    Intl.DateTimeFormat &&
+                    Intl.DateTimeFormat().resolvedOptions
                         ? Intl.DateTimeFormat().resolvedOptions().timeZone
                         : undefined,
                 connection: connection
                     ? {
-                        effectiveType: connection.effectiveType,
-                        downlink: connection.downlink,
-                        rtt: connection.rtt,
-                        saveData: connection.saveData,
-                    }
+                          effectiveType: connection.effectiveType,
+                          downlink: connection.downlink,
+                          rtt: connection.rtt,
+                          saveData: connection.saveData,
+                      }
                     : undefined,
                 visibility: document.visibilityState,
             };
@@ -1014,46 +1024,43 @@
             // Log separately to avoid truncation issues
             console.error("[FALLBACK REDIRECT]", reason);
             if (context) {
-                console.error("[FALLBACK CONTEXT]", JSON.stringify(context, null, 2));
+                console.error(
+                    "[FALLBACK CONTEXT]",
+                    JSON.stringify(context, null, 2)
+                );
             }
-            
+
             // Construct the fallback URL pointing to the external GitHub Pages file
             // NOTE: Ensure this URL matches your actual deployment path
             // We use the script's base directory to locate the offline.html file dynamically
-            const fallbackUrl = new URL(
-                "offline.html",
-                getScriptBaseDir()
-            );
-            
+            const fallbackUrl = new URL("offline.html", getScriptBaseDir());
+
             // "url" here is the *target* URL (the homezero app flow URL), not the *referrer* (the client site).
             // So we should name it targetUrl to avoid confusion in the fallback page.
             fallbackUrl.searchParams.set("targetUrl", url);
             fallbackUrl.searchParams.set("referralUrl", window.location.href); // This is the original site URL
-            
+
             if (primaryColor) {
                 fallbackUrl.searchParams.set("primaryColor", primaryColor);
             }
-            
+
             const reasonSnippet = (reason || "").slice(0, 300);
             if (reasonSnippet) {
                 fallbackUrl.searchParams.set("reason", reasonSnippet);
             }
-            
+
             const combinedContext = {
                 ...captureClientContext(),
                 ...(context || {}),
             };
-            
+
             if (combinedContext) {
                 try {
                     const contextEncoded = JSON.stringify(
                         combinedContext
                     ).slice(0, 900);
                     if (contextEncoded) {
-                        fallbackUrl.searchParams.set(
-                            "context",
-                            contextEncoded
-                        );
+                        fallbackUrl.searchParams.set("context", contextEncoded);
                     }
                 } catch (stringifyError) {
                     console.warn(
@@ -1062,34 +1069,35 @@
                     );
                 }
             }
-            
+
             performRedirect(fallbackUrl.href);
         };
         // Flag to track if loader has been shown
         let loaderShown = false;
-        
+
         // Helper function to show loader in the pre-opened window
         const showLoaderInWindow = () => {
             if (preopenedWin && !preopenedWin.closed && !loaderShown) {
                 try {
                     const doc = preopenedWin.document;
-                    
+
                     // Mark loader as shown immediately to prevent duplicates
                     loaderShown = true;
-                    
+
                     // Add viewport meta tag if not present
                     if (!doc.querySelector('meta[name="viewport"]')) {
-                        const viewport = doc.createElement('meta');
-                        viewport.name = 'viewport';
-                        viewport.content = 'width=device-width, initial-scale=1';
+                        const viewport = doc.createElement("meta");
+                        viewport.name = "viewport";
+                        viewport.content =
+                            "width=device-width, initial-scale=1";
                         doc.head.appendChild(viewport);
                     }
-                    
+
                     // Set title
-                    doc.title = 'Loading...';
-                    
+                    doc.title = "Loading...";
+
                     // Create and add style element
-                    const style = doc.createElement('style');
+                    const style = doc.createElement("style");
                     style.textContent = `
                         body {
                             margin: 0;
@@ -1130,30 +1138,34 @@
                         }
                     `;
                     doc.head.appendChild(style);
-                    
+
                     // Create loader container
-                    const container = doc.createElement('div');
-                    container.className = 'loader-container';
-                    
+                    const container = doc.createElement("div");
+                    container.className = "loader-container";
+
                     // Create spinner
-                    const spinner = doc.createElement('div');
-                    spinner.className = 'spinner';
+                    const spinner = doc.createElement("div");
+                    spinner.className = "spinner";
                     container.appendChild(spinner);
-                    
+
                     // Create heading
-                    const heading = doc.createElement('h2');
-                    heading.textContent = 'Even geduld...';
+                    const heading = doc.createElement("h2");
+                    heading.textContent = "Even geduld...";
                     container.appendChild(heading);
-                    
+
                     // Create paragraph
-                    const paragraph = doc.createElement('p');
-                    paragraph.textContent = 'We controleren de beschikbaarheid van de server';
+                    const paragraph = doc.createElement("p");
+                    paragraph.textContent =
+                        "We controleren de beschikbaarheid van de server";
                     container.appendChild(paragraph);
-                    
+
                     // Add to body
                     doc.body.appendChild(container);
                 } catch (e) {
-                    console.warn("Could not write loader to pre-opened window", e);
+                    console.warn(
+                        "Could not write loader to pre-opened window",
+                        e
+                    );
                 }
             }
         };
@@ -1214,7 +1226,10 @@
                                 );
                                 // Show loader before retry
                                 showLoaderInWindow();
-                                setTimeout(() => performPing(retryCount + 1), 500);
+                                setTimeout(
+                                    () => performPing(retryCount + 1),
+                                    500
+                                );
                             } else {
                                 redirectToFallback(
                                     `Server ${baseUrl} is online, but ping endpoint returned status ${response.status} after ${retryCount} retries. Redirecting to fallback.`,
@@ -1232,7 +1247,7 @@
                     })
                     .catch((error) => {
                         clearTimeout(timeoutId);
-                        
+
                         // Retry on network errors (but not timeout)
                         if (retryCount < 2 && error.name !== "AbortError") {
                             console.warn(
@@ -1250,10 +1265,12 @@
                             setTimeout(() => performPing(retryCount + 1), 500);
                             return;
                         }
-                        
+
                         if (error.name === "AbortError") {
                             redirectToFallback(
-                                `Server ping for ${baseUrl} timed out after ${Date.now() - pingStartedAt}ms. Redirecting to fallback.`,
+                                `Server ping for ${baseUrl} timed out after ${
+                                    Date.now() - pingStartedAt
+                                }ms. Redirecting to fallback.`,
                                 {
                                     baseUrl,
                                     pingUrl,
@@ -1286,7 +1303,7 @@
                 performRedirect(url);
             }
         };
-        
+
         // Start the ping process
         performPing();
     }
@@ -1298,7 +1315,7 @@
                 readyState: document.readyState,
                 time: new Date().toISOString(),
             });
-        } catch (e) { }
+        } catch (e) {}
 
         // Load the CSS only once
         const cssPromise = new Promise((resolve) => {
@@ -1350,9 +1367,7 @@
             try {
                 const count = elements.length || 0;
                 if (count === 0) {
-                    console.warn(
-                        "[HZ-Widget] No <hz-embed> found at init."
-                    );
+                    console.warn("[HZ-Widget] No <hz-embed> found at init.");
 
                     // Graceful SPA fallback: wait briefly for hz-embed to appear, then initialize
                     try {
@@ -1368,9 +1383,11 @@
                                         console.info(
                                             "[HZ-Widget] <hz-embed> detected shortly after init, re-initializing."
                                         );
-                                    } catch (e) { }
+                                    } catch (e) {}
                                     observer.disconnect();
-                                    document.documentElement[waiterFlag] = false;
+                                    document.documentElement[
+                                        waiterFlag
+                                    ] = false;
                                     init();
                                 }
                             });
@@ -1383,14 +1400,14 @@
                                     console.warn(
                                         "[HZ-Widget] Stopped waiting for <hz-embed> after 5000ms."
                                     );
-                                } catch (e) { }
+                                } catch (e) {}
                                 observer.disconnect();
                                 document.documentElement[waiterFlag] = false;
                             }, 5000);
                         }
-                    } catch (e) { }
+                    } catch (e) {}
                 }
-            } catch (e) { }
+            } catch (e) {}
 
             const queryParams = getQueryParams();
 
@@ -1564,7 +1581,10 @@
                         }
 
                         // Huisnummer validation
-                        if (!huisnummer.value || !/[a-zA-Z0-9]/.test(huisnummer.value)) {
+                        if (
+                            !huisnummer.value ||
+                            !/[a-zA-Z0-9]/.test(huisnummer.value)
+                        ) {
                             displayValidationMessage(
                                 huisnummer,
                                 dutchValidationMessages.huisnummer
@@ -1607,7 +1627,10 @@
                             );
                             isValid = false;
                         }
-                        if (!housenumber.value || !/[a-zA-Z0-9]/.test(housenumber.value)) {
+                        if (
+                            !housenumber.value ||
+                            !/[a-zA-Z0-9]/.test(housenumber.value)
+                        ) {
                             displayValidationMessage(
                                 housenumber,
                                 selectedLang.validation.housenumber
@@ -1684,7 +1707,7 @@
                             openNewTab === "true"
                                 ? window.open("about:blank", "_blank")
                                 : null;
-                        
+
                         url +=
                             "&ReferralURL=" +
                             encodeURIComponent(window.location.href); // Start with ReferralURL
@@ -1723,7 +1746,12 @@
                         });
 
                         // Check if the form should open in a new tab or in the same window
-                        redirectToUrlWithCheck(url, openNewTab, preopenedWin, primaryColor);
+                        redirectToUrlWithCheck(
+                            url,
+                            openNewTab,
+                            preopenedWin,
+                            primaryColor
+                        );
                     }
                 };
 
@@ -1768,22 +1796,24 @@
                         <div class="embed-row">
                             <div class="embed-col">
                                 <div class="embed-form-container">
-                                    <label class="embed-label-bold">${selectedLang.dropdownLabel
-                        }*</label>
+                                    <label class="embed-label-bold">${
+                                        selectedLang.dropdownLabel
+                                    }*</label>
                                     <div class="custom-dropdown">
-                                        <div class="dropdown-selected" tabindex="0">${selectedLang.dropdownPlaceholder
-                        }</div>
+                                        <div class="dropdown-selected" tabindex="0">${
+                                            selectedLang.dropdownPlaceholder
+                                        }</div>
                                         <div class="dropdown-options">
                                             ${measurementOptions
-                            .map(
-                                (option) => `
+                                                .map(
+                                                    (option) => `
                                                 <div class="dropdown-option" data-value="${option.url}">
                                                     ${option.icon}
                                                     <span>${option.title}</span>
                                                 </div>
                                             `
-                            )
-                            .join("")}
+                                                )
+                                                .join("")}
                                         </div>
                                     </div>
                                 </div>
@@ -1871,15 +1901,19 @@
                             <div class="embed-col">
                                 <div class="embed-flex-container">
                                     <div class="embed-form-container">
-                                        <label for="telefoon" class="embed-label-bold">${selectedLang.phoneLabel
-                        }${phoneRequired ? `<span>*</span>` : ""
-                        }</label>
+                                        <label for="telefoon" class="embed-label-bold">${
+                                            selectedLang.phoneLabel
+                                        }${
+                        phoneRequired ? `<span>*</span>` : ""
+                    }</label>
                                         <input type="tel" id="telefoon" class="embed-input-field" placeholder="0612345678" maxlength="20">
                                     </div>
                                     <div class="embed-form-container">
-                                        <label for="email" class="embed-label-bold">${selectedLang.emailLabel
-                        }${emailRequired ? `<span>*</span>` : ""
-                        }</label>
+                                        <label for="email" class="embed-label-bold">${
+                                            selectedLang.emailLabel
+                                        }${
+                        emailRequired ? `<span>*</span>` : ""
+                    }</label>
                                         <input type="email" id="email" class="embed-input-field" placeholder="jandevries@gmail.com" maxlength="100">
                                     </div>
                                 </div>
@@ -1891,9 +1925,11 @@
                         <div class="embed-row">
                             <div class="embed-col">
                                 <div class="embed-form-container">
-                                    <label for="telefoon" class="embed-label-bold">${selectedLang.phoneLabel
-                        }${phoneRequired ? `<span>*</span>` : ""
-                        }</label>
+                                    <label for="telefoon" class="embed-label-bold">${
+                                        selectedLang.phoneLabel
+                                    }${
+                        phoneRequired ? `<span>*</span>` : ""
+                    }</label>
                                     <input type="tel" id="telefoon" class="embed-input-field" placeholder="0612345678" maxlength="20">
                                 </div>
                             </div>
@@ -1904,9 +1940,11 @@
                         <div class="embed-row">
                             <div class="embed-col">
                                 <div class="embed-form-container">
-                                    <label for="email" class="embed-label-bold">${selectedLang.emailLabel
-                        }${emailRequired ? `<span>*</span>` : ""
-                        }</label>
+                                    <label for="email" class="embed-label-bold">${
+                                        selectedLang.emailLabel
+                                    }${
+                        emailRequired ? `<span>*</span>` : ""
+                    }</label>
                                     <input type="email" id="email" class="embed-input-field" placeholder="jandevries@gmail.com" maxlength="100">
                                 </div>
                             </div>
