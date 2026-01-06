@@ -304,10 +304,11 @@
             };
 
             script.onerror = (event) => {
-                const errorMsg = `Failed to load Google Places API script. Error: ${event.error ||
+                const errorMsg = `Failed to load Google Places API script. Error: ${
+                    event.error ||
                     event.message ||
                     "Unknown script loading error"
-                    }. URL: ${script.src}`;
+                }. URL: ${script.src}`;
                 console.error(errorMsg, event);
                 reject(new Error(errorMsg));
             };
@@ -671,9 +672,10 @@
                             </svg>
                             <div class="option-content">
                                 <div class="prediction-main">${placePrediction.mainText.text.toString()}</div>
-                                <div class="prediction-secondary">${placePrediction.secondaryText?.text.toString() ||
-                            ""
-                            }</div>
+                                <div class="prediction-secondary">${
+                                    placePrediction.secondaryText?.text.toString() ||
+                                    ""
+                                }</div>
                             </div>
                         `;
 
@@ -972,7 +974,12 @@
         }
     }
 
-    function redirectToUrlWithCheck(url, openNewTab, preopenedWin, primaryColor) {
+    function redirectToUrlWithCheck(
+        url,
+        openNewTab,
+        preopenedWin,
+        primaryColor
+    ) {
         const performRedirect = (targetUrl) => {
             if (openNewTab === "true" && preopenedWin) {
                 preopenedWin.location.href = targetUrl;
@@ -994,17 +1001,17 @@
                 platform: navigator.platform,
                 timezone:
                     typeof Intl !== "undefined" &&
-                        Intl.DateTimeFormat &&
-                        Intl.DateTimeFormat().resolvedOptions
+                    Intl.DateTimeFormat &&
+                    Intl.DateTimeFormat().resolvedOptions
                         ? Intl.DateTimeFormat().resolvedOptions().timeZone
                         : undefined,
                 connection: connection
                     ? {
-                        effectiveType: connection.effectiveType,
-                        downlink: connection.downlink,
-                        rtt: connection.rtt,
-                        saveData: connection.saveData,
-                    }
+                          effectiveType: connection.effectiveType,
+                          downlink: connection.downlink,
+                          rtt: connection.rtt,
+                          saveData: connection.saveData,
+                      }
                     : undefined,
                 visibility: document.visibilityState,
             };
@@ -1014,46 +1021,53 @@
             // Log separately to avoid truncation issues
             console.error("[FALLBACK REDIRECT]", reason);
             if (context) {
-                console.error("[FALLBACK CONTEXT]", JSON.stringify(context, null, 2));
+                console.error(
+                    "[FALLBACK CONTEXT]",
+                    JSON.stringify(context, null, 2)
+                );
             }
-            
+
             // Construct the fallback URL pointing to the external GitHub Pages file
             // NOTE: Ensure this URL matches your actual deployment path
             // We use the script's base directory to locate the offline.html file dynamically
-            const fallbackUrl = new URL(
-                "offline.html",
-                getScriptBaseDir()
-            );
-            
+            let baseDir = getScriptBaseDir();
+
+            // Fix for jsDelivr serving HTML as text/plain - redirect to GitHub Pages instead
+            if (baseDir.includes("cdn.jsdelivr.net")) {
+                baseDir = baseDir.replace(
+                    /cdn\.jsdelivr\.net\/gh\/HomeZeroTech\/Widget(@[^/]+)?\//,
+                    "homezerotech.github.io/Widget/"
+                );
+            }
+
+            const fallbackUrl = new URL("offline.html", baseDir);
+
             // "url" here is the *target* URL (the homezero app flow URL), not the *referrer* (the client site).
             // So we should name it targetUrl to avoid confusion in the fallback page.
             fallbackUrl.searchParams.set("targetUrl", url);
             fallbackUrl.searchParams.set("referralUrl", window.location.href); // This is the original site URL
-            
+
             if (primaryColor) {
                 fallbackUrl.searchParams.set("primaryColor", primaryColor);
             }
-            
+
             const reasonSnippet = (reason || "").slice(0, 300);
             if (reasonSnippet) {
                 fallbackUrl.searchParams.set("reason", reasonSnippet);
             }
-            
+
             const combinedContext = {
                 ...captureClientContext(),
                 ...(context || {}),
             };
-            
+
             if (combinedContext) {
                 try {
                     const contextEncoded = JSON.stringify(
                         combinedContext
                     ).slice(0, 900);
                     if (contextEncoded) {
-                        fallbackUrl.searchParams.set(
-                            "context",
-                            contextEncoded
-                        );
+                        fallbackUrl.searchParams.set("context", contextEncoded);
                     }
                 } catch (stringifyError) {
                     console.warn(
@@ -1062,34 +1076,35 @@
                     );
                 }
             }
-            
+
             performRedirect(fallbackUrl.href);
         };
         // Flag to track if loader has been shown
         let loaderShown = false;
-        
+
         // Helper function to show loader in the pre-opened window
         const showLoaderInWindow = () => {
             if (preopenedWin && !preopenedWin.closed && !loaderShown) {
                 try {
                     const doc = preopenedWin.document;
-                    
+
                     // Mark loader as shown immediately to prevent duplicates
                     loaderShown = true;
-                    
+
                     // Add viewport meta tag if not present
                     if (!doc.querySelector('meta[name="viewport"]')) {
-                        const viewport = doc.createElement('meta');
-                        viewport.name = 'viewport';
-                        viewport.content = 'width=device-width, initial-scale=1';
+                        const viewport = doc.createElement("meta");
+                        viewport.name = "viewport";
+                        viewport.content =
+                            "width=device-width, initial-scale=1";
                         doc.head.appendChild(viewport);
                     }
-                    
+
                     // Set title
-                    doc.title = 'Loading...';
-                    
+                    doc.title = "Loading...";
+
                     // Create and add style element
-                    const style = doc.createElement('style');
+                    const style = doc.createElement("style");
                     style.textContent = `
                         body {
                             margin: 0;
@@ -1130,30 +1145,34 @@
                         }
                     `;
                     doc.head.appendChild(style);
-                    
+
                     // Create loader container
-                    const container = doc.createElement('div');
-                    container.className = 'loader-container';
-                    
+                    const container = doc.createElement("div");
+                    container.className = "loader-container";
+
                     // Create spinner
-                    const spinner = doc.createElement('div');
-                    spinner.className = 'spinner';
+                    const spinner = doc.createElement("div");
+                    spinner.className = "spinner";
                     container.appendChild(spinner);
-                    
+
                     // Create heading
-                    const heading = doc.createElement('h2');
-                    heading.textContent = 'Even geduld...';
+                    const heading = doc.createElement("h2");
+                    heading.textContent = "Even geduld...";
                     container.appendChild(heading);
-                    
+
                     // Create paragraph
-                    const paragraph = doc.createElement('p');
-                    paragraph.textContent = 'We controleren de beschikbaarheid van de server';
+                    const paragraph = doc.createElement("p");
+                    paragraph.textContent =
+                        "We controleren de beschikbaarheid van de server";
                     container.appendChild(paragraph);
-                    
+
                     // Add to body
                     doc.body.appendChild(container);
                 } catch (e) {
-                    console.warn("Could not write loader to pre-opened window", e);
+                    console.warn(
+                        "Could not write loader to pre-opened window",
+                        e
+                    );
                 }
             }
         };
@@ -1214,7 +1233,10 @@
                                 );
                                 // Show loader before retry
                                 showLoaderInWindow();
-                                setTimeout(() => performPing(retryCount + 1), 500);
+                                setTimeout(
+                                    () => performPing(retryCount + 1),
+                                    500
+                                );
                             } else {
                                 redirectToFallback(
                                     `Server ${baseUrl} is online, but ping endpoint returned status ${response.status} after ${retryCount} retries. Redirecting to fallback.`,
@@ -1232,7 +1254,7 @@
                     })
                     .catch((error) => {
                         clearTimeout(timeoutId);
-                        
+
                         // Retry on network errors (but not timeout)
                         if (retryCount < 2 && error.name !== "AbortError") {
                             console.warn(
@@ -1250,10 +1272,12 @@
                             setTimeout(() => performPing(retryCount + 1), 500);
                             return;
                         }
-                        
+
                         if (error.name === "AbortError") {
                             redirectToFallback(
-                                `Server ping for ${baseUrl} timed out after ${Date.now() - pingStartedAt}ms. Redirecting to fallback.`,
+                                `Server ping for ${baseUrl} timed out after ${
+                                    Date.now() - pingStartedAt
+                                }ms. Redirecting to fallback.`,
                                 {
                                     baseUrl,
                                     pingUrl,
@@ -1286,7 +1310,7 @@
                 performRedirect(url);
             }
         };
-        
+
         // Start the ping process
         performPing();
     }
@@ -1298,7 +1322,7 @@
                 readyState: document.readyState,
                 time: new Date().toISOString(),
             });
-        } catch (e) { }
+        } catch (e) {}
 
         // Load the CSS only once
         const cssPromise = new Promise((resolve) => {
@@ -1350,9 +1374,7 @@
             try {
                 const count = elements.length || 0;
                 if (count === 0) {
-                    console.warn(
-                        "[HZ-Widget] No <hz-embed> found at init."
-                    );
+                    console.warn("[HZ-Widget] No <hz-embed> found at init.");
 
                     // Graceful SPA fallback: wait briefly for hz-embed to appear, then initialize
                     try {
@@ -1368,9 +1390,11 @@
                                         console.info(
                                             "[HZ-Widget] <hz-embed> detected shortly after init, re-initializing."
                                         );
-                                    } catch (e) { }
+                                    } catch (e) {}
                                     observer.disconnect();
-                                    document.documentElement[waiterFlag] = false;
+                                    document.documentElement[
+                                        waiterFlag
+                                    ] = false;
                                     init();
                                 }
                             });
@@ -1383,14 +1407,14 @@
                                     console.warn(
                                         "[HZ-Widget] Stopped waiting for <hz-embed> after 5000ms."
                                     );
-                                } catch (e) { }
+                                } catch (e) {}
                                 observer.disconnect();
                                 document.documentElement[waiterFlag] = false;
                             }, 5000);
                         }
-                    } catch (e) { }
+                    } catch (e) {}
                 }
-            } catch (e) { }
+            } catch (e) {}
 
             const queryParams = getQueryParams();
 
@@ -1564,7 +1588,10 @@
                         }
 
                         // Huisnummer validation
-                        if (!huisnummer.value || !/[a-zA-Z0-9]/.test(huisnummer.value)) {
+                        if (
+                            !huisnummer.value ||
+                            !/[a-zA-Z0-9]/.test(huisnummer.value)
+                        ) {
                             displayValidationMessage(
                                 huisnummer,
                                 dutchValidationMessages.huisnummer
@@ -1607,7 +1634,10 @@
                             );
                             isValid = false;
                         }
-                        if (!housenumber.value || !/[a-zA-Z0-9]/.test(housenumber.value)) {
+                        if (
+                            !housenumber.value ||
+                            !/[a-zA-Z0-9]/.test(housenumber.value)
+                        ) {
                             displayValidationMessage(
                                 housenumber,
                                 selectedLang.validation.housenumber
@@ -1684,7 +1714,7 @@
                             openNewTab === "true"
                                 ? window.open("about:blank", "_blank")
                                 : null;
-                        
+
                         url +=
                             "&ReferralURL=" +
                             encodeURIComponent(window.location.href); // Start with ReferralURL
@@ -1723,7 +1753,12 @@
                         });
 
                         // Check if the form should open in a new tab or in the same window
-                        redirectToUrlWithCheck(url, openNewTab, preopenedWin, primaryColor);
+                        redirectToUrlWithCheck(
+                            url,
+                            openNewTab,
+                            preopenedWin,
+                            primaryColor
+                        );
                     }
                 };
 
@@ -1768,22 +1803,24 @@
                         <div class="embed-row">
                             <div class="embed-col">
                                 <div class="embed-form-container">
-                                    <label class="embed-label-bold">${selectedLang.dropdownLabel
-                        }*</label>
+                                    <label class="embed-label-bold">${
+                                        selectedLang.dropdownLabel
+                                    }*</label>
                                     <div class="custom-dropdown">
-                                        <div class="dropdown-selected" tabindex="0">${selectedLang.dropdownPlaceholder
-                        }</div>
+                                        <div class="dropdown-selected" tabindex="0">${
+                                            selectedLang.dropdownPlaceholder
+                                        }</div>
                                         <div class="dropdown-options">
                                             ${measurementOptions
-                            .map(
-                                (option) => `
+                                                .map(
+                                                    (option) => `
                                                 <div class="dropdown-option" data-value="${option.url}">
                                                     ${option.icon}
                                                     <span>${option.title}</span>
                                                 </div>
                                             `
-                            )
-                            .join("")}
+                                                )
+                                                .join("")}
                                         </div>
                                     </div>
                                 </div>
@@ -1871,15 +1908,19 @@
                             <div class="embed-col">
                                 <div class="embed-flex-container">
                                     <div class="embed-form-container">
-                                        <label for="telefoon" class="embed-label-bold">${selectedLang.phoneLabel
-                        }${phoneRequired ? `<span>*</span>` : ""
-                        }</label>
+                                        <label for="telefoon" class="embed-label-bold">${
+                                            selectedLang.phoneLabel
+                                        }${
+                        phoneRequired ? `<span>*</span>` : ""
+                    }</label>
                                         <input type="tel" id="telefoon" class="embed-input-field" placeholder="0612345678" maxlength="20">
                                     </div>
                                     <div class="embed-form-container">
-                                        <label for="email" class="embed-label-bold">${selectedLang.emailLabel
-                        }${emailRequired ? `<span>*</span>` : ""
-                        }</label>
+                                        <label for="email" class="embed-label-bold">${
+                                            selectedLang.emailLabel
+                                        }${
+                        emailRequired ? `<span>*</span>` : ""
+                    }</label>
                                         <input type="email" id="email" class="embed-input-field" placeholder="jandevries@gmail.com" maxlength="100">
                                     </div>
                                 </div>
@@ -1891,9 +1932,11 @@
                         <div class="embed-row">
                             <div class="embed-col">
                                 <div class="embed-form-container">
-                                    <label for="telefoon" class="embed-label-bold">${selectedLang.phoneLabel
-                        }${phoneRequired ? `<span>*</span>` : ""
-                        }</label>
+                                    <label for="telefoon" class="embed-label-bold">${
+                                        selectedLang.phoneLabel
+                                    }${
+                        phoneRequired ? `<span>*</span>` : ""
+                    }</label>
                                     <input type="tel" id="telefoon" class="embed-input-field" placeholder="0612345678" maxlength="20">
                                 </div>
                             </div>
@@ -1904,9 +1947,11 @@
                         <div class="embed-row">
                             <div class="embed-col">
                                 <div class="embed-form-container">
-                                    <label for="email" class="embed-label-bold">${selectedLang.emailLabel
-                        }${emailRequired ? `<span>*</span>` : ""
-                        }</label>
+                                    <label for="email" class="embed-label-bold">${
+                                        selectedLang.emailLabel
+                                    }${
+                        emailRequired ? `<span>*</span>` : ""
+                    }</label>
                                     <input type="email" id="email" class="embed-input-field" placeholder="jandevries@gmail.com" maxlength="100">
                                 </div>
                             </div>
