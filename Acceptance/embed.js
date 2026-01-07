@@ -1180,24 +1180,58 @@
             }
         };
 
-        // Ping function with retry capability
-        const performPing = (retryCount = 0) => {
+        // Ping function using Health Script fallback (No retries)
+        const performPing = () => {
             try {
                 const targetUrl = new URL(url);
                 const baseUrl = targetUrl.origin;
                 const pingUrl = `${baseUrl}/ping/v1/ping`;
 
+                // Helper to fallback to Script loading (health.js)
+                const checkHealthScript = (originalError) => {
+                    console.info("Attempting health script check...");
+                    const script = document.createElement("script");
+                    // Custom path provided by user
+                    const checkUrl = `${baseUrl}/ping/v1/script/health.js?cb=${Date.now()}`;
+
+                    script.onload = function () {
+                        console.info("Health script loaded. Server is online.");
+                        // Cleanup
+                        try {
+                            document.head.removeChild(script);
+                        } catch (e) {}
+
+                        performRedirect(url);
+                    };
+
+                    script.onerror = function () {
+                        console.warn("Health script failed to load.");
+                        // Cleanup
+                        try {
+                            document.head.removeChild(script);
+                        } catch (e) {}
+
+                        // Final failure - redirect to offline page
+                        redirectToFallback(
+                            "Server appears offline (Fetch and Health Script failed)",
+                            {
+                                baseUrl,
+                                error: originalError
+                                    ? originalError.message
+                                    : "Health script failed",
+                            }
+                        );
+                    };
+
+                    script.src = checkUrl;
+                    document.head.appendChild(script);
+                };
+
                 const controller = new AbortController();
                 const pingStartedAt = Date.now();
                 const timeoutId = setTimeout(() => {
                     console.warn(
-                        `Ping to ${pingUrl} exceeded 5000ms timeout. Aborting request.`,
-                        {
-                            baseUrl,
-                            pingUrl,
-                            retryCount,
-                            ...captureClientContext(),
-                        }
+                        `Ping to ${pingUrl} exceeded 5000ms timeout. Aborting request.`
                     );
                     controller.abort();
                 }, 5000); // 5-second timeout
@@ -1205,7 +1239,6 @@
                 console.info("Checking server availability", {
                     baseUrl,
                     pingUrl,
-                    retryCount,
                     ...captureClientContext(),
                 });
 
@@ -1218,97 +1251,30 @@
                                 pingUrl,
                                 status: response.status,
                                 elapsedMs: Date.now() - pingStartedAt,
-                                retryCount,
                                 ...captureClientContext(),
                             });
                             performRedirect(url);
                         } else {
-                            // Non-200 response - retry once before falling back
-                            if (retryCount < 2) {
-                                console.warn(
-                                    `Ping returned non-OK status ${response.status}, retrying in 500ms...`,
-                                    {
-                                        baseUrl,
-                                        pingUrl,
-                                        status: response.status,
-                                        retryCount,
-                                    }
-                                );
-                                // Show loader before retry
-                                showLoaderInWindow();
-                                setTimeout(
-                                    () => performPing(retryCount + 1),
-                                    500
-                                );
-                            } else {
-                                redirectToFallback(
-                                    `Server ${baseUrl} is online, but ping endpoint returned status ${response.status} after ${retryCount} retries. Redirecting to fallback.`,
-                                    {
-                                        baseUrl,
-                                        pingUrl,
-                                        status: response.status,
-                                        elapsedMs: Date.now() - pingStartedAt,
-                                        responseType: response.type,
-                                        retryCount,
-                                    }
-                                );
-                            }
+                            // Non-200 response likely firewall/blocked OR maintenance
+                            console.warn(
+                                `Fetch returned status ${response.status}, trying health script fallback`
+                            );
+                            checkHealthScript(
+                                new Error(`Status ${response.status}`)
+                            );
                         }
                     })
                     .catch((error) => {
                         clearTimeout(timeoutId);
-
-                        // Retry on network errors (but not timeout)
-                        if (retryCount < 2 && error.name !== "AbortError") {
-                            console.warn(
-                                `Ping failed with error, retrying in 500ms...`,
-                                {
-                                    baseUrl,
-                                    pingUrl,
-                                    errorName: error.name,
-                                    errorMessage: error.message,
-                                    retryCount,
-                                }
-                            );
-                            // Show loader before retry
-                            showLoaderInWindow();
-                            setTimeout(() => performPing(retryCount + 1), 500);
-                            return;
-                        }
-
-                        if (error.name === "AbortError") {
-                            redirectToFallback(
-                                `Server ping for ${baseUrl} timed out after ${
-                                    Date.now() - pingStartedAt
-                                }ms. Redirecting to fallback.`,
-                                {
-                                    baseUrl,
-                                    pingUrl,
-                                    elapsedMs: Date.now() - pingStartedAt,
-                                    wasTimeout: true,
-                                    retryCount,
-                                }
-                            );
-                        } else {
-                            redirectToFallback(
-                                `Server ${baseUrl} appears to be offline after ${retryCount} retries. Redirecting to fallback.`,
-                                {
-                                    baseUrl,
-                                    pingUrl,
-                                    elapsedMs: Date.now() - pingStartedAt,
-                                    errorName: error.name,
-                                    errorMessage: error.message,
-                                    errorStack: error.stack,
-                                    retryCount,
-                                }
-                            );
-                        }
+                        console.warn(
+                            "Fetch failed, trying health script fallback",
+                            error
+                        );
+                        checkHealthScript(error);
                     });
             } catch (e) {
                 console.error(
-                    "Invalid URL, cannot perform online check. Redirecting directly.",
-                    url,
-                    e
+                    "Invalid URL, cannot perform online check. Redirecting directly."
                 );
                 performRedirect(url);
             }
