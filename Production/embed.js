@@ -1772,11 +1772,11 @@
                         <div class="embed-row">
                             <div class="embed-col">
                                 <div class="embed-form-container">
-                                    <label class="embed-label-bold">${
+                                    <label id="measurement-dropdown-label" class="embed-label-bold">${
                                         selectedLang.dropdownLabel
                                     }*</label>
                                     <div class="custom-dropdown">
-                                        <div class="dropdown-selected" tabindex="0">${
+                                        <div class="dropdown-selected" tabindex="0" aria-labelledby="measurement-dropdown-label">${
                                             selectedLang.dropdownPlaceholder
                                         }</div>
                                         <div class="dropdown-options">
