@@ -1759,7 +1759,8 @@
                             const title = element.getAttribute(
                                 `data-measurement-${type}-title`
                             );
-                            const icon = measurementIcons[type] || "";
+                            const iconRaw = measurementIcons[type] || "";
+                            const icon = iconRaw ? iconRaw.replace('<svg', '<svg aria-hidden="true"') : "";
                             return {
                                 url: attr.value,
                                 title: title,
