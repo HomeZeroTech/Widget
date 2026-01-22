@@ -2,24 +2,34 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+---
+
+## **CRITICAL: NEVER EDIT PRODUCTION FILES**
+
+**Only edit files in the `Acceptance/` folder. NEVER edit files in the `Production/` folder.**
+
+---
+
 ## Instructions
 
-Only edit the `embed.js` and `embed-styles.css` files. Do not edit any other files (including `.min.js`, `.min.css`, or `offline.html`).
-
-Do not run the build command.
+- Only edit `Acceptance/embed.js` and `Acceptance/embed-styles.css`
+- **NEVER** edit any files in `Production/` - these are deployed to live users
+- Do not edit `.min.js`, `.min.css`, or `offline.html` files
+- Do not run the build command
 
 ## Architecture
 
 This repository contains an embeddable widget for HomeZero with two deployment environments:
 
-- **Acceptance/** - Staging/test environment
-- **Production/** - Live production environment
+- **Acceptance/** - Staging/test environment (EDIT FILES HERE)
+- **Production/** - Live production environment (DO NOT EDIT)
 
 Each environment contains:
-- `embed.js` - Main widget JavaScript (the file you edit)
-- `embed-styles.css` - Widget styles (the file you edit)
-- `embed.min.js` - Minified JS (auto-generated, do not edit)
-- `embed-styles.min.css` - Minified CSS (auto-generated, do not edit)
+
+- `embed.js` - Main widget JavaScript
+- `embed-styles.css` - Widget styles
+- `embed.min.js` - Minified JS (auto-generated)
+- `embed-styles.min.css` - Minified CSS (auto-generated)
 - `offline.html` - Fallback page shown when server is unavailable
 
 The build process uses `terser` for JS minification and `lightningcss` for CSS minification.

@@ -2082,7 +2082,7 @@
             <div class="selected-content">
                  <span>${selectedLang.dropdownPlaceholder}</span>
              </div>
-             <svg class="chevron-icon" viewBox="5 7 14 10" width="14px" height="14px" xmlns="http://www.w3.org/2000/svg">
+             <svg class="chevron-icon" viewBox="5 7 14 10" width="14px" height="14px" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                  <path d="M12 16l-6-6 1.41-1.41L12 13.17l4.59-4.58L18 10l-6 6z"></path>
              </svg>
          `;
@@ -2128,7 +2128,7 @@
 
                 // Update selected content with icon and text inside a flex container
                 const svgElement = option.querySelector(".option-content svg");
-                const iconHtml = svgElement ? svgElement.outerHTML : "";
+                const iconHtml = svgElement ? svgElement.outerHTML.replace('<svg', '<svg aria-hidden="true"') : "";
                 const iconSpan = svgElement
                     ? `<span class="selected-icon">${iconHtml}</span>`
                     : "";
@@ -2138,7 +2138,7 @@
                         ${iconSpan}
                         <span>${option.textContent.trim()}</span>
                     </div>
-                    <svg class="chevron-icon" viewBox="5 7 14 10" width="14px" height="14px" xmlns="http://www.w3.org/2000/svg">
+                    <svg class="chevron-icon" viewBox="5 7 14 10" width="14px" height="14px" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                         <path d="M12 16l-6-6 1.41-1.41L12 13.17l4.59-4.58L18 10l-6 6z"></path>
                     </svg>
                 `;
@@ -2158,7 +2158,7 @@
                     const svgElement = option.querySelector(
                         ".option-content svg"
                     );
-                    const iconHtml = svgElement ? svgElement.outerHTML : "";
+                    const iconHtml = svgElement ? svgElement.outerHTML.replace('<svg', '<svg aria-hidden="true"') : "";
                     const iconSpan = svgElement
                         ? `<span class="selected-icon">${iconHtml}</span>`
                         : "";
@@ -2168,7 +2168,7 @@
                             ${iconSpan}
                             <span>${option.textContent.trim()}</span>
                         </div>
-                        <svg class="chevron-icon" viewBox="5 7 14 10" width="14px" height="14px" xmlns="http://www.w3.org/2000/svg">
+                        <svg class="chevron-icon" viewBox="5 7 14 10" width="14px" height="14px" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                             <path d="M12 16l-6-6 1.41-1.41L12 13.17l4.59-4.58L18 10l-6 6z"></path>
                         </svg>
                     `;
@@ -2182,7 +2182,7 @@
             const optionContent = option.innerHTML;
             option.innerHTML = `
                 <div class="option-content">${optionContent}</div>
-                <svg class="checkmark-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <svg class="checkmark-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                     <g clip-path="url(#clip0_15612_140328)">
                         <path d="M10.0003 1.66602C8.35215 1.66602 6.74099 2.15476 5.37058 3.07044C4.00017 3.98611 2.93206 5.2876 2.30133 6.81032C1.6706 8.33304 1.50558 10.0086 1.82712 11.6251C2.14866 13.2416 2.94234 14.7265 4.10777 15.8919C5.27321 17.0573 6.75807 17.851 8.37458 18.1726C9.99109 18.4941 11.6666 18.3291 13.1894 17.6983C14.7121 17.0676 16.0136 15.9995 16.9292 14.6291C17.8449 13.2587 18.3337 11.6475 18.3337 9.99935C18.3337 8.905 18.1181 7.82137 17.6993 6.81032C17.2805 5.79927 16.6667 4.88061 15.8929 4.10679C15.1191 3.33297 14.2004 2.71914 13.1894 2.30035C12.1783 1.88156 11.0947 1.66602 10.0003 1.66602ZM13.5837 8.00768L9.77533 13.0077C9.6977 13.1085 9.598 13.1903 9.48388 13.2466C9.36977 13.3029 9.24426 13.3324 9.117 13.3327C8.99042 13.3334 8.86535 13.3052 8.75128 13.2503C8.63721 13.1955 8.53714 13.1153 8.45866 13.016L6.42533 10.4243C6.35803 10.3379 6.30841 10.239 6.27932 10.1334C6.25022 10.0278 6.24222 9.91745 6.25576 9.80873C6.2693 9.70001 6.30412 9.59502 6.35824 9.49975C6.41236 9.40449 6.48471 9.32082 6.57116 9.25352C6.74576 9.11759 6.96721 9.0566 7.18678 9.08395C7.2955 9.09749 7.40049 9.13231 7.49576 9.18643C7.59102 9.24054 7.67469 9.3129 7.742 9.39935L9.10033 11.1327L12.2503 6.96602C12.3171 6.87847 12.4004 6.80493 12.4956 6.74959C12.5908 6.69425 12.6959 6.6582 12.805 6.6435C12.9141 6.6288 13.0251 6.63573 13.1315 6.6639C13.2379 6.69207 13.3378 6.74093 13.4253 6.80768C13.5129 6.87444 13.5864 6.95778 13.6418 7.05296C13.6971 7.14814 13.7331 7.25328 13.7478 7.36239C13.7625 7.4715 13.7556 7.58244 13.7274 7.68887C13.6993 7.7953 13.6504 7.89513 13.5837 7.98268V8.00768Z" fill="white"/>
                     </g>
