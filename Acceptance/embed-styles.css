@@ -357,3 +357,99 @@ hz-embed {
     font-size: 18px;
     margin: 0 0 16px 0;
 }
+
+/* Checkbox styling */
+.embed-checkbox-container {
+    margin-bottom: 16px;
+    align-items: flex-start !important;
+}
+
+.embed-checkbox-label {
+    display: inline-flex;
+    align-items: flex-start;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1.5;
+    gap: 10px;
+    position: relative;
+}
+
+.embed-checkbox-input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.embed-checkbox-custom {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    border: 2px solid #dadee7;
+    border-radius: 4px;
+    background-color: #fff;
+    transition: all 0.15s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 2px;
+}
+
+.embed-checkbox-custom svg {
+    width: 14px;
+    height: 14px;
+    opacity: 0;
+    transform: scale(0.5);
+    transition: all 0.15s ease-in-out;
+    color: #fff;
+    stroke-width: 3.5;
+}
+
+.embed-checkbox-input:checked ~ .embed-checkbox-custom {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.embed-checkbox-input:checked ~ .embed-checkbox-custom svg {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.embed-checkbox-label:hover .embed-checkbox-custom {
+    border-color: var(--primary-color);
+    background-color: color-mix(in srgb, var(--primary-color) 8%, transparent);
+}
+
+.embed-checkbox-input:checked + .embed-checkbox-custom:hover,
+.embed-checkbox-label:hover .embed-checkbox-input:checked ~ .embed-checkbox-custom {
+    background-color: color-mix(in srgb, var(--primary-color) 85%, black);
+    border-color: color-mix(in srgb, var(--primary-color) 85%, black);
+}
+
+.embed-checkbox-input:focus-visible ~ .embed-checkbox-custom {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+.embed-checkbox-text {
+    color: #132039;
+    font-weight: 500;
+    padding-top: 1px;
+}
+
+.embed-checkbox-required {
+    color: #132039;
+    margin-left: 2px;
+}
+
+.embed-checkbox-container .embed-validation-message {
+    margin-top: 6px;
+    margin-left: 0;
+}
