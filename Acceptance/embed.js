@@ -1408,6 +1408,7 @@
                 const primaryColor =
                     element.getAttribute("data-color") || "#2A6DF4";
                 const installer = element.getAttribute("data-installer");
+                const customContext = element.getAttribute("data-context");
                 const openNewTab =
                     element.getAttribute("data-open-new-tab") || "false";
                 const showPhone =
@@ -1755,6 +1756,12 @@
                             url +=
                                 "&checkboxvalue=" +
                                 encodeURIComponent(checkboxValue);
+                        }
+
+                        // Add custom context to URL if present
+                        if (customContext) {
+                            url +=
+                                "&context=" + encodeURIComponent(customContext);
                         }
 
                         // Append query parameters if present

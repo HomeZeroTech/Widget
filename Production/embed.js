@@ -98,6 +98,7 @@
                 emailRequired: "Please enter an e-mail address.",
                 dropdown: "Please select an option.",
                 address: "Please enter a valid address.",
+                checkbox: "Please check this box to continue.",
             },
         },
         nl: {
@@ -126,6 +127,7 @@
                 emailRequired: "Vul een e-mailadres in.",
                 dropdown: "Selecteer een maatregel.",
                 address: "Vul een geldig adres in.",
+                checkbox: "Vink aan om door te gaan.",
             },
         },
         fr: {
@@ -154,6 +156,7 @@
                 emailRequired: "Veuillez entrer une adresse e-mail.",
                 dropdown: "Veuillez sélectionner une option.",
                 address: "Veuillez entrer une adresse valide.",
+                checkbox: "Veuillez cocher cette case pour continuer.",
             },
         },
         de: {
@@ -182,6 +185,8 @@
                 emailRequired: "Bitte geben Sie eine E-Mail-Adresse ein.",
                 dropdown: "Bitte wählen Sie eine Option aus.",
                 address: "Bitte geben Sie eine gültige Adresse ein.",
+                checkbox:
+                    "Bitte aktivieren Sie dieses Kontrollkästchen, um fortzufahren.",
             },
         },
         // Default dutch validation messages for existing fields
@@ -241,7 +246,7 @@
             const now = Date.now();
             // Remove old requests outside time window
             this.requests = this.requests.filter(
-                (time) => now - time < this.timeWindow
+                (time) => now - time < this.timeWindow,
             );
 
             if (this.requests.length >= this.maxRequests) {
@@ -289,7 +294,7 @@
                         window.google.maps.places
                     ) {
                         console.log(
-                            "Google Places API initialized successfully"
+                            "Google Places API initialized successfully",
                         );
                         resolve(window.google);
                     } else {
@@ -334,7 +339,7 @@
             // Dutch address patterns: be flexible with spacing and formatting
             // Try to extract Dutch postcode pattern - handle various formats: "1234AB", "1234 AB", etc.
             const postcodeMatch = address.match(
-                /\b([1-9]\d{3}\s*[A-Za-z]{2})\b/
+                /\b([1-9]\d{3}\s*[A-Za-z]{2})\b/,
             );
             if (!postcodeMatch) {
                 return null; // No valid Dutch postcode found
@@ -348,7 +353,7 @@
 
             // Try multiple patterns for house number extraction
             let houseNumberMatch = beforePostcode.match(
-                /(\d+\s*[A-Za-z]*)\s*,?\s*$/
+                /(\d+\s*[A-Za-z]*)\s*,?\s*$/,
             ); // Standard: "123A"
             if (!houseNumberMatch) {
                 // Try alternative patterns - number anywhere in the string
@@ -383,7 +388,7 @@
                 // For addresses without commas, try to split smartly
                 // Look for postal code patterns to split the address
                 const zipMatch = address.match(
-                    /\b(\d{4,5}|[A-Za-z]{1,2}\d{1,2}\s*\d[A-Za-z]{2})\s+([A-Za-z\s]+)$/
+                    /\b(\d{4,5}|[A-Za-z]{1,2}\d{1,2}\s*\d[A-Za-z]{2})\s+([A-Za-z\s]+)$/,
                 );
                 if (zipMatch) {
                     const beforeZip = address
@@ -508,7 +513,7 @@
         country,
         addressFormat,
         form,
-        language
+        language,
     ) {
         if (!rateLimiter.canMakeRequest()) {
             console.warn("Rate limit exceeded for Google Places API");
@@ -528,7 +533,7 @@
         loadGooglePlacesAPI()
             .then((google) => {
                 console.log(
-                    "Google API loaded, setting up custom autocomplete"
+                    "Google API loaded, setting up custom autocomplete",
                 );
 
                 // Store the original parent and next sibling for proper insertion
@@ -620,7 +625,7 @@
 
                     const matchesStreetPattern = streetPatterns.some(
                         (pattern) =>
-                            pattern.test(mainText) || pattern.test(fullText)
+                            pattern.test(mainText) || pattern.test(fullText),
                     );
 
                     // Check if place types indicate it's a street address (if available)
@@ -639,7 +644,7 @@
 
                     const isExcluded = excludePatterns.some(
                         (pattern) =>
-                            pattern.test(mainText) || pattern.test(fullText)
+                            pattern.test(mainText) || pattern.test(fullText),
                     );
 
                     return (
@@ -655,7 +660,7 @@
 
                     // Filter suggestions to only show likely street addresses
                     const streetAddresses = suggestions.filter((suggestion) =>
-                        isLikelyStreetAddress(suggestion.placePrediction)
+                        isLikelyStreetAddress(suggestion.placePrediction),
                     );
 
                     currentPredictions = streetAddresses;
@@ -718,7 +723,7 @@
                         ) {
                             const addressData = extractAddressComponents(
                                 place.addressComponents,
-                                addressFormat
+                                addressFormat,
                             );
 
                             // Store the extracted data
@@ -735,7 +740,7 @@
                             if (
                                 validationMessage &&
                                 validationMessage.classList.contains(
-                                    "embed-validation-message"
+                                    "embed-validation-message",
                                 )
                             ) {
                                 validationMessage.remove();
@@ -746,7 +751,7 @@
                             refreshSessionToken();
                         } else {
                             console.error(
-                                "No address components found in place"
+                                "No address components found in place",
                             );
                         }
                     } catch (error) {
@@ -776,7 +781,7 @@
                     if (
                         validationMessage &&
                         validationMessage.classList.contains(
-                            "embed-validation-message"
+                            "embed-validation-message",
                         )
                     ) {
                         validationMessage.remove();
@@ -797,7 +802,7 @@
                     searchTimeout = setTimeout(async () => {
                         if (!rateLimiter.canMakeRequest()) {
                             console.warn(
-                                "Rate limit exceeded for autocomplete search"
+                                "Rate limit exceeded for autocomplete search",
                             );
                             return;
                         }
@@ -814,7 +819,7 @@
 
                             const { suggestions } =
                                 await google.maps.places.AutocompleteSuggestion.fetchAutocompleteSuggestions(
-                                    request
+                                    request,
                                 );
 
                             if (suggestions && suggestions.length > 0) {
@@ -840,7 +845,7 @@
                             e.preventDefault();
                             selectedIndex = Math.min(
                                 selectedIndex + 1,
-                                currentPredictions.length - 1
+                                currentPredictions.length - 1,
                             );
                             highlightOption(selectedIndex);
                             break;
@@ -856,7 +861,7 @@
                                     currentPredictions[selectedIndex];
                                 selectPrediction(
                                     suggestion.placePrediction,
-                                    selectedIndex
+                                    selectedIndex,
                                 );
                             }
                             break;
@@ -981,7 +986,7 @@
         url,
         openNewTab,
         preopenedWin,
-        primaryColor
+        primaryColor,
     ) {
         const performRedirect = (targetUrl) => {
             if (openNewTab === "true" && preopenedWin) {
@@ -1026,7 +1031,7 @@
             if (context) {
                 console.error(
                     "[FALLBACK CONTEXT]",
-                    JSON.stringify(context, null, 2)
+                    JSON.stringify(context, null, 2),
                 );
             }
 
@@ -1039,7 +1044,7 @@
             if (baseDir.includes("cdn.jsdelivr.net")) {
                 baseDir = baseDir.replace(
                     /cdn\.jsdelivr\.net\/gh\/HomeZeroTech\/Widget(@[^/]+)?\//,
-                    "homezerotech.github.io/Widget/"
+                    "homezerotech.github.io/Widget/",
                 );
             }
 
@@ -1067,7 +1072,7 @@
             if (combinedContext) {
                 try {
                     const contextEncoded = JSON.stringify(
-                        combinedContext
+                        combinedContext,
                     ).slice(0, 900);
                     if (contextEncoded) {
                         fallbackUrl.searchParams.set("context", contextEncoded);
@@ -1075,7 +1080,7 @@
                 } catch (stringifyError) {
                     console.warn(
                         "Failed to serialize fallback context",
-                        stringifyError
+                        stringifyError,
                     );
                 }
             }
@@ -1174,7 +1179,7 @@
                 } catch (e) {
                     console.warn(
                         "Could not write loader to pre-opened window",
-                        e
+                        e,
                     );
                 }
             }
@@ -1219,7 +1224,7 @@
                                 error: originalError
                                     ? originalError.message
                                     : "Health script failed",
-                            }
+                            },
                         );
                     };
 
@@ -1231,7 +1236,7 @@
                 const pingStartedAt = Date.now();
                 const timeoutId = setTimeout(() => {
                     console.warn(
-                        `Ping to ${pingUrl} exceeded 5000ms timeout. Aborting request.`
+                        `Ping to ${pingUrl} exceeded 5000ms timeout. Aborting request.`,
                     );
                     controller.abort();
                 }, 5000); // 5-second timeout
@@ -1257,10 +1262,10 @@
                         } else {
                             // Non-200 response likely firewall/blocked OR maintenance
                             console.warn(
-                                `Fetch returned status ${response.status}, trying health script fallback`
+                                `Fetch returned status ${response.status}, trying health script fallback`,
                             );
                             checkHealthScript(
-                                new Error(`Status ${response.status}`)
+                                new Error(`Status ${response.status}`),
                             );
                         }
                     })
@@ -1268,13 +1273,13 @@
                         clearTimeout(timeoutId);
                         console.warn(
                             "Fetch failed, trying health script fallback",
-                            error
+                            error,
                         );
                         checkHealthScript(error);
                     });
             } catch (e) {
                 console.error(
-                    "Invalid URL, cannot perform online check. Redirecting directly."
+                    "Invalid URL, cannot perform online check. Redirecting directly.",
                 );
                 performRedirect(url);
             }
@@ -1309,7 +1314,7 @@
             // Fallback to non-minified version if minified fails
             link.onerror = () => {
                 console.warn(
-                    "Minified CSS failed to load, falling back to non-minified version, you are probably using an old version of the widget, please contact HomeZero for the latest version."
+                    "Minified CSS failed to load, falling back to non-minified version, you are probably using an old version of the widget, please contact HomeZero for the latest version.",
                 );
 
                 // Remove the failed link and create a new one for the fallback
@@ -1321,7 +1326,7 @@
 
                 fallbackLink.onerror = () => {
                     console.error(
-                        "Both minified and non-minified CSS failed to load"
+                        "Both minified and non-minified CSS failed to load",
                     );
                     resolve(); // Resolve anyway to prevent blocking
                 };
@@ -1337,7 +1342,7 @@
         // Wait for CSS to load before initializing the form
         cssPromise.then(() => {
             const elements = document.querySelectorAll(
-                "hz-embed:not([data-initialized])"
+                "hz-embed:not([data-initialized])",
             );
 
             try {
@@ -1352,18 +1357,17 @@
                             document.documentElement[waiterFlag] = true;
                             const observer = new MutationObserver(() => {
                                 const found = document.querySelector(
-                                    "hz-embed:not([data-initialized])"
+                                    "hz-embed:not([data-initialized])",
                                 );
                                 if (found) {
                                     try {
                                         console.info(
-                                            "[HZ-Widget] <hz-embed> detected shortly after init, re-initializing."
+                                            "[HZ-Widget] <hz-embed> detected shortly after init, re-initializing.",
                                         );
                                     } catch (e) {}
                                     observer.disconnect();
-                                    document.documentElement[
-                                        waiterFlag
-                                    ] = false;
+                                    document.documentElement[waiterFlag] =
+                                        false;
                                     init();
                                 }
                             });
@@ -1374,7 +1378,7 @@
                             setTimeout(() => {
                                 try {
                                     console.warn(
-                                        "[HZ-Widget] Stopped waiting for <hz-embed> after 5000ms."
+                                        "[HZ-Widget] Stopped waiting for <hz-embed> after 5000ms.",
                                     );
                                 } catch (e) {}
                                 observer.disconnect();
@@ -1404,6 +1408,7 @@
                 const primaryColor =
                     element.getAttribute("data-color") || "#2A6DF4";
                 const installer = element.getAttribute("data-installer");
+                const customContext = element.getAttribute("data-context");
                 const openNewTab =
                     element.getAttribute("data-open-new-tab") || "false";
                 const showPhone =
@@ -1425,6 +1430,17 @@
                 const selectedLang = translations[language] || translations.nl; // Fallback to NL
                 const dutchValidationMessages = translations.dutchValidation;
 
+                // Checkbox configuration
+                const checkboxTitle = element.getAttribute(
+                    "data-checkbox-title",
+                );
+                const checkboxShorttitle = element.getAttribute(
+                    "data-checkbox-shorttitle",
+                );
+                const checkboxRequired =
+                    element.getAttribute("data-checkbox-required") === "true";
+                const showCheckbox = !!checkboxTitle; // Show checkbox if title is provided
+
                 // Add CSS variables for primary color
                 form.style.setProperty("--primary-color", primaryColor);
                 form.setAttribute("data-address-format", addressFormat); // Store format for submit handler
@@ -1436,13 +1452,13 @@
                     form.querySelectorAll(".embed-validation-message").forEach(
                         function (message) {
                             message.remove();
-                        }
+                        },
                     );
 
                     // Custom validation
                     let isValid = true;
                     const currentAddressFormat = form.getAttribute(
-                        "data-address-format"
+                        "data-address-format",
                     );
                     const selected = form.querySelector(".dropdown-selected");
                     const selectedValue = selected
@@ -1466,11 +1482,11 @@
 
                         // Check for the attribute on the container (address-autocomplete) or fallback to input
                         const addressContainer = googleAddressInput.closest(
-                            ".address-autocomplete"
+                            ".address-autocomplete",
                         );
                         const selectedPlace =
                             addressContainer.getAttribute(
-                                "data-selected-place"
+                                "data-selected-place",
                             ) === "true";
 
                         let addressData = null;
@@ -1490,7 +1506,7 @@
                             addressData = parseAddressManually(
                                 addressText,
                                 currentAddressFormat,
-                                country
+                                country,
                             );
                         }
 
@@ -1500,14 +1516,14 @@
                                 // No text and no valid address data
                                 displayValidationMessage(
                                     googleAddressInput,
-                                    selectedLang.validation.address
+                                    selectedLang.validation.address,
                                 );
                                 isValid = false;
                             } else {
                                 // There's text but it couldn't be parsed
                                 displayValidationMessage(
                                     googleAddressInput,
-                                    selectedLang.validation.address
+                                    selectedLang.validation.address,
                                 );
                                 isValid = false;
                             }
@@ -1541,17 +1557,17 @@
                         if (!postcode.value) {
                             displayValidationMessage(
                                 postcode,
-                                dutchValidationMessages.postcode
+                                dutchValidationMessages.postcode,
                             );
                             isValid = false;
                         } else if (
                             !postcode.value.match(
-                                /^[1-9][0-9]{3}\s?[A-Za-z]{2}$/
+                                /^[1-9][0-9]{3}\s?[A-Za-z]{2}$/,
                             )
                         ) {
                             displayValidationMessage(
                                 postcode,
-                                dutchValidationMessages.postcodeFormat
+                                dutchValidationMessages.postcodeFormat,
                             );
                             isValid = false;
                         }
@@ -1563,7 +1579,7 @@
                         ) {
                             displayValidationMessage(
                                 huisnummer,
-                                dutchValidationMessages.huisnummer
+                                dutchValidationMessages.huisnummer,
                             );
                             isValid = false;
                         }
@@ -1585,21 +1601,21 @@
                         if (!city.value) {
                             displayValidationMessage(
                                 city,
-                                selectedLang.validation.city
+                                selectedLang.validation.city,
                             );
                             isValid = false;
                         }
                         if (!zipcode.value) {
                             displayValidationMessage(
                                 zipcode,
-                                selectedLang.validation.zipcode
+                                selectedLang.validation.zipcode,
                             );
                             isValid = false;
                         }
                         if (!street.value) {
                             displayValidationMessage(
                                 street,
-                                selectedLang.validation.street
+                                selectedLang.validation.street,
                             );
                             isValid = false;
                         }
@@ -1609,7 +1625,7 @@
                         ) {
                             displayValidationMessage(
                                 housenumber,
-                                selectedLang.validation.housenumber
+                                selectedLang.validation.housenumber,
                             );
                             isValid = false;
                         }
@@ -1628,7 +1644,7 @@
                     if (selected && !selectedValue) {
                         displayValidationMessage(
                             selected,
-                            selectedLang.validation.dropdown
+                            selectedLang.validation.dropdown,
                         );
                         isValid = false;
                     }
@@ -1641,13 +1657,13 @@
                         ) {
                             displayValidationMessage(
                                 phone,
-                                selectedLang.validation.phone
+                                selectedLang.validation.phone,
                             );
                             isValid = false;
                         } else if (phoneRequired && !phone.value) {
                             displayValidationMessage(
                                 phone,
-                                selectedLang.validation.phoneRequired
+                                selectedLang.validation.phoneRequired,
                             );
                             isValid = false;
                         }
@@ -1658,21 +1674,36 @@
                         if (
                             email.value &&
                             !email.value.match(
-                                /^[A-Za-z0-9!#$%&'*+\=?^_`{|}~-]+(?:\.[A-Za-z0-9!#$%&'*+\=?^_`{|}~-]+)*@(?:[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?\.)+[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?$/
+                                /^[A-Za-z0-9!#$%&'*+\=?^_`{|}~-]+(?:\.[A-Za-z0-9!#$%&'*+\=?^_`{|}~-]+)*@(?:[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?\.)+[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?$/,
                             )
                         ) {
                             displayValidationMessage(
                                 email,
-                                selectedLang.validation.email
+                                selectedLang.validation.email,
                             );
                             isValid = false;
                         } else if (emailRequired && !email.value) {
                             displayValidationMessage(
                                 email,
-                                selectedLang.validation.emailRequired
+                                selectedLang.validation.emailRequired,
                             );
                             isValid = false;
                         }
+                    }
+
+                    // Checkbox validation
+                    const checkbox = form.querySelector("#embed-checkbox");
+                    if (
+                        showCheckbox &&
+                        checkboxRequired &&
+                        checkbox &&
+                        !checkbox.checked
+                    ) {
+                        displayValidationMessage(
+                            checkbox,
+                            selectedLang.validation.checkbox,
+                        );
+                        isValid = false;
                     }
 
                     // If the form is valid, proceed with URL construction and navigation
@@ -1691,7 +1722,7 @@
                         // Add address parameters
                         Object.keys(addressParams).forEach(function (key) {
                             url += `&${key}=${encodeURIComponent(
-                                addressParams[key]
+                                addressParams[key],
                             )}`;
                         });
 
@@ -1703,13 +1734,34 @@
                             // Strip spaces from phone number before adding to URL
                             const strippedPhone = phone.value.replace(
                                 /\s+/g,
-                                ""
+                                "",
                             );
                             url +=
                                 "&Phone=" + encodeURIComponent(strippedPhone);
                         }
                         if (showEmail && email.value) {
                             url += "&Email=" + encodeURIComponent(email.value);
+                        }
+
+                        // Add checkbox to URL if checkbox is shown
+                        if (showCheckbox && checkbox) {
+                            const checkboxValue = checkbox.checked
+                                ? "true"
+                                : "false";
+                            if (checkboxShorttitle) {
+                                url +=
+                                    "&checkboxtitle=" +
+                                    encodeURIComponent(checkboxShorttitle);
+                            }
+                            url +=
+                                "&checkboxvalue=" +
+                                encodeURIComponent(checkboxValue);
+                        }
+
+                        // Add custom context to URL if present
+                        if (customContext) {
+                            url +=
+                                "&context=" + encodeURIComponent(customContext);
                         }
 
                         // Append query parameters if present
@@ -1726,7 +1778,7 @@
                             url,
                             openNewTab,
                             preopenedWin,
-                            primaryColor
+                            primaryColor,
                         );
                     }
                 };
@@ -1750,17 +1802,22 @@
                         .filter(
                             (attr) =>
                                 attr.name.startsWith("data-measurement-") &&
-                                attr.name.endsWith("-url")
+                                attr.name.endsWith("-url"),
                         )
                         .map((attr) => {
                             const type = attr.name
                                 .replace("data-measurement-", "")
                                 .replace("-url", "");
                             const title = element.getAttribute(
-                                `data-measurement-${type}-title`
+                                `data-measurement-${type}-title`,
                             );
                             const iconRaw = measurementIcons[type] || "";
-                            const icon = iconRaw ? iconRaw.replace('<svg', '<svg aria-hidden="true"') : "";
+                            const icon = iconRaw
+                                ? iconRaw.replace(
+                                      "<svg",
+                                      '<svg aria-hidden="true"',
+                                  )
+                                : "";
                             return {
                                 url: attr.value,
                                 title: title,
@@ -1788,7 +1845,7 @@
                                                     ${option.icon}
                                                     <span>${option.title}</span>
                                                 </div>
-                                            `
+                                            `,
                                                 )
                                                 .join("")}
                                         </div>
@@ -1881,16 +1938,20 @@
                                         <label for="telefoon" class="embed-label-bold">${
                                             selectedLang.phoneLabel
                                         }${
-                        phoneRequired ? `<span>*</span>` : ""
-                    }</label>
+                                            phoneRequired
+                                                ? `<span>*</span>`
+                                                : ""
+                                        }</label>
                                         <input type="tel" id="telefoon" class="embed-input-field" placeholder="0612345678" maxlength="20">
                                     </div>
                                     <div class="embed-form-container">
                                         <label for="email" class="embed-label-bold">${
                                             selectedLang.emailLabel
                                         }${
-                        emailRequired ? `<span>*</span>` : ""
-                    }</label>
+                                            emailRequired
+                                                ? `<span>*</span>`
+                                                : ""
+                                        }</label>
                                         <input type="email" id="email" class="embed-input-field" placeholder="jandevries@gmail.com" maxlength="100">
                                     </div>
                                 </div>
@@ -1905,8 +1966,8 @@
                                     <label for="telefoon" class="embed-label-bold">${
                                         selectedLang.phoneLabel
                                     }${
-                        phoneRequired ? `<span>*</span>` : ""
-                    }</label>
+                                        phoneRequired ? `<span>*</span>` : ""
+                                    }</label>
                                     <input type="tel" id="telefoon" class="embed-input-field" placeholder="0612345678" maxlength="20">
                                 </div>
                             </div>
@@ -1920,8 +1981,8 @@
                                     <label for="email" class="embed-label-bold">${
                                         selectedLang.emailLabel
                                     }${
-                        emailRequired ? `<span>*</span>` : ""
-                    }</label>
+                                        emailRequired ? `<span>*</span>` : ""
+                                    }</label>
                                     <input type="email" id="email" class="embed-input-field" placeholder="jandevries@gmail.com" maxlength="100">
                                 </div>
                             </div>
@@ -1930,6 +1991,28 @@
                 }
                 form.innerHTML += contactFieldsHtml;
 
+                // Add checkbox if configured
+                if (showCheckbox) {
+                    const checkboxHtml = `
+                        <div class="embed-row">
+                            <div class="embed-col">
+                                <div class="embed-form-container embed-checkbox-container">
+                                    <label class="embed-checkbox-label">
+                                        <input type="checkbox" id="embed-checkbox" class="embed-checkbox-input">
+                                        <span class="embed-checkbox-custom">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                                                <polyline points="20 6 9 17 4 12"></polyline>
+                                            </svg>
+                                        </span>
+                                        <span class="embed-checkbox-text">${checkboxTitle}${checkboxRequired ? '<span class="embed-checkbox-required">*</span>' : ""}</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    form.innerHTML += checkboxHtml;
+                }
+
                 // Add the submit button
                 form.innerHTML += `
                     <button type="submit" class="embed-submit-button" style="background-color: ${primaryColor}">${buttonText}</button>
@@ -1937,13 +2020,13 @@
 
                 // Overwrites the button radius based on the settings
                 const submitButtons = form.querySelectorAll(
-                    ".embed-submit-button"
+                    ".embed-submit-button",
                 );
                 submitButtons.forEach(function (button) {
                     button.style.setProperty(
                         "border-radius",
                         `${buttonRadius}`,
-                        "important"
+                        "important",
                     );
                 });
 
@@ -1956,7 +2039,7 @@
                         if (
                             validationMessage &&
                             validationMessage.classList.contains(
-                                "embed-validation-message"
+                                "embed-validation-message",
                             )
                         ) {
                             validationMessage.remove();
@@ -1978,7 +2061,7 @@
                             country,
                             addressFormat,
                             form,
-                            language
+                            language,
                         );
                     }
                 }
@@ -2027,20 +2110,34 @@
 
         // Check if this is a Google address autocomplete input
         const addressAutocompleteContainer = inputElement.closest(
-            ".address-autocomplete"
+            ".address-autocomplete",
+        );
+
+        // Check if this is a checkbox input
+        const checkboxContainer = inputElement.closest(
+            ".embed-checkbox-container",
         );
 
         if (inputElement === selected) {
             inputElement.parentElement.insertAdjacentElement(
                 "afterend",
-                messageElement
+                messageElement,
             );
         } else if (addressAutocompleteContainer) {
             // For Google address autocomplete, place message after the entire container
             addressAutocompleteContainer.insertAdjacentElement(
                 "afterend",
-                messageElement
+                messageElement,
             );
+        } else if (checkboxContainer) {
+            // For checkbox, place message after the label (inside the container)
+            const checkboxLabel = checkboxContainer.querySelector(
+                ".embed-checkbox-label",
+            );
+            if (checkboxLabel) {
+                checkboxLabel.insertAdjacentElement("afterend", messageElement);
+            }
+            return; // Don't set border color for checkbox
         } else {
             inputElement.insertAdjacentElement("afterend", messageElement);
         }
@@ -2129,7 +2226,12 @@
 
                 // Update selected content with icon and text inside a flex container
                 const svgElement = option.querySelector(".option-content svg");
-                const iconHtml = svgElement ? svgElement.outerHTML.replace('<svg', '<svg aria-hidden="true"') : "";
+                const iconHtml = svgElement
+                    ? svgElement.outerHTML.replace(
+                          "<svg",
+                          '<svg aria-hidden="true"',
+                      )
+                    : "";
                 const iconSpan = svgElement
                     ? `<span class="selected-icon">${iconHtml}</span>`
                     : "";
@@ -2157,9 +2259,14 @@
                 if (value && value.includes(preselectedId)) {
                     option.classList.add("selected");
                     const svgElement = option.querySelector(
-                        ".option-content svg"
+                        ".option-content svg",
                     );
-                    const iconHtml = svgElement ? svgElement.outerHTML.replace('<svg', '<svg aria-hidden="true"') : "";
+                    const iconHtml = svgElement
+                        ? svgElement.outerHTML.replace(
+                              "<svg",
+                              '<svg aria-hidden="true"',
+                          )
+                        : "";
                     const iconSpan = svgElement
                         ? `<span class="selected-icon">${iconHtml}</span>`
                         : "";
