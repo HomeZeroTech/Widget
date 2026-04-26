@@ -2057,9 +2057,12 @@
                 }
 
                 // Add the submit button
-                form.innerHTML += `
-                    <button type="submit" class="embed-submit-button" style="background-color: ${primaryColor}">${buttonText}</button>
-                `;
+                const submitBtn = document.createElement("button");
+                submitBtn.type = "submit";
+                submitBtn.className = "embed-submit-button";
+                submitBtn.style.backgroundColor = primaryColor;
+                submitBtn.textContent = buttonText;
+                form.appendChild(submitBtn);
 
                 // Overwrites the button radius based on the settings
                 const submitButtons = form.querySelectorAll(
