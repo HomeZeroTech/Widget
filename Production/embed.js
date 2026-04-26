@@ -258,6 +258,21 @@
         },
     };
 
+    function sanitizeColor(color) {
+        const s = new Option().style;
+        s.color = color;
+        return s.color !== "" ? color : "#2A6DF4";
+    }
+
+    function isSafeUrl(url) {
+        try {
+            const parsed = new URL(url);
+            return parsed.protocol === "https:";
+        } catch {
+            return false;
+        }
+    }
+
     // Google Places API loading and management
     let googleApiPromise = null;
     const GOOGLE_API_KEY = "AIzaSyAGOPVG4UinlU37eP7p-Jim3eigcWwLwsA";
@@ -674,18 +689,26 @@
                         const placePrediction = suggestion.placePrediction;
                         const option = document.createElement("div");
                         option.className = "dropdown-option address-option";
-                        option.innerHTML = `
-                            <svg class="location-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="currentColor"/>
-                            </svg>
-                            <div class="option-content">
-                                <div class="prediction-main">${placePrediction.mainText.text.toString()}</div>
-                                <div class="prediction-secondary">${
-                                    placePrediction.secondaryText?.text.toString() ||
-                                    ""
-                                }</div>
-                            </div>
-                        `;
+
+                        const svgWrapper = document.createElement("span");
+                        svgWrapper.innerHTML = `<svg class="location-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="currentColor"/></svg>`;
+
+                        const content = document.createElement("div");
+                        content.className = "option-content";
+
+                        const main = document.createElement("div");
+                        main.className = "prediction-main";
+                        main.textContent = placePrediction.mainText.text;
+
+                        const secondary = document.createElement("div");
+                        secondary.className = "prediction-secondary";
+                        secondary.textContent =
+                            placePrediction.secondaryText?.text ?? "";
+
+                        content.appendChild(main);
+                        content.appendChild(secondary);
+                        option.appendChild(svgWrapper);
+                        option.appendChild(content);
 
                         option.addEventListener("click", () => {
                             selectPrediction(placePrediction, index);
@@ -988,6 +1011,11 @@
         preopenedWin,
         primaryColor,
     ) {
+        if (!isSafeUrl(url)) {
+            console.error("Unsafe redirect URL blocked:", url);
+            return;
+        }
+
         const performRedirect = (targetUrl) => {
             if (openNewTab === "true" && preopenedWin) {
                 preopenedWin.location.href = targetUrl;
@@ -1405,8 +1433,9 @@
                     element.getAttribute("data-button-text") || "Start Scan";
                 const buttonRadius =
                     element.getAttribute("data-button-radius") || "10px";
-                const primaryColor =
-                    element.getAttribute("data-color") || "#2A6DF4";
+                const primaryColor = sanitizeColor(
+                    element.getAttribute("data-color") || "#2A6DF4",
+                );
                 const installer = element.getAttribute("data-installer");
                 const customContext = element.getAttribute("data-context");
                 const openNewTab =
@@ -1785,15 +1814,21 @@
 
                 // Add title and subtitle if they exist
                 if (title || subtitle) {
-                    let headerHtml = '<div class="embed-header">';
+                    const header = document.createElement("div");
+                    header.className = "embed-header";
                     if (title) {
-                        headerHtml += `<h2 class="embed-title">${title}</h2>`;
+                        const h2 = document.createElement("h2");
+                        h2.className = "embed-title";
+                        h2.textContent = title;
+                        header.appendChild(h2);
                     }
                     if (subtitle) {
-                        headerHtml += `<p class="embed-subtitle">${subtitle}</p>`;
+                        const p = document.createElement("p");
+                        p.className = "embed-subtitle";
+                        p.textContent = subtitle;
+                        header.appendChild(p);
                     }
-                    headerHtml += "</div>";
-                    form.innerHTML = headerHtml;
+                    form.appendChild(header);
                 }
 
                 // If no src attribute, add a dropdown for measurement selection
@@ -2004,13 +2039,21 @@
                                                 <polyline points="20 6 9 17 4 12"></polyline>
                                             </svg>
                                         </span>
-                                        <span class="embed-checkbox-text">${checkboxTitle}${checkboxRequired ? '<span class="embed-checkbox-required">*</span>' : ""}</span>
+                                        <span class="embed-checkbox-text"></span>
                                     </label>
                                 </div>
                             </div>
                         </div>
                     `;
                     form.innerHTML += checkboxHtml;
+                    const textSpan = form.querySelector(".embed-checkbox-text");
+                    textSpan.textContent = checkboxTitle;
+                    if (checkboxRequired) {
+                        const asterisk = document.createElement("span");
+                        asterisk.className = "embed-checkbox-required";
+                        asterisk.textContent = "*";
+                        textSpan.appendChild(asterisk);
+                    }
                 }
 
                 // Add the submit button
