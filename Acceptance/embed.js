@@ -3130,6 +3130,7 @@
         const cta1TextBooking = element.getAttribute('data-cta1-text-booking') || 'Plan een gratis adviesgesprek';
         const showCta2 = element.getAttribute('data-cta2-show') === 'true';
         const cta2Text = element.getAttribute('data-cta2-text') || 'Direct contact (30 sec)';
+        const cta2Action = element.getAttribute('data-cta2-action') || 'pico';
         const contactSkipAddress = element.getAttribute('data-contact-skip-address') === 'true';
         const picoKey = element.getAttribute('data-pico-key') || '';
         const picoEnv = element.getAttribute('data-pico-env') || 'production';
@@ -3215,11 +3216,43 @@
             cta2Btn.className = 'embed-cta-secondary';
             cta2Btn.style.setProperty('border-radius', config.buttonRadius, 'important');
             cta2Btn.textContent = cta2Text;
-            ctaWrapper.appendChild(cta2Btn);
 
-            cta2Btn.addEventListener('click', function () {
-                handleScanCta2(form, tiles, selectedTilesSet, picoKey, picoEnv, picoFlowIdOverride, contactSkipAddress, config, selectedLang, dutchVal, cta2Btn, cta2Text);
-            });
+            if (cta2Action === 'ai-chat') {
+                // Hidden until ChatWidget is detected on the page
+                cta2Btn.style.display = 'none';
+                ctaWrapper.appendChild(cta2Btn);
+
+                function tryShowAiChatBtn() {
+                    if (window.ChatWidget) {
+                        cta2Btn.style.display = '';
+                        return true;
+                    }
+                    return false;
+                }
+
+                if (!tryShowAiChatBtn()) {
+                    let attempts = 0;
+                    const poll = setInterval(function () {
+                        attempts++;
+                        if (tryShowAiChatBtn() || attempts >= 10) clearInterval(poll);
+                    }, 500);
+                }
+
+                cta2Btn.addEventListener('click', function () {
+                    if (window.ChatWidget && typeof window.ChatWidget.open === 'function') {
+                        window.ChatWidget.open();
+                    } else {
+                        // Fallback: click the chat toggle button if present in DOM
+                        const toggle = document.querySelector('.chat-widget-toggle, [data-chat-toggle], .hz-chat-toggle');
+                        if (toggle) toggle.click();
+                    }
+                });
+            } else {
+                ctaWrapper.appendChild(cta2Btn);
+                cta2Btn.addEventListener('click', function () {
+                    handleScanCta2(form, tiles, selectedTilesSet, picoKey, picoEnv, picoFlowIdOverride, contactSkipAddress, config, selectedLang, dutchVal, cta2Btn, cta2Text);
+                });
+            }
         }
 
         form.appendChild(ctaWrapper);
