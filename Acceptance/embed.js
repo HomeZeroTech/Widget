@@ -1738,8 +1738,9 @@
 
         function renderChips() {
             Array.from(chipsArea.querySelectorAll('[data-chip-key]')).forEach(function (el) { el.remove(); });
+            if (chipsArea.contains(placeholder)) chipsArea.removeChild(placeholder);
             tiles.filter(function (t) { return selectedTilesSet.has(t.key); }).forEach(function (tile) {
-                chipsArea.insertBefore(renderChip(tile), placeholder);
+                chipsArea.appendChild(renderChip(tile));
             });
             updatePlaceholder();
         }
@@ -3236,6 +3237,8 @@
                         attempts++;
                         if (tryShowAiChatBtn() || attempts >= 10) clearInterval(poll);
                     }, 500);
+                    window.addEventListener('hz-chatwidget-ready', function () { tryShowAiChatBtn(); });
+                    window.addEventListener('hz-chatwidget-removed', function () { cta2Btn.style.display = 'none'; });
                 }
 
                 cta2Btn.addEventListener('click', function () {

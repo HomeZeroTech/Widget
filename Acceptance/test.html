@@ -182,7 +182,12 @@
         </div>
         <details class="code-block">
             <summary>▶ Bekijk embed code</summary>
-            <pre>&lt;hz-embed
+            <pre>&lt;!--
+  data-cta2-action (default: "pico") stuurt een direct-contact lead via de Pico API.
+  Daarvoor is data-pico-key vereist. Zonder key werkt CTA2 niet.
+  Alternatief: data-cta2-action="ai-chat" opent de AI chatwidget (geen Pico key nodig).
+--&gt;
+&lt;hz-embed
   data-mode="scan"
   data-color="#2A6DF4"
   data-gradient-from="#2A6DF4"
@@ -196,6 +201,7 @@
   data-cta1-text-booking="Plan een gratis adviesgesprek"
   data-cta2-show="true"
   data-cta2-text="Direct contact (30 sec)"
+  data-cta2-action="pico"
   data-contact-skip-address="true"
   data-pico-key="your-api-key"
   data-pico-env="production"
@@ -243,6 +249,28 @@
                 data-email-required="true"
             ></hz-embed>
         </div>
+        <details class="code-block">
+            <summary>▶ Bekijk embed code</summary>
+            <pre>&lt;!-- data-tiles-max-select="2" limiteert selectie tot max 2 tegels tegelijk --&gt;
+&lt;hz-embed
+  data-mode="scan"
+  data-color="#e8367c"
+  data-tile-batterij-url="https://..."
+  data-tile-batterij-title="Batterij"
+  data-tile-ems-url="https://..."
+  data-tile-ems-title="EMS"
+  data-tile-laadpaal-url="https://..."
+  data-tile-laadpaal-title="Laadpaal"
+  data-tile-zon-url="https://..."
+  data-tile-zon-title="Zon"
+  data-tile-meterkast-url="https://..."
+  data-tile-meterkast-title="Meterkast"
+  data-tiles-default="batterij"
+  data-tiles-max-select="2"
+  data-show-email="true"
+  data-email-required="true"
+&gt;&lt;/hz-embed&gt;</pre>
+        </details>
     </div>
 
     <!-- Scan met dropdown (single select) -->
@@ -508,17 +536,19 @@
             <button onclick="
                 if(window.ChatWidget){
                     delete window.ChatWidget;
+                    window.dispatchEvent(new CustomEvent('hz-chatwidget-removed'));
                     this.textContent='▶ Simuleer ChatWidget aan';
                     this.style.background='#f0f4fa';
                 } else {
                     window.ChatWidget = { open: function(){ alert('ChatWidget.open() aangeroepen!'); } };
+                    window.dispatchEvent(new CustomEvent('hz-chatwidget-ready'));
                     this.textContent='⏹ Verwijder ChatWidget simulatie';
                     this.style.background='#d1fae5';
                 }
             " style="padding:8px 16px;border-radius:8px;border:1px solid #dadee7;background:#f0f4fa;font-size:13px;font-weight:500;cursor:pointer;">
                 ▶ Simuleer ChatWidget aan
             </button>
-            <span style="font-size:12px;color:#7585a3;">Na aanzetten: de widget herlaadt automatisch niet — refresh de widget door de pagina te herladen met ChatWidget actief.</span>
+            <span style="font-size:12px;color:#7585a3;">De knop verschijnt direct zodra je de simulatie aanzet — geen refresh nodig.</span>
         </div>
         <div class="widget-container">
             <hz-embed

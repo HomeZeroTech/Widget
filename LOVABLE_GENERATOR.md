@@ -188,18 +188,34 @@ meterkast      → Meterkast
 general        → Algemeen
 ```
 
+### Multi-tegel URL gedrag (CTA 1)
+
+Wanneer een gebruiker meerdere tegels selecteert, werkt de redirect als volgt:
+
+- **Redirect URL**: altijd de URL van de **primaire tegel** (eerste geselecteerde tegel)
+- **Meegegeven als URL-params**:
+  - `Tiles=solarpanels,homebattery` — komma-gescheiden lijst van alle geselecteerde keys
+  - `PrimaryTile=solarpanels` — de primaire tegel
+  - `Phone`, `Email`, `ReferralURL`, adresparams, etc.
+
+Dit betekent: **elke tegel heeft zijn eigen leadflow URL** (`data-tile-{key}-url`), en de primaire tegel bepaalt welke flow wordt geopend. Alle geselecteerde tegels worden als metadata meegestuurd zodat de leadflow ze kan verwerken.
+
+**Configuratietip voor de generator:** Toon een note als `data-tiles-max-select` niet op 1 staat: *"Bij meerdere geselecteerde producten gaat de gebruiker naar de leadflow van het eerste geselecteerde product. Zorg dat de URL's per tegel correct zijn ingesteld."*
+
+**Booking URL per tegel:** Als een tegel een `data-tile-{key}-booking-url` heeft én geselecteerd is als primaire tegel, opent CTA 1 direct de booking URL (bijv. Calendly) i.p.v. de scan leadflow. De knoptekst wisselt dan automatisch van `data-cta1-text-scan` naar `data-cta1-text-booking`.
+
 ### Section 4: Velden (Form fields)
 
 The available fields differ by widget type:
 
 **Scan mode fields:**
 
-| Toggle | Label | Sub-options |
-|---|---|---|
-| Adresveld | Adresveld (altijd aan) | Format: "Nederlands" / "Internationaal" toggle. Sub-toggle: "Google Plaatsen autocomplete" |
-| Mobielveld | Mobiel nummer | Sub-toggle: "Verplicht" |
-| E-mailveld | E-mailadres | Sub-toggle: "Verplicht" |
-| Toestemmingsvak | Toestemming checkbox | Text input for checkbox label. Sub-toggle: "Verplicht". Short key input: `data-checkbox-shorttitle` |
+| Toggle | Label | Attribuut | Sub-opties |
+|---|---|---|---|
+| Adresveld | Adresveld (altijd aan) | — | Format: "Nederlands" (`data-address-format="dutch"`, standaard) / "Internationaal" (`data-address-format="international"`) / "Google autocomplete" (`data-google-search="true"` + `data-country="nl"`). Google autocomplete vervangt postcode+huisnummer door een Google Places zoekveld — handig voor internationale klanten. |
+| Mobielveld | Mobiel nummer | `data-show-phone="true"` | Sub-toggle: "Verplicht" → `data-phone-required="true"` |
+| E-mailveld | E-mailadres | `data-show-email="true"` | Sub-toggle: "Verplicht" → `data-email-required="true"`. Optioneel = veld zichtbaar maar niet verplicht. |
+| Toestemmingsvak | Toestemming checkbox | `data-checkbox-title="..."` | Sub-toggle: "Verplicht" → `data-checkbox-required="true"`. Verkorte sleutel: `data-checkbox-shorttitle="..."` (wordt meegestuurd als URL-param `checkboxtitle`). |
 
 **Booking mode fields:**
 
@@ -219,15 +235,33 @@ The available fields differ by widget type:
 
 ### Section 5: Knoppen (Buttons/CTAs)
 
-**For scan mode:**
+#### Scan mode — 3-laags CTA systeem
+
+**CTA 1 (hoofd — altijd zichtbaar):**
 
 | Field | Component | Notes |
 |---|---|---|
-| Knoptekst (scan) | Text input | Default: "Bereken wat je bespaart". `data-cta1-text-scan` |
-| Knoptekst (adviesgesprek) | Text input | Default: "Plan een gratis adviesgesprek". `data-cta1-text-booking` |
-| Direct contact CTA | Toggle | Enables second button. `data-cta2-show="true"` |
-| ↳ CTA 2 tekst | Text input (conditional) | Default: "Direct contact (30 sec)". `data-cta2-text` |
-| ↳ Adres overslaan | Toggle (conditional) | Allow submit without address. `data-contact-skip-address` |
+| Knoptekst (scan flow) | Text input | Default: "Bereken wat je bespaart". `data-cta1-text-scan` |
+| Knoptekst (adviesgesprek) | Text input | Default: "Plan een gratis adviesgesprek". `data-cta1-text-booking`. Wordt automatisch gebruikt als de geselecteerde tegel een `booking-url` heeft |
+
+**CTA 2 (secundair — optioneel):**
+
+Toggle "Secundaire CTA" enables a second button. When enabled, show:
+
+| Field | Component | Notes |
+|---|---|---|
+| CTA 2 tekst | Text input | Default: "Direct contact (30 sec)". `data-cta2-text` |
+| CTA 2 actie | Segmented control | "Direct contact (Pico)" / "AI chat widget". `data-cta2-action` |
+| ↳ Adres overslaan | Toggle (alleen bij Pico) | Submit zonder adres. `data-contact-skip-address` |
+| ↳ Pico API key | Password input (alleen bij Pico) | Verplaatst naar Section 6 maar toon waarschuwing hier als leeg. `data-pico-key` |
+
+**`data-cta2-action` waarden:**
+- `"pico"` (default): verstuurt direct-contact lead via de Pico API. Vereist `data-pico-key`.
+- `"ai-chat"`: opent de AI chat widget op de pagina (`window.ChatWidget.open()`). **Geen Pico key nodig.** De knop is automatisch verborgen op pagina's waar geen `ChatWidget` aanwezig is — partners hoeven niets extra te doen. Widget detecteert `window.ChatWidget` via polling (5 sec) én luistert naar custom event `hz-chatwidget-ready`.
+
+**CTA 3 (AI chat — automatisch):**
+
+Geen aparte instelling nodig. Als `data-cta2-action="ai-chat"` is ingesteld, toont de widget de AI chat knop alleen wanneer `window.ChatWidget` gedetecteerd wordt. Toon dit als informatieve note in de generator UI: *"De AI chat knop verschijnt automatisch alleen op pagina's waar de HomeZero AI chat widget geladen is."*
 
 **For booking mode:**
 
@@ -464,9 +498,10 @@ interface WidgetConfig {
   // CTAs
   cta1TextScan: string;
   cta1TextBooking: string;
-  cta1Text: string;          // booking + brochure mode
+  cta1Text: string;                    // booking + brochure mode
   showCta2: boolean;
   cta2Text: string;
+  cta2Action: 'pico' | 'ai-chat';     // data-cta2-action
   contactSkipAddress: boolean;
   
   // Booking mode
@@ -607,7 +642,8 @@ function generateEmbedCode(config: WidgetConfig): string {
     if (config.showCta2) {
       attrs.push(['data-cta2-show', 'true']);
       if (config.cta2Text) attrs.push(['data-cta2-text', config.cta2Text]);
-      if (config.contactSkipAddress) attrs.push(['data-contact-skip-address', 'true']);
+      if (config.cta2Action && config.cta2Action !== 'pico') attrs.push(['data-cta2-action', config.cta2Action]);
+      if (config.cta2Action !== 'ai-chat' && config.contactSkipAddress) attrs.push(['data-contact-skip-address', 'true']);
     }
   }
   
