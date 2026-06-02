@@ -1412,7 +1412,7 @@
         if (document.getElementById('hz-tile-styles')) return;
         const s = document.createElement('style');
         s.id = 'hz-tile-styles';
-        s.textContent = '.embed-tile-grid{display:grid!important;grid-template-columns:repeat(auto-fill,minmax(84px,1fr))!important;gap:8px!important;margin-bottom:16px!important;width:100%!important}.embed-tile-grid-large{grid-template-columns:repeat(auto-fill,minmax(110px,1fr))!important}.embed-tile:hover{border-color:var(--primary-color)!important;background:color-mix(in srgb,var(--primary-color) 7%,#fff)!important}.embed-tile-large:hover{border-color:var(--primary-color)!important}.embed-cta-secondary:hover{opacity:.8!important}.embed-tags-field:hover{border-color:var(--primary-color)!important}';
+        s.textContent = '.embed-tile-grid{display:grid!important;grid-template-columns:repeat(auto-fill,minmax(84px,1fr))!important;gap:8px!important;margin-bottom:16px!important;width:100%!important}.embed-tile-grid-large{grid-template-columns:repeat(4,1fr)!important}@container (max-width:379px){.embed-tile-grid-large{grid-template-columns:repeat(2,1fr)!important}}.embed-tile:hover{border-color:var(--primary-color)!important;background:color-mix(in srgb,var(--primary-color) 7%,#fff)!important}.embed-tile-large:hover{border-color:var(--primary-color)!important}.embed-cta-secondary:hover{opacity:.8!important}.embed-tags-field:hover{border-color:var(--primary-color)!important}';
         document.head.appendChild(s);
     }
 
@@ -1532,8 +1532,8 @@
 
         const grid = document.createElement('div');
         grid.className = 'embed-tile-grid embed-tile-grid-large';
-        // auto-fill: 4 cols on wide (~480px+), 2 cols on mobile (<280px)
-        grid.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;margin-bottom:16px;width:100%;box-sizing:border-box;';
+        // 4 cols full-width desktop, @container 2 cols mobile — matches address row width
+        grid.style.cssText = 'display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px;width:100%;box-sizing:border-box;';
 
         visibleTiles.forEach(function (tile) {
             const isSelected = selectedTilesSet.has(tile.key);
@@ -1916,7 +1916,8 @@
                     bookingUrl: element.getAttribute('data-tile-' + key + '-booking-url') || '',
                     iconSvg: element.getAttribute('data-tile-' + key + '-icon-svg') || '',
                 };
-            });
+            })
+            .slice(0, 4);
     }
 
     function buildAddressFieldsHtml(googleSearch, addressFormat, selectedLang, country) {

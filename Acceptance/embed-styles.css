@@ -616,7 +616,13 @@ hz-embed {
 /* ── Large tile grid (max 4, radio circles) ──────────────────────────────── */
 
 .embed-tile-grid-large {
-    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    grid-template-columns: repeat(4, 1fr);
+}
+
+@container (max-width: 379px) {
+    .embed-tile-grid-large {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
 
 .embed-tile-large {
