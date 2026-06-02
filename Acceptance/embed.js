@@ -3234,7 +3234,7 @@
         const picoFlowIdOverride = element.getAttribute('data-pico-flow-id') || '';
         const tilesDefault = (element.getAttribute('data-tiles-default') || '').split(',').map(function (k) { return k.trim(); }).filter(Boolean);
         const tilesMaxSelect = parseInt(element.getAttribute('data-tiles-max-select') || '0', 10) || 0;
-        const tileDisplay = element.getAttribute('data-tile-display') || 'tiles';
+        const tileDisplay = element.getAttribute('data-tile-display') || 'large';
         const tilesLabel = element.getAttribute('data-tiles-label') || 'Producten';
 
         const tiles = parseTilesFromElement(element);
@@ -3294,21 +3294,22 @@
                 });
                 form.insertBefore(grid, refNode);
             } else {
-                const grid = renderTileGrid(tiles, selectedTilesSet, config.primaryColor, config.gradientFrom, config.gradientTo, function (key, tileEl) {
+                // 'tiles' and 'large' both use the large variant
+                const grid = renderTileLargeGrid(tiles, selectedTilesSet, config.primaryColor, function (key, tileEl) {
                     if (selectedTilesSet.has(key)) {
                         selectedTilesSet.delete(key);
                         tileEl.classList.remove('selected');
-                        clearTileSelectedStyle(tileEl);
+                        clearTileLargeSelectedStyle(tileEl);
                     } else {
                         if (tilesMaxSelect > 0 && selectedTilesSet.size >= tilesMaxSelect) {
                             const firstKey = selectedTilesSet.values().next().value;
                             selectedTilesSet.delete(firstKey);
                             const firstEl = form.querySelector('[data-tile-key="' + firstKey + '"]');
-                            if (firstEl) { firstEl.classList.remove('selected'); clearTileSelectedStyle(firstEl); }
+                            if (firstEl) { firstEl.classList.remove('selected'); clearTileLargeSelectedStyle(firstEl); }
                         }
                         selectedTilesSet.add(key);
                         tileEl.classList.add('selected');
-                        applyTileSelectedStyle(tileEl, config.primaryColor, config.gradientFrom, config.gradientTo);
+                        applyTileLargeSelectedStyle(tileEl, config.primaryColor);
                     }
                     updateCta1Text();
                 });
@@ -3520,7 +3521,7 @@
         const bookingUrl = element.getAttribute('data-booking-url') || '';
         const cta1Text = element.getAttribute('data-cta1-text') || 'Plan een afspraak';
         const showTilesAttr = element.getAttribute('data-show-tiles') || '';
-        const tileDisplay = showTilesAttr === 'dropdown' ? 'dropdown' : (showTilesAttr === 'tags' ? 'tags' : (showTilesAttr === 'large' ? 'large' : (showTilesAttr === 'true' ? 'tiles' : 'none')));
+        const tileDisplay = showTilesAttr === 'dropdown' ? 'dropdown' : (showTilesAttr === 'tags' ? 'tags' : (showTilesAttr === 'none' || showTilesAttr === 'false' || showTilesAttr === '' ? 'none' : 'large'));
         const tilesLabel = element.getAttribute('data-tiles-label') || 'Producten';
         const passToUrl = element.getAttribute('data-pass-to-url') !== 'false';
         const tilesMaxSelect = parseInt(element.getAttribute('data-tiles-max-select') || '0', 10) || 0;
@@ -3568,21 +3569,21 @@
                     });
                     form.insertBefore(grid, refNode);
                 } else {
-                    const grid = renderTileGrid(tiles, selectedTilesSet, config.primaryColor, config.gradientFrom, config.gradientTo, function (key, tileEl) {
+                    const grid = renderTileLargeGrid(tiles, selectedTilesSet, config.primaryColor, function (key, tileEl) {
                         if (selectedTilesSet.has(key)) {
                             selectedTilesSet.delete(key);
                             tileEl.classList.remove('selected');
-                            clearTileSelectedStyle(tileEl);
+                            clearTileLargeSelectedStyle(tileEl);
                         } else {
                             if (tilesMaxSelect > 0 && selectedTilesSet.size >= tilesMaxSelect) {
                                 const firstKey = selectedTilesSet.values().next().value;
                                 selectedTilesSet.delete(firstKey);
                                 const firstEl = form.querySelector('[data-tile-key="' + firstKey + '"]');
-                                if (firstEl) { firstEl.classList.remove('selected'); clearTileSelectedStyle(firstEl); }
+                                if (firstEl) { firstEl.classList.remove('selected'); clearTileLargeSelectedStyle(firstEl); }
                             }
                             selectedTilesSet.add(key);
                             tileEl.classList.add('selected');
-                            applyTileSelectedStyle(tileEl, config.primaryColor, config.gradientFrom, config.gradientTo);
+                            applyTileLargeSelectedStyle(tileEl, config.primaryColor);
                         }
                     });
                     form.insertBefore(grid, refNode);
