@@ -613,6 +613,64 @@ hz-embed {
     line-height: 1.5;
 }
 
+/* ── Large tile grid (max 4, radio circles) ──────────────────────────────── */
+
+.embed-tile-grid-large {
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+}
+
+.embed-tile-large {
+    padding: 16px 10px 14px;
+    border-radius: 14px;
+    min-height: 100px;
+    gap: 8px;
+}
+
+.embed-tile-large .embed-tile-icon {
+    width: 36px;
+    height: 36px;
+}
+
+.embed-tile-large .embed-tile-icon svg {
+    width: 36px;
+    height: 36px;
+}
+
+.embed-tile-large .embed-tile-label {
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.embed-tile-large:hover {
+    border-color: var(--primary-color) !important;
+    /* no background fill on hover — only border */
+}
+
+.embed-tile-large.selected {
+    /* override: tinted bg + colored border, NOT full fill */
+    background: color-mix(in srgb, var(--primary-color) 8%, #fff) !important;
+    border-color: var(--primary-color) !important;
+    border-width: 2px;
+    color: var(--primary-color);
+}
+
+.embed-tile-radio {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #dadee7;
+    border-radius: 50%;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.18s ease;
+    flex-shrink: 0;
+    box-sizing: border-box;
+}
+
 /* ── Tag / chip multi-select ──────────────────────────────────────────────── */
 
 .embed-tags-field {

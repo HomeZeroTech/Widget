@@ -1412,7 +1412,7 @@
         if (document.getElementById('hz-tile-styles')) return;
         const s = document.createElement('style');
         s.id = 'hz-tile-styles';
-        s.textContent = '.embed-tile-grid{display:grid!important;grid-template-columns:repeat(auto-fill,minmax(84px,1fr))!important;gap:8px!important;margin-bottom:16px!important;width:100%!important}.embed-tile:hover{border-color:var(--primary-color)!important;background:color-mix(in srgb,var(--primary-color) 7%,#fff)!important}.embed-cta-secondary:hover{opacity:.8!important}.embed-tags-field:hover{border-color:var(--primary-color)!important}';
+        s.textContent = '.embed-tile-grid{display:grid!important;grid-template-columns:repeat(auto-fill,minmax(84px,1fr))!important;gap:8px!important;margin-bottom:16px!important;width:100%!important}.embed-tile-grid-large{grid-template-columns:repeat(auto-fill,minmax(110px,1fr))!important}.embed-tile:hover{border-color:var(--primary-color)!important;background:color-mix(in srgb,var(--primary-color) 7%,#fff)!important}.embed-tile-large:hover{border-color:var(--primary-color)!important}.embed-cta-secondary:hover{opacity:.8!important}.embed-tags-field:hover{border-color:var(--primary-color)!important}';
         document.head.appendChild(s);
     }
 
@@ -1491,6 +1491,94 @@
 
             if (isSelected) applyTileSelectedStyle(tileEl, primaryColor, gradientFrom, gradientTo);
 
+            tileEl.addEventListener('click', function () { onSelect(tile.key, tileEl); });
+            grid.appendChild(tileEl);
+        });
+
+        return grid;
+    }
+
+    function applyTileLargeSelectedStyle(tileEl, primaryColor) {
+        tileEl.style.borderColor = primaryColor;
+        tileEl.style.borderWidth = '2px';
+        tileEl.style.background = 'color-mix(in srgb, ' + primaryColor + ' 8%, #fff)';
+        tileEl.style.color = primaryColor;
+        const circle = tileEl.querySelector('.embed-tile-radio');
+        if (circle) {
+            circle.style.borderColor = primaryColor;
+            circle.style.backgroundColor = primaryColor;
+            const ck = circle.querySelector('svg');
+            if (ck) ck.style.opacity = '1';
+        }
+    }
+
+    function clearTileLargeSelectedStyle(tileEl) {
+        tileEl.style.borderColor = '#dadee7';
+        tileEl.style.borderWidth = '1.5px';
+        tileEl.style.background = '#fff';
+        tileEl.style.color = '#132039';
+        const circle = tileEl.querySelector('.embed-tile-radio');
+        if (circle) {
+            circle.style.borderColor = '#dadee7';
+            circle.style.backgroundColor = '#fff';
+            const ck = circle.querySelector('svg');
+            if (ck) ck.style.opacity = '0';
+        }
+    }
+
+    function renderTileLargeGrid(tiles, selectedTilesSet, primaryColor, onSelect) {
+        ensureTileStyles();
+        const visibleTiles = tiles.slice(0, 4);
+
+        const grid = document.createElement('div');
+        grid.className = 'embed-tile-grid embed-tile-grid-large';
+        // auto-fill: 4 cols on wide (~480px+), 2 cols on mobile (<280px)
+        grid.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;margin-bottom:16px;width:100%;box-sizing:border-box;';
+
+        visibleTiles.forEach(function (tile) {
+            const isSelected = selectedTilesSet.has(tile.key);
+            const tileEl = document.createElement('div');
+            tileEl.className = 'embed-tile embed-tile-large' + (isSelected ? ' selected' : '');
+            tileEl.setAttribute('data-tile-key', tile.key);
+            tileEl.style.cssText = 'display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px 10px 14px;border:1.5px solid #dadee7;border-radius:14px;cursor:pointer;background:#fff;position:relative;gap:8px;text-align:center;user-select:none;min-height:100px;color:#132039;box-sizing:border-box;transition:background 0.18s ease,border-color 0.18s ease,color 0.18s ease;';
+
+            const iconWrap = document.createElement('div');
+            iconWrap.className = 'embed-tile-icon';
+            iconWrap.style.cssText = 'width:36px;height:36px;min-width:36px;min-height:36px;max-width:36px;max-height:36px;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;';
+
+            const iconRaw = decodeTileIcon(tile);
+            if (iconRaw) {
+                iconWrap.innerHTML = iconRaw.replace('<svg', '<svg aria-hidden="true"');
+                const svg = iconWrap.querySelector('svg');
+                if (svg) {
+                    svg.removeAttribute('width'); svg.removeAttribute('height');
+                    svg.style.cssText = 'width:36px;height:36px;min-width:36px;min-height:36px;display:block;flex-shrink:0;';
+                }
+            }
+
+            const label = document.createElement('span');
+            label.className = 'embed-tile-label';
+            label.style.cssText = 'font-size:12px;font-weight:700;line-height:1.25;color:inherit;';
+            label.textContent = tile.title;
+
+            // Radio circle top-right
+            const circle = document.createElement('span');
+            circle.className = 'embed-tile-radio';
+            circle.style.cssText = 'position:absolute;top:8px;right:8px;width:20px;height:20px;border:2px solid #dadee7;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;transition:all 0.18s ease;flex-shrink:0;box-sizing:border-box;';
+            circle.innerHTML = '<svg width="10" height="10" viewBox="0 0 10 10" fill="none" style="opacity:0;transition:opacity 0.18s ease;" aria-hidden="true"><path d="M1.5 5L3.5 7.5L8.5 2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+            tileEl.appendChild(iconWrap);
+            tileEl.appendChild(label);
+            tileEl.appendChild(circle);
+
+            if (isSelected) applyTileLargeSelectedStyle(tileEl, primaryColor);
+
+            tileEl.addEventListener('mouseenter', function () {
+                if (!selectedTilesSet.has(tile.key)) tileEl.style.borderColor = primaryColor;
+            });
+            tileEl.addEventListener('mouseleave', function () {
+                if (!selectedTilesSet.has(tile.key)) tileEl.style.borderColor = '#dadee7';
+            });
             tileEl.addEventListener('click', function () { onSelect(tile.key, tileEl); });
             grid.appendChild(tileEl);
         });
@@ -3177,6 +3265,26 @@
             } else if (tileDisplay === 'tags') {
                 const tagsWrap = renderTileTagsSelect(tiles, selectedTilesSet, config.primaryColor, tilesMaxSelect, tilesLabel, updateCta1Text);
                 form.insertBefore(tagsWrap, refNode);
+            } else if (tileDisplay === 'large') {
+                const grid = renderTileLargeGrid(tiles, selectedTilesSet, config.primaryColor, function (key, tileEl) {
+                    if (selectedTilesSet.has(key)) {
+                        selectedTilesSet.delete(key);
+                        tileEl.classList.remove('selected');
+                        clearTileLargeSelectedStyle(tileEl);
+                    } else {
+                        if (tilesMaxSelect > 0 && selectedTilesSet.size >= tilesMaxSelect) {
+                            const firstKey = selectedTilesSet.values().next().value;
+                            selectedTilesSet.delete(firstKey);
+                            const firstEl = form.querySelector('[data-tile-key="' + firstKey + '"]');
+                            if (firstEl) { firstEl.classList.remove('selected'); clearTileLargeSelectedStyle(firstEl); }
+                        }
+                        selectedTilesSet.add(key);
+                        tileEl.classList.add('selected');
+                        applyTileLargeSelectedStyle(tileEl, config.primaryColor);
+                    }
+                    updateCta1Text();
+                });
+                form.insertBefore(grid, refNode);
             } else {
                 const grid = renderTileGrid(tiles, selectedTilesSet, config.primaryColor, config.gradientFrom, config.gradientTo, function (key, tileEl) {
                     if (selectedTilesSet.has(key)) {
@@ -3405,7 +3513,7 @@
         const bookingUrl = element.getAttribute('data-booking-url') || '';
         const cta1Text = element.getAttribute('data-cta1-text') || 'Plan een afspraak';
         const showTilesAttr = element.getAttribute('data-show-tiles') || '';
-        const tileDisplay = showTilesAttr === 'dropdown' ? 'dropdown' : (showTilesAttr === 'tags' ? 'tags' : (showTilesAttr === 'true' ? 'tiles' : 'none'));
+        const tileDisplay = showTilesAttr === 'dropdown' ? 'dropdown' : (showTilesAttr === 'tags' ? 'tags' : (showTilesAttr === 'large' ? 'large' : (showTilesAttr === 'true' ? 'tiles' : 'none')));
         const tilesLabel = element.getAttribute('data-tiles-label') || 'Producten';
         const passToUrl = element.getAttribute('data-pass-to-url') !== 'false';
         const tilesMaxSelect = parseInt(element.getAttribute('data-tiles-max-select') || '0', 10) || 0;
@@ -3433,6 +3541,25 @@
                 } else if (tileDisplay === 'tags') {
                     const tagsWrap = renderTileTagsSelect(tiles, selectedTilesSet, config.primaryColor, tilesMaxSelect, tilesLabel, null);
                     form.insertBefore(tagsWrap, refNode);
+                } else if (tileDisplay === 'large') {
+                    const grid = renderTileLargeGrid(tiles, selectedTilesSet, config.primaryColor, function (key, tileEl) {
+                        if (selectedTilesSet.has(key)) {
+                            selectedTilesSet.delete(key);
+                            tileEl.classList.remove('selected');
+                            clearTileLargeSelectedStyle(tileEl);
+                        } else {
+                            if (tilesMaxSelect > 0 && selectedTilesSet.size >= tilesMaxSelect) {
+                                const firstKey = selectedTilesSet.values().next().value;
+                                selectedTilesSet.delete(firstKey);
+                                const firstEl = form.querySelector('[data-tile-key="' + firstKey + '"]');
+                                if (firstEl) { firstEl.classList.remove('selected'); clearTileLargeSelectedStyle(firstEl); }
+                            }
+                            selectedTilesSet.add(key);
+                            tileEl.classList.add('selected');
+                            applyTileLargeSelectedStyle(tileEl, config.primaryColor);
+                        }
+                    });
+                    form.insertBefore(grid, refNode);
                 } else {
                     const grid = renderTileGrid(tiles, selectedTilesSet, config.primaryColor, config.gradientFrom, config.gradientTo, function (key, tileEl) {
                         if (selectedTilesSet.has(key)) {

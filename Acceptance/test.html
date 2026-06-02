@@ -215,60 +215,57 @@
     <div class="section">
         <div class="section-header">
             <span class="mode-badge scan">Scan</span>
-            <h2>Scan — Alias keys (batterij, ems, laadpaal, zon, advies, meterkast)</h2>
+            <h2>Scan — Grote tegels / alias keys (max 4, radio select)</h2>
         </div>
         <div class="widget-container">
             <hz-embed
                 data-mode="scan"
-                data-color="#e8367c"
-                data-gradient-from="#e8367c"
-                data-gradient-to="#f08a3e"
-                data-button-radius="24px"
+                data-color="#e8a020"
+                data-button-radius="14px"
                 data-open-new-tab="false"
-                data-title="Jouw duurzame installatie"
-                data-subtitle="Welk product wil je berekenen?"
+                data-title="Grip op jouw eigen energie"
+                data-subtitle="Waar heb je interesse in? Meer opties mogelijk"
+
+                data-tile-display="large"
 
                 data-tile-batterij-url="https://homezero-accp.mendixcloud.com/link/start?id=5fc267a2-d867-4b72-ad76-2546f5019f9f"
-                data-tile-batterij-title="Batterij"
-                data-tile-ems-url="https://homezero-accp.mendixcloud.com/link/start?id=5fc267a2-d867-4b72-ad76-2546f5019f9f"
-                data-tile-ems-title="EMS"
+                data-tile-batterij-title="Thuisbatterij"
+                data-tile-zon-url="https://homezero-accp.mendixcloud.com/link/start?id=5fc267a2-d867-4b72-ad76-2546f5019f9f"
+                data-tile-zon-title="Zonnepanelen"
                 data-tile-laadpaal-url="https://homezero-accp.mendixcloud.com/link/start?id=5fc267a2-d867-4b72-ad76-2546f5019f9f"
                 data-tile-laadpaal-title="Laadpaal"
-                data-tile-zon-url="https://homezero-accp.mendixcloud.com/link/start?id=5fc267a2-d867-4b72-ad76-2546f5019f9f"
-                data-tile-zon-title="Zon"
                 data-tile-meterkast-url="https://homezero-accp.mendixcloud.com/link/start?id=5fc267a2-d867-4b72-ad76-2546f5019f9f"
-                data-tile-meterkast-title="Meterkast"
+                data-tile-meterkast-title="Groepenkast"
 
                 data-tiles-default="batterij"
-                data-tiles-max-select="2"
-                data-cta1-text-scan="Bereken mijn besparing"
+                data-cta1-text-scan="Vind jouw thuisbatterij"
 
                 data-address-format="dutch"
                 data-show-phone="false"
                 data-show-email="true"
-                data-email-required="true"
             ></hz-embed>
         </div>
         <details class="code-block">
             <summary>▶ Bekijk embed code</summary>
-            <pre>&lt;!-- data-tiles-max-select="2" limiteert selectie tot max 2 tegels tegelijk --&gt;
+            <pre>&lt;!--
+  data-tile-display="large": grote tegels met radio-cirkel, max 4 tegels zichtbaar.
+  Op mobiel automatisch 2x2 grid.
+--&gt;
 &lt;hz-embed
   data-mode="scan"
-  data-color="#e8367c"
+  data-color="#e8a020"
+  data-tile-display="large"
   data-tile-batterij-url="https://..."
-  data-tile-batterij-title="Batterij"
-  data-tile-ems-url="https://..."
-  data-tile-ems-title="EMS"
+  data-tile-batterij-title="Thuisbatterij"
+  data-tile-zon-url="https://..."
+  data-tile-zon-title="Zonnepanelen"
   data-tile-laadpaal-url="https://..."
   data-tile-laadpaal-title="Laadpaal"
-  data-tile-zon-url="https://..."
-  data-tile-zon-title="Zon"
   data-tile-meterkast-url="https://..."
-  data-tile-meterkast-title="Meterkast"
+  data-tile-meterkast-title="Groepenkast"
   data-tiles-default="batterij"
-  data-tiles-max-select="2"
+  data-cta1-text-scan="Vind jouw thuisbatterij"
   data-show-email="true"
-  data-email-required="true"
 &gt;&lt;/hz-embed&gt;</pre>
         </details>
     </div>
