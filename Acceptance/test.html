@@ -522,6 +522,78 @@
         </div>
     </div>
 
+    <!-- Scan met custom SVG iconen via data-tile-{key}-icon-svg -->
+    <div class="section">
+        <div class="section-header">
+            <span class="mode-badge scan">Scan</span>
+            <h2>Scan — Custom iconen via base64 SVG attribuut</h2>
+        </div>
+        <p style="margin:0 0 12px;font-size:14px;color:#7585a3;">
+            Elk tegel-icoon kan overschreven worden via <code>data-tile-{key}-icon-svg</code> met een base64-gecodeerde SVG.
+            De ingebouwde iconen worden alleen als fallback gebruikt.
+        </p>
+        <div class="widget-container">
+            <hz-embed
+                data-mode="scan"
+                data-color="#0d9f6e"
+                data-gradient-from="#0d9f6e"
+                data-gradient-to="#059669"
+                data-button-radius="10px"
+                data-title="Custom iconen demo"
+                data-subtitle="Deze tegels gebruiken aangepaste SVG iconen"
+
+                data-tile-solarpanels-url="https://homezero-accp.mendixcloud.com/link/start?id=5fc267a2-d867-4b72-ad76-2546f5019f9f"
+                data-tile-solarpanels-title="Zonnepanelen"
+                data-tile-solarpanels-icon-svg="PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cmVjdCB4PSIyIiB5PSI3IiB3aWR0aD0iMjAiIGhlaWdodD0iMTQiIHJ4PSIyIi8+PGxpbmUgeDE9IjIiIHkxPSIxMiIgeDI9IjIyIiB5Mj0iMTIiLz48bGluZSB4MT0iNyIgeTE9IjciIHgyPSI3IiB5Mj0iMjEiLz48bGluZSB4MT0iMTIiIHkxPSI3IiB4Mj0iMTIiIHkyPSIyMSIvPjxsaW5lIHgxPSIxNyIgeTE9IjciIHgyPSIxNyIgeTI9IjIxIi8+PHBhdGggZD0iTTcgNyBRMTIgMiAxNyA3Ii8+PC9zdmc+"
+
+                data-tile-homebattery-url="https://homezero-accp.mendixcloud.com/link/start?id=5fc267a2-d867-4b72-ad76-2546f5019f9f"
+                data-tile-homebattery-title="Thuisbatterij"
+                data-tile-homebattery-icon-svg="PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cmVjdCB4PSI0IiB5PSI2IiB3aWR0aD0iMTYiIGhlaWdodD0iMTQiIHJ4PSIyIi8+PGxpbmUgeDE9IjkiIHkxPSIzIiB4Mj0iOSIgeTI9IjYiLz48bGluZSB4MT0iMTUiIHkxPSIzIiB4Mj0iMTUiIHkyPSI2Ii8+PHBvbHlsaW5lIHBvaW50cz0iOCAxNCAxMiAxMCAxMiAxNCAxNiAxMCIvPjwvc3ZnPg=="
+
+                data-tile-heatpump-url="https://homezero-accp.mendixcloud.com/link/start?id=5fc267a2-d867-4b72-ad76-2546f5019f9f"
+                data-tile-heatpump-title="Warmtepomp"
+                data-tile-heatpump-icon-svg="PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cmVjdCB4PSIyIiB5PSI0IiB3aWR0aD0iMjAiIGhlaWdodD0iMTYiIHJ4PSIzIi8+PGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iNCIvPjxwYXRoIGQ9Ik0xMiA4IEwxMiA0IE0xMiAxNiBMMTIgMjAgTTggMTIgTDIgMTIgTTE2IDEyIEwyMiAxMiIvPjwvc3ZnPg=="
+
+                data-tile-carcharger-url="https://homezero-accp.mendixcloud.com/link/start?id=5fc267a2-d867-4b72-ad76-2546f5019f9f"
+                data-tile-carcharger-title="Laadpaal"
+
+                data-address-format="dutch"
+                data-show-email="true"
+                data-cta1-text-scan="Bereken wat je bespaart"
+            ></hz-embed>
+        </div>
+        <details class="code-block">
+            <summary>▶ Bekijk embed code</summary>
+            <pre>&lt;!--
+  data-tile-{key}-icon-svg = base64-gecodeerde SVG string
+  Genereer met: btoa(svgString) in JavaScript
+  Of via Lovable generator: upload SVG of genereer met AI
+--&gt;
+&lt;hz-embed
+  data-mode="scan"
+  data-color="#0d9f6e"
+
+  data-tile-solarpanels-url="https://..."
+  data-tile-solarpanels-title="Zonnepanelen"
+  data-tile-solarpanels-icon-svg="PHN2ZyB4bWxu..."
+
+  data-tile-homebattery-url="https://..."
+  data-tile-homebattery-title="Thuisbatterij"
+  data-tile-homebattery-icon-svg="PHN2ZyB4bWxu..."
+
+  data-tile-heatpump-url="https://..."
+  data-tile-heatpump-title="Warmtepomp"
+  data-tile-heatpump-icon-svg="PHN2ZyB4bWxu..."
+
+  data-tile-carcharger-url="https://..."
+  data-tile-carcharger-title="Laadpaal"
+  &lt;!-- carcharger gebruikt ingebouwd icoon als fallback --&gt;
+
+  data-show-email="true"
+&gt;&lt;/hz-embed&gt;</pre>
+        </details>
+    </div>
+
     <!-- Scan met AI chat CTA2 -->
     <div class="section">
         <div class="section-header">
