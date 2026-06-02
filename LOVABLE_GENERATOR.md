@@ -131,13 +131,14 @@ This section is the most complex. It allows the partner to build their tile grid
 
 **Weergave-stijl** (tile display style) — radio button group shown at top of section:
 
-| Value | Label | Description |
-|---|---|---|
-| `tiles` | Tegels (standaard) | Grid of icon tiles — classic look |
-| `dropdown` | Dropdown | Multi-select dropdown list |
-| `tags` | Tags / chips | Chip multi-select — selected items appear as colored pills with icon + name + × |
+| Value | Label | Description | Attribute (scan) | Attribute (booking) |
+|---|---|---|---|---|
+| `tiles` | Tegels (standaard) | Small icon grid, auto-fill columns | `data-tile-display="tiles"` (default, omit) | `data-show-tiles="true"` |
+| `large` | Grote tegels | 4-column full-width grid, radio circles, tinted-bg selection — **recommended for ≤ 4 alias keys** | `data-tile-display="large"` | `data-show-tiles="large"` |
+| `dropdown` | Dropdown | Multi-select dropdown list | `data-tile-display="dropdown"` | `data-show-tiles="dropdown"` |
+| `tags` | Tags / chips | Chip multi-select — selected items appear as colored pills with icon + name + × | `data-tile-display="tags"` | `data-show-tiles="tags"` |
 
-Generated as: `data-tile-display="tiles|dropdown|tags"` (omit attribute when `tiles` — it is the default).
+**Important:** Scan mode uses `data-tile-display`. Booking mode uses `data-show-tiles` (different attribute name — same values).
 
 **Label veld:** Text input for the label shown above the selector. Default: "Producten". Generated as `data-tiles-label="..."`.
 
@@ -150,7 +151,7 @@ Show a list of configurable tiles. Each row:
 [drag handle] [icon preview] [name field] [URL field] [booking URL toggle] [delete]
 ```
 
-- Maximum: 6 tiles
+- Maximum: 4 tiles — the widget enforces this in `parseTilesFromElement()` via `.slice(0, 4)`. Extra tiles are silently ignored. The UI should hard-cap at 4.
 - Minimum: 1 tile (when section enabled)
 - **Add tile button:** opens a modal to pick from the supported icon types
 
@@ -479,7 +480,7 @@ interface WidgetConfig {
   tiles: TileConfig[];
   tilesDefault: string[];          // pre-selected keys
   tilesEnabled: boolean;
-  tileDisplay: 'tiles' | 'dropdown' | 'tags';  // data-tile-display
+  tileDisplay: 'tiles' | 'large' | 'dropdown' | 'tags';  // data-tile-display (scan) / data-show-tiles (booking)
   tilesLabel: string;              // data-tiles-label, default "Producten"
   tilesMaxSelect: number;          // data-tiles-max-select, 0 = unlimited
   
@@ -654,6 +655,20 @@ function generateEmbedCode(config: WidgetConfig): string {
     if (config.showPhone) attrs.push(['data-show-phone', 'true']);
     if (config.phoneRequired) attrs.push(['data-phone-required', 'true']);
     if (config.passToUrl) attrs.push(['data-pass-to-url', 'true']);
+    // Tiles — booking mode uses data-show-tiles (not data-tile-display)
+    if (config.tilesEnabled && config.tiles.length > 0) {
+      const showTilesValue = config.tileDisplay === 'tiles' ? 'true' : config.tileDisplay;
+      attrs.push(['data-show-tiles', showTilesValue]);
+      if (config.tilesLabel && config.tilesLabel !== 'Producten') attrs.push(['data-tiles-label', config.tilesLabel]);
+      if (config.tilesMaxSelect > 0) attrs.push(['data-tiles-max-select', String(config.tilesMaxSelect)]);
+      config.tiles.forEach(tile => {
+        if (tile.url) attrs.push([`data-tile-${tile.key}-url`, tile.url]);
+        attrs.push([`data-tile-${tile.key}-title`, tile.title]);
+        if (tile.iconSvg) attrs.push([`data-tile-${tile.key}-icon-svg`, tile.iconSvg]);
+      });
+      const defaults = config.tiles.filter(t => t.isDefault).map(t => t.key);
+      if (defaults.length) attrs.push(['data-tiles-default', defaults.join(',')]);
+    }
   }
   
   if (config.mode === 'brochure') {
@@ -866,9 +881,12 @@ Flow:
 - [ ] Tile grid renders with correct icons (SVG from embed.js)
 - [ ] Tile add/remove/reorder works
 - [ ] Booking URL tile toggle (booking-url per tile) works
-- [ ] Tile display selector (tiles / dropdown / tags) switches preview correctly
+- [ ] Tile display selector (tiles / large / dropdown / tags) switches preview correctly
+- [ ] Large tile variant shows 4-column radio-circle grid (2×2 on mobile)
 - [ ] Tags chip variant shows colored pill chips with icon, name and × in preview
 - [ ] Dropdown variant shows multi-select dropdown in preview
+- [ ] Booking mode emits `data-show-tiles` (not `data-tile-display`) for tile config
+- [ ] Max 4 tiles enforced in UI — add button disabled when 4 tiles present
 - [ ] Custom SVG icon upload works per tile (file input → base64 → preview)
 - [ ] AI icon generation modal opens, generates, and stores base64 SVG
 - [ ] `data-tile-display` and `data-tiles-label` attributes appear in generated code

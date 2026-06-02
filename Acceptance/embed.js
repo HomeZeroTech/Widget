@@ -1438,7 +1438,10 @@
 
     function decodeTileIcon(tile) {
         if (tile.iconSvg) {
-            try { return atob(tile.iconSvg); } catch (e) { /* ignore decode errors */ }
+            try {
+                const decoded = atob(tile.iconSvg);
+                if (/^\s*<svg[\s>]/i.test(decoded)) return decoded;
+            } catch (e) { /* ignore */ }
         }
         return measurementIcons[tile.key] || measurementIcons.general || '';
     }
@@ -1727,13 +1730,15 @@
             }
         });
 
-        document.addEventListener('click', function (e) {
+        var _ddClickHandler = function (e) {
+            if (!wrap.isConnected) { document.removeEventListener('click', _ddClickHandler); return; }
             if (!dropdown.contains(e.target)) {
                 optionsPanel.style.display = 'none';
                 trigger.classList.remove('open');
                 trigger.style.borderColor = '#dadee7';
             }
-        });
+        };
+        document.addEventListener('click', _ddClickHandler);
 
         optionsPanel.addEventListener('click', function (e) { e.stopPropagation(); });
 
@@ -1888,12 +1893,14 @@
             }
         });
 
-        document.addEventListener('click', function (e) {
+        var _tagsClickHandler = function (e) {
+            if (!wrap.isConnected) { document.removeEventListener('click', _tagsClickHandler); return; }
             if (!wrap.contains(e.target)) {
                 optionsPanel.style.display = 'none';
                 fieldBox.style.borderColor = selectedTilesSet.size > 0 ? primaryColor : '#dadee7';
             }
-        });
+        };
+        document.addEventListener('click', _tagsClickHandler);
 
         chipsArea.appendChild(placeholder);
         fieldBox.appendChild(chipsArea);
@@ -3332,13 +3339,13 @@
                 cta2Btn.style.display = 'none';
                 ctaWrapper.appendChild(cta2Btn);
 
-                function tryShowAiChatBtn() {
-                    if (window.ChatWidget) {
-                        cta2Btn.style.display = '';
-                        return true;
-                    }
+                const tryShowAiChatBtn = function () {
+                    if (window.ChatWidget) { cta2Btn.style.display = ''; return true; }
                     return false;
-                }
+                };
+
+                // Always register removed-listener regardless of whether ChatWidget is present now
+                window.addEventListener('hz-chatwidget-removed', function () { cta2Btn.style.display = 'none'; });
 
                 if (!tryShowAiChatBtn()) {
                     let attempts = 0;
@@ -3347,7 +3354,6 @@
                         if (tryShowAiChatBtn() || attempts >= 10) clearInterval(poll);
                     }, 500);
                     window.addEventListener('hz-chatwidget-ready', function () { tryShowAiChatBtn(); });
-                    window.addEventListener('hz-chatwidget-removed', function () { cta2Btn.style.display = 'none'; });
                 }
 
                 cta2Btn.addEventListener('click', function () {
