@@ -2071,6 +2071,13 @@
         });
     }
 
+    function getCookieValue(name) {
+        const match = document.cookie.match(
+            new RegExp("(?:^|;\\s*)" + name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "=([^;]*)"),
+        );
+        return match ? decodeURIComponent(match[1]) : null;
+    }
+
     function getQueryParams() {
         const params = new URLSearchParams(window.location.search);
         const queryParams = {};
@@ -2089,7 +2096,7 @@
             "li_fat_id",
             "ad_id",
         ].forEach(function (param) {
-            const value = params.get(param);
+            const value = params.get(param) || getCookieValue(param);
             if (value) {
                 queryParams[param] = value;
             }
