@@ -2119,7 +2119,11 @@
 
     function getCookieValue(name) {
         const match = document.cookie.match(
-            new RegExp("(?:^|;\\s*)" + name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "=([^;]*)"),
+            new RegExp(
+                "(?:^|;\\s*)" +
+                    name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") +
+                    "=([^;]*)",
+            ),
         );
         return match ? decodeURIComponent(match[1]) : null;
     }
@@ -2143,8 +2147,18 @@
             "ad_id",
         ].forEach(function (param) {
             const value = params.get(param) || getCookieValue(param);
+            // Guard against junk values that upstream scripts (e.g. GTM/ad
+            // tags) sometimes write, like the literal strings "undefined" or
+            // "null", or empty/whitespace-only values.
             if (value) {
-                queryParams[param] = value;
+                const trimmed = value.trim();
+                if (
+                    trimmed &&
+                    trimmed.toLowerCase() !== "undefined" &&
+                    trimmed.toLowerCase() !== "null"
+                ) {
+                    queryParams[param] = trimmed;
+                }
             }
         });
         return queryParams;
