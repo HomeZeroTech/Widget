@@ -6,6 +6,12 @@ Build a **widget configuration tool** that allows HomeZero partners to visually 
 
 This tool replaces the "Pico Widget Generator" prototype at `flowmatchwidgetgenerator.lovable.app`. It must have a significantly more complete configuration surface and an accurate live preview.
 
+> **What changed in this revision (read first):**
+> - **Unified dual-CTA model.** Scan mode now supports **1 or 2 CTAs that route to two different leadflows** per measurement. CTA2 is no longer Pico-only: it can route to a HomeZero leadflow (`flow`) or an external calendar (`booking`), per-tile, per-combination, or a global fallback.
+> - **AI-chat is now a separate text link** (not a button, not the CTA2 slot). Controlled by `data-ai-chat-show` (default **false**) + `data-ai-chat-text`. Shown as a centered underlined link under the bottom CTA, only when `window.ChatWidget` is present.
+> - **Selection modes are explicit:** tiles = single or multi, **dropdown = single only**, tags = single or multi.
+> - **Config validation + guaranteed fallback:** misconfigurations log a `console.warn` and degrade gracefully; HomeZero leadflows always pass through the offline.html connectivity fallback, external calendars open directly.
+
 ---
 
 ## Tech Stack
@@ -78,7 +84,7 @@ Widget type definitions:
 
 | Type key | Name | Description | Icon |
 |---|---|---|---|
-| `scan` | Postcodeflow | Tegels + adres → scan starten | `MapPin` |
+| `scan` | Postcodeflow | Maatregel kiezen + adres → leadflow(s) | `MapPin` |
 | `booking` | Afspraak plannen | Afspraak inplannen via externe tool | `Calendar` |
 | `brochure` | Brochure download | E-mailadres → brochure per mail | `FileText` |
 | `classic` | Klassiek (geavanceerd) | Bestaande widget configuratie | `Settings` |
@@ -98,7 +104,8 @@ The sections differ per widget type:
 3. **Producten** (Products/tiles) — shown for scan; optional toggle for booking/brochure
 4. **Velden** (Form fields)
 5. **Knoppen** (Buttons/CTAs)
-6. **Geavanceerd** (Advanced — installer, context, tracking)
+6. **AI-chat link** (scan mode only — optional)
+7. **Geavanceerd** (Advanced — installer, context, tracking)
 
 Classic mode shows a simplified view with raw attribute editing.
 
@@ -108,13 +115,15 @@ Classic mode shows a simplified view with raw attribute editing.
 
 ### Section 1: Stijl (Style)
 
+These are the **only** style attributes settable via the embed code. Everything else (card background, fonts, input styling, label colors, card radius) is fixed in `embed-styles.css`.
+
 | Field | Component | Notes |
 |---|---|---|
-| Primaire kleur | Color picker + hex input | Default: `#2A6DF4`. Shows a color swatch. On change updates preview in real-time |
-| Kleurverloop (gradient) | Toggle + two color pickers | When enabled, shows "Van kleur" and "Naar kleur" inputs. Adds `data-gradient-from` / `data-gradient-to` |
-| Knop afronding | Slider (0–24px) + label "px" | Default: 10. Updates `data-button-radius` |
-| Taal | Segmented control: NL / EN / FR / DE | Default: NL. Updates `data-language` |
-| Link openen | Toggle: "In nieuw tabblad" | Default: off. Updates `data-open-new-tab` |
+| Primaire kleur | Color picker + hex input | Default: `#2A6DF4`. Drives primary button fill, tile-selection accents, the **secondary CTA outline**, and the AI-chat link color. Sanitized server-side via `sanitizeColor()`; invalid colors fall back to `#2A6DF4`. `data-color` |
+| Kleurverloop (gradient) | Toggle + two color pickers | When enabled, shows "Van kleur" and "Naar kleur". Used for tile-selection background. `data-gradient-from` / `data-gradient-to` |
+| Knop afronding | Slider (0–24px) + label "px" | Default: 10. Applies to both CTAs. `data-button-radius` |
+| Taal | Segmented control: NL / EN / FR / DE | Default: NL. Drives field labels, the "(Optioneel)" suffix and validation messages. `data-language` |
+| Link openen | Toggle: "In nieuw tabblad" | Default: off. `data-open-new-tab` |
 
 ### Section 2: Inhoud (Content)
 
@@ -125,98 +134,108 @@ Classic mode shows a simplified view with raw attribute editing.
 
 ### Section 3: Producten (Products)
 
-This section is the most complex. It allows the partner to build their tile grid.
+This section is the most complex. It allows the partner to build their tile/dropdown list and wire each measurement to its leadflow(s).
 
-**Header:** "Productopties" with a toggle to enable/disable the entire section. When disabled, no tiles are shown and the widget goes straight to the address field.
+**Header:** "Productopties" with a toggle to enable/disable the entire section. When disabled, no selector is shown and the widget goes straight to the address field.
 
-**Weergave-stijl** (tile display style) — radio button group shown at top of section:
+**Weergave-stijl** (display style) — radio group at the top of the section. Each style also has a **selectie-modus**:
 
-| Value | Label | Description | Attribute (scan) | Attribute (booking) |
+| Value | Label | Selection | Attribute (scan) | Attribute (booking) |
 |---|---|---|---|---|
-| `tiles` | Tegels (standaard) | Small icon grid, auto-fill columns | `data-tile-display="tiles"` (default, omit) | `data-show-tiles="true"` |
-| `large` | Grote tegels | 4-column full-width grid, radio circles, tinted-bg selection — **recommended for ≤ 4 alias keys** | `data-tile-display="large"` | `data-show-tiles="large"` |
-| `dropdown` | Dropdown | Multi-select dropdown list | `data-tile-display="dropdown"` | `data-show-tiles="dropdown"` |
-| `tags` | Tags / chips | Chip multi-select — selected items appear as colored pills with icon + name + × | `data-tile-display="tags"` | `data-show-tiles="tags"` |
+| `large` | Grote tegels (standaard) | single **of** multi | `data-tile-display="large"` (default, omit) | `data-show-tiles="large"` |
+| `dropdown` | Dropdown | **single only** | `data-tile-display="dropdown"` | `data-show-tiles="dropdown"` |
+| `tags` | Tags / chips | single **of** multi | `data-tile-display="tags"` | `data-show-tiles="tags"` |
 
-**Important:** Scan mode uses `data-tile-display`. Booking mode uses `data-show-tiles` (different attribute name — same values).
+- **Selectie-modus** (single / multi) maps to `data-tiles-max-select`: **single = `1`**, **multi = `0`** (unlimited) or a number > 1.
+- **Dropdown is single-select only.** The widget forces `data-tiles-max-select="1"` for dropdown and logs a warning if you set anything else. In the generator, hide the multi option when `dropdown` is selected.
+- **Important:** Scan mode uses `data-tile-display`; booking mode uses `data-show-tiles` (different name — same values).
 
-**Label veld:** Text input for the label shown above the selector. Default: "Producten". Generated as `data-tiles-label="..."`.
-
-**Max. selecties:** Number input (0 = unlimited). Generated as `data-tiles-max-select="N"` (omit when 0).
+**Label veld:** Text input for the label above the selector. Default: "Producten". Generated as `data-tiles-label="..."`. To render **no** label (e.g. when the title already asks the question, like Feenstra's "Waarin ben je geïnteresseerd?"), emit `data-tiles-label=""` (explicit empty string is respected).
 
 **Tile list:**
 
 Show a list of configurable tiles. Each row:
 ```
-[drag handle] [icon preview] [name field] [URL field] [booking URL toggle] [delete]
+[drag handle] [icon preview] [name field] [primary URL] [2e CTA URL toggle] [delete]
 ```
 
-- Maximum: 4 tiles — the widget enforces this in `parseTilesFromElement()` via `.slice(0, 4)`. Extra tiles are silently ignored. The UI should hard-cap at 4.
+- Maximum: 4 tiles — the widget enforces this in `parseTilesFromElement()` via `.slice(0, 4)`. The UI must hard-cap at 4.
 - Minimum: 1 tile (when section enabled)
 - **Add tile button:** opens a modal to pick from the supported icon types
 
-**Add tile modal:**
-Shows a grid of all supported product icons with their Dutch labels. Partner clicks one to add it to the list. Pre-configures `data-tile-{key}-title` with the default Dutch label.
+**Add tile modal:** Grid of all supported product icons with Dutch labels. Clicking one adds it and pre-fills `data-tile-{key}-title` with the default Dutch label.
 
 **Per-tile configuration (expanded row):**
 
 | Field | Component | Notes |
 |---|---|---|
-| Label | Text input | Tile display name |
-| Scan URL | URL input | `data-tile-{key}-url` |
-| Booking URL | URL input (collapsible) | `data-tile-{key}-booking-url`. Show toggle "Afwijkende booking URL" that reveals this field. When set, shows a calendar icon indicator on the tile preview |
+| Label | Text input | Tile display name. `data-tile-{key}-title` |
+| Primaire flow URL | URL input | CTA1 target for this measurement (the "offerte"-flow). `data-tile-{key}-url` |
+| 2e CTA flow URL | URL input (collapsible) | CTA2 target for this measurement (the "adviesgesprek"-flow). Reveal via toggle "Aparte 2e CTA per maatregel". `data-tile-{key}-cta2-url`. Leave empty to fall back to the global 2e CTA URL; if neither exists, CTA2 is hidden for that measurement → automatically **1 button**. |
+| Booking URL (legacy) | URL input (collapsible, advanced) | `data-tile-{key}-booking-url`. **Legacy single-button switch:** when set and selected, CTA1 itself becomes a booking button (opens this URL directly) and uses `data-cta1-text-booking`. Prefer the new "2e CTA flow URL" for dual-flow. Show a deprecation hint. |
 | Standaard geselecteerd | Checkbox | Adds key to `data-tiles-default` |
-| Aangepast icoon | File upload + AI button | Uploads or generates a custom SVG icon. Stored as base64 in `data-tile-{key}-icon-svg`. See "AI Iconen Genereren" section below. |
+| Aangepast icoon | File upload + AI button | Custom SVG icon, base64 in `data-tile-{key}-icon-svg`. Built-in icon used as fallback. See "AI Iconen Genereren". |
 
 **Supported icon types** (show in add modal with icons):
 
 ```
-solarpanels    → Zonnepanelen
-heatpump       → Warmtepomp
-airconditioning → Airco
-homebattery    → Thuisbatterij / Batterij
-carcharger     → Laadpaal
+solarpanels     → Zonnepanelen          (alias: zon)
+heatpump        → Warmtepomp
+airconditioning → Airco                  (alias: airco)
+homebattery     → Thuisbatterij         (alias: batterij)
+carcharger      → Laadpaal              (alias: laadpaal)
 floorinsulation → Vloerisolatie
-wallinsulation → Spouwmuurisolatie
-roofinsulation → Dakisolatie
+wallinsulation  → Spouwmuurisolatie
+roofinsulation  → Dakisolatie
 glassinsulation → Glas / HR++
-gasboiler      → CV-Ketel
-ems            → EMS
-adviescan      → Advies scan
-advisormodule  → Adviseur / Advies
-solarboiler    → Zonneboiler
-meterkast      → Meterkast
-general        → Algemeen
+gasboiler       → CV-Ketel
+ems             → EMS
+advicescan      → Advies scan
+advisormodule   → Adviseur / Advies     (alias: advies)
+solarboiler     → Zonneboiler / Zonnestroomboiler
+meterkast       → Meterkast / Groepenkast
+general         → Algemeen
 ```
 
-### Multi-tegel URL gedrag (CTA 1)
+Aliases are short keys that resolve to the same built-in icon (e.g. `data-tile-batterij-url` uses the `homebattery` icon). Both the canonical key and the alias work as the `{key}` in `data-tile-{key}-*`.
 
-Wanneer een gebruiker meerdere tegels selecteert, werkt de redirect als volgt:
+### CTA-routing logic (read carefully — this is the core)
 
-- **Redirect URL**: altijd de URL van de **primaire tegel** (eerste geselecteerde tegel)
-- **Meegegeven als URL-params**:
-  - `Tiles=solarpanels,homebattery` — komma-gescheiden lijst van alle geselecteerde keys
-  - `PrimaryTile=solarpanels` — de primaire tegel
-  - `Phone`, `Email`, `ReferralURL`, adresparams, etc.
+The widget resolves CTA targets at click time based on the current selection (`resolveCtaTarget`). Precedence:
 
-Dit betekent: **elke tegel heeft zijn eigen leadflow URL** (`data-tile-{key}-url`), en de primaire tegel bepaalt welke flow wordt geopend. Alle geselecteerde tegels worden als metadata meegestuurd zodat de leadflow ze kan verwerken.
+**CTA1** (primary, always present when a tile is selected):
+- 1 selected → that tile's `data-tile-{key}-url`.
+- >1 selected → `data-cta1-combo-url` (a single combination leadflow). If omitted, falls back to the first selected tile's URL **and logs a warning**.
+- Legacy: if the single selected tile has `data-tile-{key}-booking-url`, CTA1 becomes a direct booking button to that URL.
 
-**Configuratietip voor de generator:** Toon een note als `data-tiles-max-select` niet op 1 staat: *"Bij meerdere geselecteerde producten gaat de gebruiker naar de leadflow van het eerste geselecteerde product. Zorg dat de URL's per tegel correct zijn ingesteld."*
+**CTA2** (secondary, optional; `data-cta2-show="true"`), depends on `data-cta2-action`:
+- `"flow"` → HomeZero leadflow. Target: 1 selected → `data-tile-{key}-cta2-url` else `data-cta2-url`; >1 selected → `data-cta2-combo-url` else `data-cta2-url`. **Full validation + offline.html fallback.**
+- `"booking"` → external calendar (Calendly/Google). Same target precedence, but the URL **opens directly** in a new tab (passes phone/email), **no address required, no offline.html fallback**.
+- `"pico"` (legacy) → direct-contact lead via the Pico API; requires `data-pico-key`.
 
-**Booking URL per tegel:** Als een tegel een `data-tile-{key}-booking-url` heeft én geselecteerd is als primaire tegel, opent CTA 1 direct de booking URL (bijv. Calendly) i.p.v. de scan leadflow. De knoptekst wisselt dan automatisch van `data-cta1-text-scan` naar `data-cta1-text-booking`.
+**CTA2 auto-visibility:** for `flow`/`booking`, CTA2 only shows when a target resolves for the current selection. Measurements without a 2e-CTA target render only CTA1. This is how "1 of 2 CTA's per maatregel" works — no extra flag needed.
+
+**Reusing one leadflow everywhere:** set a single `data-cta2-url` (e.g. a generic "plan adviesgesprek" leadflow or a direct Calendly link) and leave per-tile/combo URLs empty. Every measurement then shows the same secondary CTA.
+
+**Generator scenarios to support (all expressible):**
+1. *Feenstra (dropdown, dual-flow per maatregel):* `data-tile-display="dropdown"`, `data-tiles-max-select="1"`, per tile `-url` + `-cta2-url`, `data-cta2-show="true"`, `data-cta2-action="flow"`. One measurement without `-cta2-url` → shows a single button.
+2. *Multi-select met combinatie-flows:* `data-tile-display="large"` (multi), per tile `-url`, `data-cta1-combo-url` for >1, `data-cta2-action="flow"` + global `data-cta2-url` (reused).
+3. *Secundaire CTA altijd naar agenda:* `data-cta2-action="booking"`, global `data-cta2-url="https://calendly.com/..."`.
 
 ### Section 4: Velden (Form fields)
 
-The available fields differ by widget type:
+The available fields differ by widget type.
 
 **Scan mode fields:**
 
 | Toggle | Label | Attribuut | Sub-opties |
 |---|---|---|---|
-| Adresveld | Adresveld (altijd aan) | — | Format: "Nederlands" (`data-address-format="dutch"`, standaard) / "Internationaal" (`data-address-format="international"`) / "Google autocomplete" (`data-google-search="true"` + `data-country="nl"`). Google autocomplete vervangt postcode+huisnummer door een Google Places zoekveld — handig voor internationale klanten. |
-| Mobielveld | Mobiel nummer | `data-show-phone="true"` | Sub-toggle: "Verplicht" → `data-phone-required="true"` |
-| E-mailveld | E-mailadres | `data-show-email="true"` | Sub-toggle: "Verplicht" → `data-email-required="true"`. Optioneel = veld zichtbaar maar niet verplicht. |
-| Toestemmingsvak | Toestemming checkbox | `data-checkbox-title="..."` | Sub-toggle: "Verplicht" → `data-checkbox-required="true"`. Verkorte sleutel: `data-checkbox-shorttitle="..."` (wordt meegestuurd als URL-param `checkboxtitle`). |
+| Adresveld | Adresveld (altijd aan) | — | Format: "Nederlands" (`data-address-format="dutch"`, standaard → Postcode + Huisnummer + Toevoeging) / "Internationaal" (`data-address-format="international"`) / "Google autocomplete" (`data-google-search="true"` + `data-country="nl"`). |
+| Mobielveld | Mobiel nummer | `data-show-phone="true"` | Sub-toggle: "Verplicht" → `data-phone-required="true"`. Niet-verplicht toont label "(Optioneel)". |
+| E-mailveld | E-mailadres | `data-show-email="true"` | Sub-toggle: "Verplicht" → `data-email-required="true"`. Niet-verplicht toont label "(Optioneel)". |
+| Toestemmingsvak | Toestemming checkbox | `data-checkbox-title="..."` | Sub-toggle: "Verplicht" → `data-checkbox-required="true"`. Verkorte sleutel: `data-checkbox-shorttitle="..."` (meegestuurd als URL-param `checkboxtitle`). |
+
+> The "(Optioneel)" suffix is added automatically by the widget for any shown-but-not-required phone/email field, translated per `data-language`.
 
 **Booking mode fields:**
 
@@ -236,35 +255,38 @@ The available fields differ by widget type:
 
 ### Section 5: Knoppen (Buttons/CTAs)
 
-#### Scan mode — 3-laags CTA systeem
+#### Scan mode — unified CTA system
 
 **CTA 1 (hoofd — altijd zichtbaar):**
 
 | Field | Component | Notes |
 |---|---|---|
-| Knoptekst (scan flow) | Text input | Default: "Bereken wat je bespaart". `data-cta1-text-scan` |
-| Knoptekst (adviesgesprek) | Text input | Default: "Plan een gratis adviesgesprek". `data-cta1-text-booking`. Wordt automatisch gebruikt als de geselecteerde tegel een `booking-url` heeft |
+| Knoptekst | Text input | Default: "Bereken wat je bespaart". `data-cta1-text` (legacy alias `data-cta1-text-scan` still read). For Feenstra: "Direct een offerte". |
+| Knoptekst (booking, legacy) | Text input | Default: "Plan een gratis adviesgesprek". `data-cta1-text-booking`. Only used by the legacy per-tile `booking-url` switch. |
+| Combinatie-flow URL | URL input | Shown when selection-mode is multi. `data-cta1-combo-url` — target when >1 tile selected. |
 
 **CTA 2 (secundair — optioneel):**
 
-Toggle "Secundaire CTA" enables a second button. When enabled, show:
+Toggle "Secundaire CTA" → `data-cta2-show="true"`. When enabled:
 
 | Field | Component | Notes |
 |---|---|---|
-| CTA 2 tekst | Text input | Default: "Direct contact (30 sec)". `data-cta2-text` |
-| CTA 2 actie | Segmented control | "Direct contact (Pico)" / "AI chat widget". `data-cta2-action` |
-| ↳ Adres overslaan | Toggle (alleen bij Pico) | Submit zonder adres. `data-contact-skip-address` |
-| ↳ Pico API key | Password input (alleen bij Pico) | Verplaatst naar Section 6 maar toon waarschuwing hier als leeg. `data-pico-key` |
+| CTA 2 tekst | Text input | Default: "Direct contact (30 sec)". For Feenstra: "Adviesgesprek aanvraag". `data-cta2-text` |
+| CTA 2 actie | Segmented control | "Leadflow" (`flow`) / "Externe agenda" (`booking`) / "Direct contact (Pico)" (`pico`). `data-cta2-action` |
+| ↳ Globale 2e flow URL | URL input (flow/booking) | `data-cta2-url`. Fallback target for all measurements + for combinations. For `booking`, a Calendly/Google Calendar URL. |
+| ↳ Combinatie 2e flow URL | URL input (flow/booking, multi only) | `data-cta2-combo-url`. Target for CTA2 when >1 tile selected. |
+| ↳ Adres overslaan | Toggle (alleen bij Pico) | `data-contact-skip-address` |
+| ↳ Pico API key | Password (alleen bij Pico) | `data-pico-key` (lives in Advanced; warn here if empty) |
 
-**`data-cta2-action` waarden:**
-- `"pico"` (default): verstuurt direct-contact lead via de Pico API. Vereist `data-pico-key`.
-- `"ai-chat"`: opent de AI chat widget op de pagina (`window.ChatWidget.open()`). **Geen Pico key nodig.** De knop is automatisch verborgen op pagina's waar geen `ChatWidget` aanwezig is — partners hoeven niets extra te doen. Widget detecteert `window.ChatWidget` via polling (5 sec) én luistert naar custom event `hz-chatwidget-ready`.
+**`data-cta2-action` values:**
+- `"flow"` — HomeZero leadflow with address fields + offline.html fallback. Target precedence: per-tile `data-tile-{key}-cta2-url` → `data-cta2-combo-url` (multi) → global `data-cta2-url`.
+- `"booking"` — external calendar; opens directly in a new tab, no fallback, passes phone/email only. Same target precedence.
+- `"pico"` — direct-contact via Pico API. Requires `data-pico-key`.
+- ~~`"ai-chat"`~~ — **deprecated.** Still works (maps to the AI-chat link) but the generator must use Section 6 instead.
 
-**CTA 3 (AI chat — automatisch):**
+> **Per-measurement 1 or 2 CTAs:** you don't toggle this manually. With `flow`/`booking`, CTA2 hides automatically for any selected measurement that has no resolvable 2e-CTA target.
 
-Geen aparte instelling nodig. Als `data-cta2-action="ai-chat"` is ingesteld, toont de widget de AI chat knop alleen wanneer `window.ChatWidget` gedetecteerd wordt. Toon dit als informatieve note in de generator UI: *"De AI chat knop verschijnt automatisch alleen op pagina's waar de HomeZero AI chat widget geladen is."*
-
-**For booking mode:**
+**Booking mode CTAs:**
 
 | Field | Component | Notes |
 |---|---|---|
@@ -272,22 +294,33 @@ Geen aparte instelling nodig. Als `data-cta2-action="ai-chat"` is ingesteld, too
 | Booking provider | Dropdown | calendly / google / microsoft / hubspot / acuity / other. `data-booking-provider` |
 | Booking URL | URL input | Required. `data-booking-url` |
 
-**For brochure mode:**
+**Brochure mode CTAs:**
 
 | Field | Component | Notes |
 |---|---|---|
 | Knoptekst | Text input | Default: "Stuur mij de brochure". `data-cta1-text` |
 | Bevestigingstekst | Text input | Default: "De brochure is onderweg!". `data-success-message` |
 
-### Section 6: Geavanceerd (Advanced)
+### Section 6: AI-chat link (scan mode only)
+
+A standalone, centered, underlined **text link** below the bottom CTA — not a button. Used to point visitors to the on-page HomeZero AI chat assistant (e.g. "Of chat met Fleur de Ai adviseur").
+
+| Field | Component | Notes |
+|---|---|---|
+| AI-chat link tonen | Toggle | Default **off**. `data-ai-chat-show="true"` |
+| Link tekst | Text input | Default: "Of chat met onze AI adviseur". `data-ai-chat-text` |
+
+Behavior note to show in the UI: *"De link verschijnt alleen op pagina's waar de HomeZero AI chat widget (`window.ChatWidget`) geladen is. Klikken roept `ChatWidget.open()` aan."* The widget detects ChatWidget via 5s polling and the `hz-chatwidget-ready` / `hz-chatwidget-removed` custom events.
+
+### Section 7: Geavanceerd (Advanced)
 
 | Field | Component | Notes |
 |---|---|---|
 | Installer ID | Text input | `data-installer` |
 | Context | Text input | `data-context` |
-| Pico API key | Password input | Scan (CTA2) + brochure mode. `data-pico-key`. Required for direct-contact and brochure submissions |
+| Pico API key | Password input | Scan (CTA2=pico) + brochure. `data-pico-key` |
 | Pico omgeving | Segmented control: Production / Acceptance | Default: production. `data-pico-env` |
-| Pico flow ID | Text input | UUID. Optional — auto-extracted from tile scan URL when omitted. `data-pico-flow-id` |
+| Pico flow ID | Text input | UUID. Optional — auto-extracted from tile URL when omitted. `data-pico-flow-id` |
 
 ---
 
@@ -297,193 +330,150 @@ The live preview renders a **pixel-perfect React component** that looks exactly 
 
 ### Preview wrapper
 
-The preview panel shows the widget on a light gray background with a subtle shadow, simulating an embedded widget on a white website. Show a label above: "Live preview — zo ziet de widget er uit op jouw website".
-
-Provide a device toggle:
-- `[Desktop]` — shows widget at 480px width
-- `[Mobile]` — shows widget at 375px width
+Light gray background with subtle shadow, simulating an embedded widget on a white website. Label above: "Live preview — zo ziet de widget er uit op jouw website". Device toggle: `[Desktop]` (480px) / `[Mobile]` (375px).
 
 ### Preview components to build (React)
-
-Build these as separate React components that mirror the actual widget HTML/CSS:
 
 #### `WidgetPreview` (wrapper)
 Applies `--primary-color`, `--primary-gradient`, `--button-radius` as CSS variables.
 
-#### `TileGrid` (scan mode)
-```
-Props: tiles[], selectedTiles (Set), onToggle, primaryColor, gradient?
-
-Renders: grid of tile buttons.
-Selected tile: gradient background (or primary-color solid), white text, checkmark badge top-right.
-Unselected tile: light gray border, hover state.
-```
+#### `TileSelector` (scan mode)
+Renders one of three variants based on display style:
+- **large:** 4-column full-width grid, radio circle, tinted-bg selection (`color-mix(in srgb, primary 8%, #fff)`), 2×2 on mobile.
+- **dropdown:** single trigger showing the selected icon in a **grey rounded badge** + name; options list with the same icon badge per row and a checkmark on the selected row. Single-select.
+- **tags:** chip multi-select — selected items appear as colored pills (icon + name + ×).
 
 #### `AddressField` (scan + classic mode)
 ```
-Props: format ("dutch" | "international" | "google"), language
-
 Dutch: [Postcode] [Huisnummer] [Toevoeging] in a row
-International: [Straat] [Huisnummer] in row, [Postcode] [Stad] in row below
+International: [Straat] [Huisnummer] then [Postcode] [Stad]
 Google: single text input with search icon
 ```
 
 #### `ContactFields` (scan + booking mode)
-```
-Props: showPhone, showEmail, phoneRequired, emailRequired, language
-
-Renders phone and/or email inputs based on props.
-When both shown: side-by-side in a grid.
-```
-
-#### `BrochureForm` (brochure mode)
-```
-Props: showName, showPhone, language, successMessage, ctaText
-
-Renders: optional name row, email input, optional phone, CTA button.
-```
+Renders phone and/or email inputs. Non-required fields show a "(Optioneel)" suffix on the label. Both shown → side-by-side grid.
 
 #### `DualCTA` (scan mode)
 ```
-Props: cta1Text, cta2Text, showCta2, primaryColor, gradient?, onCta1Click, onCta2Click
+Props: cta1Text, cta2Text, showCta2, cta2Resolvable, primaryColor, gradient?, buttonRadius
 
-Primary button: full width, gradient or solid primary color, rounded (buttonRadius).
-Secondary button: full width, muted gray background, text color.
-Spacing: 12px between buttons.
+Primary button: full width, gradient or solid primary color, rounded.
+Secondary button: full width, TRANSPARENT background, 1.5px solid primary-color border,
+  primary-color text (outline style). Hidden when !cta2Resolvable for current selection.
+Spacing: 8px between buttons.
+```
+
+#### `AiChatLink` (scan mode)
+```
+Props: text, primaryColor, visible
+
+Centered, underlined text link in primary color, 14px, below the bottom CTA.
+Only rendered when visible (simulate window.ChatWidget presence with a preview toggle).
 ```
 
 #### `SingleCTA` (booking + brochure mode)
-```
-Props: text, primaryColor, gradient?, buttonRadius
-
 Single full-width button.
-```
 
-#### `ConfirmScreen` (all modes)
-```
-Props: title, message
-
-Center-aligned, checkmark icon in primary color circle, title, message.
-```
-
-#### `CheckboxField`
-```
-Props: label, required
-
-Custom styled checkbox matching embed-styles.css.
-```
+#### `ConfirmScreen` / `CheckboxField`
+As before — confirm screen is center-aligned with a checkmark in a primary-color circle; checkbox matches `embed-styles.css`.
 
 ### Live preview tile icons
 
-For the tile icons in the preview, use **inline SVG** copied from the `measurementIcons` object in `embed.js`. These must match exactly. Do not substitute with Lucide icons.
+Use **inline SVG** copied from the `measurementIcons` object in `embed.js`. Must match exactly. Do not substitute Lucide icons.
 
-### Styling the live preview
+### Styling the live preview — key values to match
 
-The preview components must use CSS that closely matches `embed-styles.css`. Use Tailwind for layout but add an `<style>` block or CSS module for the specific widget styles (input borders, border-radius, font sizes, etc.).
-
-Key style values to match:
-- Input border: `1px solid #dadee7`, border-radius `8px`, padding `12px`
-- Font size inputs: `14px`, weight `500`
-- Label: `12px`, weight `500`, color `#132039`
+- Input border: `1px solid #dadee7`, radius `8px`, padding `12px`
+- Inputs: `14px`, weight `500`. Labels: `12px`, weight `500`, color `#132039`
+- Optional-suffix: weight `400`, color `#7585a3`
 - Validation message: `14px`, color `#fd3118`
 - Primary button: `16px`, weight `500`, padding `13px 40px`, no box-shadow
-- Submit hover: `opacity: 0.8`
+- Secondary button (outline): transparent bg, `1.5px solid var(--primary-color)`, text `var(--primary-color)`
+- AI-chat link: `14px`, weight `500`, underline, `color: var(--primary-color)`, centered, `margin-top: 12px`
+- Dropdown icon badge: `32×32`, radius `8px`, background `#f0f2f5`
+- Hover (buttons/link): `opacity: 0.8`
 
 ---
 
 ## Embed Code Generator
 
-Below the config panel, show a section:
-
-```
-┌─────────────────────────────────────────────────────────┐
-│  Embed code                                              │
-│                                                          │
-│  ┌──────────────────────────────────────────────────┐   │
-│  │ <hz-embed                                        │   │
-│  │   data-mode="scan"                               │   │
-│  │   data-color="#2A6DF4"                           │   │
-│  │   ...                                            │   │
-│  │ ></hz-embed>                                     │   │
-│  │ <script defer                                    │   │
-│  │   src="https://homezerotech.github.io/Widget/    │   │
-│  │   Acceptance/embed.min.js">                      │   │
-│  │ </script>                                        │   │
-│  └──────────────────────────────────────────────────┘   │
-│                                                          │
-│  [📋 Kopieer code]                                       │
-└─────────────────────────────────────────────────────────┘
-```
+Below the config panel, show the generated code with a copy button.
 
 ### Code generation rules
 
 1. Only include attributes that differ from defaults (keep code clean)
 2. Always include `data-mode` and `data-color`
-3. For tiles: include all configured `data-tile-*` attributes in alphabetical order
-4. The script tag always points to: `https://homezerotech.github.io/Widget/Acceptance/embed.min.js`
-5. Pretty-print with one attribute per line, 2-space indentation
-6. Syntax-highlight the output (use a simple highlighter or `<pre>` with CSS classes for attribute names/values)
+3. For tiles: include all configured `data-tile-*` attributes grouped per tile
+4. The script tag points to `https://homezerotech.github.io/Widget/Acceptance/embed.min.js` for testing; for live use the partner switches `/Acceptance/` to `/Production/`. Surface this as a "Omgeving: Acceptatie / Productie" toggle.
+5. Pretty-print one attribute per line, 2-space indentation
+6. Syntax-highlight attribute names/values
 
-### Generated code format
+### Generated code format — Feenstra example (dropdown dual-flow)
 
 ```html
-<!-- HomeZero Widget — {{widget-type-label}} -->
+<!-- HomeZero Widget — Postcodeflow -->
 <hz-embed
   data-mode="scan"
-  data-color="#2A6DF4"
-  data-title="Ontdek jouw besparingsmogelijkheden"
-  data-tile-solarpanels-url="https://..."
-  data-tile-solarpanels-title="Zonnepanelen"
-  data-tile-heatpump-url="https://..."
-  data-tile-heatpump-title="Warmtepomp"
-  data-tiles-default="solarpanels"
-  data-cta1-text-scan="Bereken wat je bespaart"
-  data-cta2-show="true"
-  data-cta2-text="Direct contact (30 sec)"
-  data-google-search="true"
-  data-country="nl"
-  data-show-phone="true"
+  data-color="#e8762a"
+  data-button-radius="24px"
   data-open-new-tab="true"
+  data-title="Waarin ben je geïnteresseerd?"
+  data-tile-display="dropdown"
+  data-tiles-max-select="1"
+  data-tiles-label=""
+  data-tiles-default="airco"
+  data-tile-airco-title="Airco"
+  data-tile-airco-url="https://.../start?id=...&flow=offerte-airco"
+  data-tile-airco-cta2-url="https://.../start?id=...&flow=advies-airco"
+  data-tile-batterij-title="Thuisbatterij"
+  data-tile-batterij-url="https://.../start?id=...&flow=offerte-batterij"
+  data-tile-batterij-cta2-url="https://.../start?id=...&flow=advies-batterij"
+  data-tile-solarboiler-title="Zonnestroomboiler"
+  data-tile-solarboiler-url="https://.../start?id=...&flow=offerte-boiler"
+  data-cta1-text="Direct een offerte"
+  data-cta2-show="true"
+  data-cta2-action="flow"
+  data-cta2-text="Adviesgesprek aanvraag"
+  data-address-format="dutch"
+  data-show-email="true"
+  data-ai-chat-show="true"
+  data-ai-chat-text="Of chat met Fleur de Ai adviseur"
 ></hz-embed>
 <script defer src="https://homezerotech.github.io/Widget/Acceptance/embed.min.js"></script>
 ```
 
 ### Copy button behavior
-
-On click:
-1. Copy code to clipboard using `navigator.clipboard.writeText()`
-2. Change button label to "✓ Gekopieerd!" for 2 seconds
-3. Revert to "📋 Kopieer code"
+On click: copy via `navigator.clipboard.writeText()`, change label to "✓ Gekopieerd!" for 2s, revert.
 
 ---
 
 ## State Model
 
 ```typescript
-// Top-level config state
 interface WidgetConfig {
   mode: 'scan' | 'booking' | 'brochure' | 'classic';
-  
+
   // Style
-  color: string;           // hex, default "#2A6DF4"
-  gradientFrom?: string;   // hex, optional
-  gradientTo?: string;     // hex, optional
-  buttonRadius: number;    // px, default 10
+  color: string;            // hex, default "#2A6DF4"
+  gradientFrom?: string;
+  gradientTo?: string;
+  buttonRadius: number;     // px, default 10
   language: 'nl' | 'en' | 'fr' | 'de';
   openNewTab: boolean;
-  
+
   // Content
   title: string;
   subtitle: string;
-  
-  // Tiles (scan + optional for others)
+
+  // Tiles
   tiles: TileConfig[];
   tilesDefault: string[];          // pre-selected keys
   tilesEnabled: boolean;
-  tileDisplay: 'tiles' | 'large' | 'dropdown' | 'tags';  // data-tile-display (scan) / data-show-tiles (booking)
-  tilesLabel: string;              // data-tiles-label, default "Producten"
-  tilesMaxSelect: number;          // data-tiles-max-select, 0 = unlimited
-  
+  tileDisplay: 'large' | 'dropdown' | 'tags';
+  selectionMode: 'single' | 'multi';   // → tilesMaxSelect (single=1, multi=0). Forced 'single' for dropdown.
+  tilesLabel: string;              // default "Producten"; "" = no label
+  tilesMaxSelect: number;          // derived from selectionMode
+
   // Fields
   showPhone: boolean;
   phoneRequired: boolean;
@@ -495,94 +485,84 @@ interface WidgetConfig {
   checkboxTitle: string;
   checkboxShortTitle: string;
   checkboxRequired: boolean;
-  
-  // CTAs
-  cta1TextScan: string;
-  cta1TextBooking: string;
-  cta1Text: string;                    // booking + brochure mode
+
+  // CTAs (scan)
+  cta1Text: string;                // default "Bereken wat je bespaart"
+  cta1TextBooking: string;         // legacy booking-url switch
+  cta1ComboUrl: string;            // CTA1 target when >1 selected
   showCta2: boolean;
   cta2Text: string;
-  cta2Action: 'pico' | 'ai-chat';     // data-cta2-action
-  contactSkipAddress: boolean;
-  
+  cta2Action: 'flow' | 'booking' | 'pico';
+  cta2Url: string;                 // global secondary target (flow/booking)
+  cta2ComboUrl: string;            // CTA2 target when >1 selected
+  contactSkipAddress: boolean;     // pico only
+
+  // CTAs (booking + brochure)
+  cta1Text_single: string;         // booking/brochure single CTA text
+  successMessage: string;          // brochure
+
+  // AI-chat link (scan)
+  aiChatShow: boolean;             // default false
+  aiChatText: string;              // default "Of chat met onze AI adviseur"
+
   // Booking mode
   bookingUrl: string;
   bookingProvider: 'calendly' | 'google' | 'microsoft' | 'hubspot' | 'acuity' | 'other';
   passToUrl: boolean;
-  
-  // Brochure mode
-  successMessage: string;
-  
-  // Pico API (CTA2 direct-contact in scan mode + brochure mode)
-  picoKey: string;           // X-API-Key header value
+
+  // Pico API
+  picoKey: string;
   picoEnv: 'production' | 'acceptance';
-  picoFlowId: string;        // UUID — auto-extracted from tile URL when omitted
-  
+  picoFlowId: string;
+
   // Advanced
   installer: string;
   context: string;
+
+  // Embed environment
+  embedEnv: 'acceptance' | 'production';   // script src path
 }
 
 interface TileConfig {
-  key: string;          // e.g. "solarpanels"
-  title: string;        // e.g. "Zonnepanelen"
-  url: string;          // scan flow URL
-  bookingUrl?: string;  // optional external booking URL
+  key: string;          // e.g. "airco"
+  title: string;        // e.g. "Airco"
+  url: string;          // CTA1 primary leadflow URL — data-tile-{key}-url
+  cta2Url?: string;     // CTA2 secondary leadflow URL — data-tile-{key}-cta2-url
+  bookingUrl?: string;  // legacy CTA1 booking switch — data-tile-{key}-booking-url
   isDefault: boolean;
-  iconSvg?: string;     // base64-encoded custom SVG icon (data-tile-{key}-icon-svg)
+  iconSvg?: string;     // base64 custom SVG — data-tile-{key}-icon-svg
 }
 ```
 
-**Initialize** the config state with sensible defaults when a widget type is selected:
+**Defaults per mode:**
 
 ```typescript
 const DEFAULTS: Record<WidgetConfig['mode'], Partial<WidgetConfig>> = {
   scan: {
-    color: '#2A6DF4',
-    buttonRadius: 10,
-    language: 'nl',
-    openNewTab: true,
+    color: '#2A6DF4', buttonRadius: 10, language: 'nl', openNewTab: true,
     tiles: [
       { key: 'solarpanels', title: 'Zonnepanelen', url: '', isDefault: false },
       { key: 'heatpump', title: 'Warmtepomp', url: '', isDefault: false },
     ],
-    tilesEnabled: true,
-    tileDisplay: 'tiles',
+    tilesEnabled: true, tileDisplay: 'large', selectionMode: 'single',
     tilesLabel: 'Producten',
-    tilesMaxSelect: 0,
-    showPhone: true,
-    showEmail: true,
-    addressFormat: 'dutch',
-    cta1TextScan: 'Bereken wat je bespaart',
+    showPhone: false, showEmail: true, addressFormat: 'dutch',
+    cta1Text: 'Bereken wat je bespaart',
     cta1TextBooking: 'Plan een gratis adviesgesprek',
-    showCta2: false,
-    cta2Text: 'Direct contact (30 sec)',
+    showCta2: false, cta2Text: 'Direct contact (30 sec)', cta2Action: 'flow',
+    aiChatShow: false, aiChatText: 'Of chat met onze AI adviseur',
   },
   booking: {
-    color: '#2A6DF4',
-    buttonRadius: 10,
-    language: 'nl',
-    openNewTab: true,
-    showPhone: true,
-    phoneRequired: true,
-    cta1Text: 'Plan een afspraak',
+    color: '#2A6DF4', buttonRadius: 10, language: 'nl', openNewTab: true,
+    showPhone: true, phoneRequired: true, cta1Text_single: 'Plan een afspraak',
     bookingProvider: 'calendly',
   },
   brochure: {
-    color: '#2A6DF4',
-    buttonRadius: 10,
-    language: 'nl',
-    showEmail: true,
-    cta1Text: 'Stuur mij de brochure',
-    successMessage: 'De brochure is onderweg naar jouw inbox!',
-    picoEnv: 'production',
+    color: '#2A6DF4', buttonRadius: 10, language: 'nl', showEmail: true,
+    cta1Text_single: 'Stuur mij de brochure',
+    successMessage: 'De brochure is onderweg naar jouw inbox!', picoEnv: 'production',
   },
-  classic: {
-    color: '#2A6DF4',
-    buttonRadius: 10,
-    language: 'nl',
-    addressFormat: 'dutch',
-  },
+  classic: { color: '#2A6DF4', buttonRadius: 10, language: 'nl', addressFormat: 'dutch' },
 };
 ```
 
@@ -593,10 +573,11 @@ const DEFAULTS: Record<WidgetConfig['mode'], Partial<WidgetConfig>> = {
 ```typescript
 function generateEmbedCode(config: WidgetConfig): string {
   const attrs: [string, string][] = [];
-  
+  const maxSelect = config.tileDisplay === 'dropdown' ? 1 : (config.selectionMode === 'single' ? 1 : 0);
+
   attrs.push(['data-mode', config.mode]);
   attrs.push(['data-color', config.color]);
-  
+
   if (config.gradientFrom) attrs.push(['data-gradient-from', config.gradientFrom]);
   if (config.gradientTo) attrs.push(['data-gradient-to', config.gradientTo]);
   if (config.buttonRadius !== 10) attrs.push(['data-button-radius', `${config.buttonRadius}px`]);
@@ -604,21 +585,24 @@ function generateEmbedCode(config: WidgetConfig): string {
   if (config.openNewTab) attrs.push(['data-open-new-tab', 'true']);
   if (config.title) attrs.push(['data-title', config.title]);
   if (config.subtitle) attrs.push(['data-subtitle', config.subtitle]);
-  
+
   if (config.mode === 'scan') {
-    // Tiles
-    if (config.tileDisplay && config.tileDisplay !== 'tiles') attrs.push(['data-tile-display', config.tileDisplay]);
-    if (config.tilesLabel && config.tilesLabel !== 'Producten') attrs.push(['data-tiles-label', config.tilesLabel]);
-    if (config.tilesMaxSelect > 0) attrs.push(['data-tiles-max-select', String(config.tilesMaxSelect)]);
+    // Selector
+    if (config.tileDisplay !== 'large') attrs.push(['data-tile-display', config.tileDisplay]);
+    if (config.tilesLabel !== 'Producten') attrs.push(['data-tiles-label', config.tilesLabel]); // "" respected
+    if (maxSelect === 1) attrs.push(['data-tiles-max-select', '1']);
+
+    // Tiles (grouped per tile)
     config.tiles.forEach(tile => {
       if (tile.url) attrs.push([`data-tile-${tile.key}-url`, tile.url]);
       attrs.push([`data-tile-${tile.key}-title`, tile.title]);
+      if (tile.cta2Url) attrs.push([`data-tile-${tile.key}-cta2-url`, tile.cta2Url]);
       if (tile.bookingUrl) attrs.push([`data-tile-${tile.key}-booking-url`, tile.bookingUrl]);
       if (tile.iconSvg) attrs.push([`data-tile-${tile.key}-icon-svg`, tile.iconSvg]);
     });
     const defaults = config.tiles.filter(t => t.isDefault).map(t => t.key);
     if (defaults.length) attrs.push(['data-tiles-default', defaults.join(',')]);
-    
+
     // Address
     if (config.addressFormat === 'google') {
       attrs.push(['data-google-search', 'true']);
@@ -626,7 +610,7 @@ function generateEmbedCode(config: WidgetConfig): string {
     } else if (config.addressFormat === 'international') {
       attrs.push(['data-address-format', 'international']);
     }
-    
+
     // Fields
     if (config.showPhone) {
       attrs.push(['data-show-phone', 'true']);
@@ -636,31 +620,47 @@ function generateEmbedCode(config: WidgetConfig): string {
       attrs.push(['data-show-email', 'true']);
       if (config.emailRequired) attrs.push(['data-email-required', 'true']);
     }
-    
-    // CTAs
-    if (config.cta1TextScan !== 'Bereken wat je bespaart') attrs.push(['data-cta1-text-scan', config.cta1TextScan]);
-    if (config.cta1TextBooking !== 'Plan een gratis adviesgesprek') attrs.push(['data-cta1-text-booking', config.cta1TextBooking]);
+
+    // CTA1
+    if (config.cta1Text !== 'Bereken wat je bespaart') attrs.push(['data-cta1-text', config.cta1Text]);
+    if (maxSelect !== 1 && config.cta1ComboUrl) attrs.push(['data-cta1-combo-url', config.cta1ComboUrl]);
+    if (config.tiles.some(t => t.bookingUrl) && config.cta1TextBooking !== 'Plan een gratis adviesgesprek') {
+      attrs.push(['data-cta1-text-booking', config.cta1TextBooking]);
+    }
+
+    // CTA2
     if (config.showCta2) {
       attrs.push(['data-cta2-show', 'true']);
       if (config.cta2Text) attrs.push(['data-cta2-text', config.cta2Text]);
-      if (config.cta2Action && config.cta2Action !== 'pico') attrs.push(['data-cta2-action', config.cta2Action]);
-      if (config.cta2Action !== 'ai-chat' && config.contactSkipAddress) attrs.push(['data-contact-skip-address', 'true']);
+      attrs.push(['data-cta2-action', config.cta2Action]); // flow | booking | pico
+      if (config.cta2Action !== 'pico') {
+        if (config.cta2Url) attrs.push(['data-cta2-url', config.cta2Url]);
+        if (maxSelect !== 1 && config.cta2ComboUrl) attrs.push(['data-cta2-combo-url', config.cta2ComboUrl]);
+      } else if (config.contactSkipAddress) {
+        attrs.push(['data-contact-skip-address', 'true']);
+      }
+    }
+
+    // AI-chat link
+    if (config.aiChatShow) {
+      attrs.push(['data-ai-chat-show', 'true']);
+      if (config.aiChatText) attrs.push(['data-ai-chat-text', config.aiChatText]);
     }
   }
-  
+
   if (config.mode === 'booking') {
     if (config.bookingUrl) attrs.push(['data-booking-url', config.bookingUrl]);
     if (config.bookingProvider !== 'other') attrs.push(['data-booking-provider', config.bookingProvider]);
-    if (config.cta1Text !== 'Plan een afspraak') attrs.push(['data-cta1-text', config.cta1Text]);
+    if (config.cta1Text_single !== 'Plan een afspraak') attrs.push(['data-cta1-text', config.cta1Text_single]);
     if (config.showPhone) attrs.push(['data-show-phone', 'true']);
     if (config.phoneRequired) attrs.push(['data-phone-required', 'true']);
+    if (config.showEmail) attrs.push(['data-show-email', 'true']);
     if (config.passToUrl) attrs.push(['data-pass-to-url', 'true']);
     // Tiles — booking mode uses data-show-tiles (not data-tile-display)
     if (config.tilesEnabled && config.tiles.length > 0) {
-      const showTilesValue = config.tileDisplay === 'tiles' ? 'true' : config.tileDisplay;
-      attrs.push(['data-show-tiles', showTilesValue]);
-      if (config.tilesLabel && config.tilesLabel !== 'Producten') attrs.push(['data-tiles-label', config.tilesLabel]);
-      if (config.tilesMaxSelect > 0) attrs.push(['data-tiles-max-select', String(config.tilesMaxSelect)]);
+      attrs.push(['data-show-tiles', config.tileDisplay === 'large' ? 'large' : config.tileDisplay]);
+      if (config.tilesLabel !== 'Producten') attrs.push(['data-tiles-label', config.tilesLabel]);
+      if (maxSelect === 1) attrs.push(['data-tiles-max-select', '1']);
       config.tiles.forEach(tile => {
         if (tile.url) attrs.push([`data-tile-${tile.key}-url`, tile.url]);
         attrs.push([`data-tile-${tile.key}-title`, tile.title]);
@@ -670,37 +670,38 @@ function generateEmbedCode(config: WidgetConfig): string {
       if (defaults.length) attrs.push(['data-tiles-default', defaults.join(',')]);
     }
   }
-  
+
   if (config.mode === 'brochure') {
-    if (config.cta1Text !== 'Stuur mij de brochure') attrs.push(['data-cta1-text', config.cta1Text]);
+    if (config.cta1Text_single !== 'Stuur mij de brochure') attrs.push(['data-cta1-text', config.cta1Text_single]);
     if (config.showName) attrs.push(['data-show-name', 'true']);
     if (config.showPhone) attrs.push(['data-show-phone', 'true']);
     if (config.successMessage !== 'De brochure is onderweg naar jouw inbox!') {
       attrs.push(['data-success-message', config.successMessage]);
     }
   }
-  
-  // Pico API — scan (CTA2) and brochure modes
-  if ((config.mode === 'scan' && config.showCta2) || config.mode === 'brochure') {
+
+  // Pico API — scan (CTA2=pico) and brochure modes
+  if ((config.mode === 'scan' && config.showCta2 && config.cta2Action === 'pico') || config.mode === 'brochure') {
     if (config.picoKey) attrs.push(['data-pico-key', config.picoKey]);
-    if (config.picoEnv && config.picoEnv !== 'production') attrs.push(['data-pico-env', config.picoEnv]);
+    if (config.picoEnv !== 'production') attrs.push(['data-pico-env', config.picoEnv]);
     if (config.picoFlowId) attrs.push(['data-pico-flow-id', config.picoFlowId]);
   }
-  
+
   // Checkbox
   if (config.checkboxTitle) {
     attrs.push(['data-checkbox-title', config.checkboxTitle]);
     if (config.checkboxShortTitle) attrs.push(['data-checkbox-shorttitle', config.checkboxShortTitle]);
     if (config.checkboxRequired) attrs.push(['data-checkbox-required', 'true']);
   }
-  
+
   // Advanced
   if (config.installer) attrs.push(['data-installer', config.installer]);
   if (config.context) attrs.push(['data-context', config.context]);
-  
+
   const attrLines = attrs.map(([k, v]) => `  ${k}="${v}"`).join('\n');
-  const scriptSrc = 'https://homezerotech.github.io/Widget/Acceptance/embed.min.js';
-  
+  const envPath = config.embedEnv === 'production' ? 'Production' : 'Acceptance';
+  const scriptSrc = `https://homezerotech.github.io/Widget/${envPath}/embed.min.js`;
+
   return `<!-- HomeZero Widget -->\n<hz-embed\n${attrLines}\n></hz-embed>\n<script defer src="${scriptSrc}"></script>`;
 }
 ```
@@ -710,157 +711,114 @@ function generateEmbedCode(config: WidgetConfig): string {
 ## UX Details
 
 ### Section Accordion
+Header (bold + chevron), animated body (`max-height` transition), open by default, remembers state per session.
 
-Each config section has:
-- **Header:** bold label + chevron icon (rotates on open/close)
-- **Body:** smooth height animation (`max-height` transition)
-- **State:** open by default, remembers state per session
+### Input validation in the generator (mirror the widget's own checks)
 
-### Input validation in the generator
+The widget validates config at runtime (`validateScanConfig`) and logs `console.warn` while degrading gracefully. The generator should surface the same issues **before** the partner copies the code:
 
-- URL fields: show a warning icon if value is non-empty and not a valid URL
-- Required fields for brochure mode: highlight Pico API key with an asterisk
-- If `data-pico-key` is empty and CTA2 is enabled (scan mode): show a warning "Zonder Pico API key worden directe contactmeldingen niet verwerkt"
-- If `data-pico-key` is empty in brochure mode: show a warning "Zonder Pico API key kan de brochure niet worden verstuurd"
+- URL fields: warning icon if non-empty and not a valid http(s) URL.
+- Dropdown + multi selected: not allowed — force single, show note "Dropdown is altijd single-select".
+- Multi-select without `data-cta1-combo-url`: warn "Bij meerdere geselecteerde producten valt CTA1 terug op het eerste product. Stel een combinatie-flow in."
+- `cta2-show` + action `flow`/`booking` but no per-tile cta2-url, no combo-url and no global cta2-url: warn "Secundaire CTA heeft geen doel en blijft verborgen."
+- `cta2-action="pico"` and empty `data-pico-key`: warn "Zonder Pico API key worden directe contactmeldingen niet verwerkt."
+- Brochure mode empty `data-pico-key`: warn "Zonder Pico API key kan de brochure niet worden verstuurd."
+- Any tile missing a primary `url`: warn per tile.
 
 ### Color picker
-
-Use an `<input type="color">` styled as a color swatch. Alongside it, a text input showing the hex value. Both are two-way synced.
+`<input type="color">` styled as a swatch + two-way-synced hex text input.
 
 ### Tile drag-and-drop ordering
-
-Tiles can be reordered by drag-and-drop. Use the HTML5 drag API (no external library). Reordering updates the order of `data-tile-*` attributes in the generated code.
+HTML5 drag API. Reordering updates the order of `data-tile-*` groups in the output.
 
 ---
 
 ## Header
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│  [HomeZero logo/wordmark]  Widget Generator                 │
-│                                                [v2.0 badge] │
-└─────────────────────────────────────────────────────────────┘
-```
-
-Height: `56px`. White background. Border-bottom: `1px solid #e5e7eb`.
+White, `56px`, border-bottom `1px solid #e5e7eb`. Left: logo + "Widget Generator". Right: `v2.1` badge + the "Acceptatie / Productie" environment toggle.
 
 ---
 
 ## Empty States
 
-**When no tiles are configured (scan mode):**
-Show a dashed border placeholder in the preview where the tile grid would be, with the text "Voeg producten toe in de configuratie".
-
-**When booking URL is empty (booking mode):**
-Show a placeholder booking card in the preview with "Vul een booking URL in".
-
-**When Pico API key is empty (brochure mode):**
-Show a placeholder form with a note "Vul de Pico API key in om de brochure te kunnen versturen".
+- **No tiles (scan):** dashed placeholder in preview "Voeg producten toe in de configuratie".
+- **No booking URL (booking):** placeholder card "Vul een booking URL in".
+- **No Pico key (brochure):** placeholder note "Vul de Pico API key in om de brochure te kunnen versturen".
 
 ---
 
 ## Validation and Completeness Indicator
 
-At the bottom of the config panel, show a **completeness indicator**:
+Bottom of config panel:
 
 ```
 Configuratie: ████████░░  80% compleet
-⚠ Scan URL ontbreekt voor 2 tegels
-⚠ Installer ID niet ingevuld (optioneel)
+⚠ Primaire flow URL ontbreekt voor 2 maatregelen
+⚠ Combinatie-flow URL niet ingevuld (multi-select)
 ```
 
-This updates dynamically. Green checkmark when 100% complete.
+Green checkmark at 100%.
 
 ---
 
 ## Responsiveness
 
-**Desktop (>= 1024px):** Full three-column layout as described.
-
-**Tablet (768px–1023px):** Config panel + preview stacked vertically. Sidebar becomes a horizontal tab bar at top.
-
-**Mobile (< 768px):** Same as tablet. Preview is collapsed behind a "Bekijk preview" toggle button. Config is shown by default.
+- **Desktop (≥1024px):** three columns.
+- **Tablet (768–1023px):** config + preview stacked; sidebar becomes a top tab bar.
+- **Mobile (<768px):** preview collapsed behind a "Bekijk preview" toggle; config shown by default.
 
 ---
 
 ## Page Title and Meta
-
 - Title: `HomeZero Widget Generator`
 - Description: `Configureer en embed lead-capture widgets op jouw website.`
-- No indexing (`noindex, nofollow`) — this is an internal tool
+- `noindex, nofollow` — internal tool.
 
 ---
 
 ## Notes on the Live Preview
 
-The live preview is a **React reimplementation** of the widget — it does NOT load `embed.js` or use an iframe. This is intentional:
+The live preview is a **React reimplementation** of the widget — it does NOT load `embed.js` or use an iframe (instant updates, no CORS, full styling control). Keep it **in sync** with the widget's HTML/CSS. When `embed.js` changes, update the preview.
 
-- Instant updates with no delay
-- No CORS / same-origin issues
-- No dependency on the production script URL
-- Full control over styling
-
-The preview must be kept **in sync** with the actual widget's HTML structure and CSS. When `embed.js` is updated, the preview components must be updated to match.
-
-Consider adding a small note below the preview: "De preview is een benadering. Exacte weergave kan variëren door je website-stijlen."
+Show below the preview: "De preview is een benadering. Exacte weergave kan variëren door je website-stijlen." Add a small **"Simuleer AI chat"** toggle so partners can preview the AI-chat link visibility.
 
 ---
 
 ## AI Iconen Genereren
 
-Each tile can have a custom SVG icon instead of the built-in icon. The widget reads the `data-tile-{key}-icon-svg` attribute, base64-decodes it with `atob()`, and renders it as an inline SVG.
+Each tile can have a custom SVG icon instead of the built-in one. The widget reads `data-tile-{key}-icon-svg`, base64-decodes it with `atob()`, and renders it inline. Built-in icon is the fallback.
 
 ### How custom icons work in the widget
+1. `parseTilesFromElement()` reads `data-tile-{key}-icon-svg` → `tile.iconSvg`.
+2. `decodeTileIcon(tile)` decodes with `atob()`, falls back to the built-in icon if absent/malformed.
+3. The SVG is injected into a fixed-size container (large grid 36×36, tile grid 28×28, dropdown/tag badge 18×18 inside a 32×32 badge).
 
-1. Widget calls `parseTilesFromElement()` → reads `data-tile-{key}-icon-svg` → stored on `tile.iconSvg`
-2. When rendering, `decodeTileIcon(tile)` decodes with `atob()`, falls back to built-in icon if absent or malformed
-3. The SVG is injected into a fixed-size container (28×28 px for tile grid, 22×22 for tag chips, 20×20 for dropdown)
+### Workflow in the generator
 
-### Workflow in the Lovable generator
+**Option A — Upload SVG file:** file input (`image/svg+xml`) per tile → read as text → `btoa(svgText)` → `tile.iconSvg`; preview immediately.
 
-**Option A — Upload SVG file:**
-- Show a file input (accept `image/svg+xml`) per tile in the expanded tile row
-- On file select: read file as text → `btoa(svgText)` → store in `tile.iconSvg`
-- Preview the icon immediately in the tile row using the decoded SVG
-
-**Option B — AI genereren (Gemini / Nano Banana):**
-
-Use the Gemini API (model: `gemini-2.0-flash-preview-image-generation`, also called "Nano Banana") to generate a product icon from a text prompt.
-
-Flow:
-1. Partner clicks "AI icoon genereren" button on a tile row
-2. A modal opens with:
-   - Text field: "Beschrijf het icoon" (pre-filled with a smart default per tile key, e.g. "zonnepaneel op een dak, simpele lijnstijl, blauw")
-   - Optional: "Website URL" — if filled, scrape the brand color from the site's CSS or meta tags and use it in the prompt
-   - "Genereer" button
-3. Call Gemini image generation API with a prompt like:
+**Option B — AI genereren (Gemini / Nano Banana):** model `gemini-2.0-flash-preview-image-generation`.
+1. "AI icoon genereren" button per tile row.
+2. Modal: prompt field (smart default per key), optional "Website URL" to scrape brand color, "Genereer".
+3. Prompt template:
    ```
    Generate a clean, minimal line-art SVG icon of a {product} suitable for a website widget.
-   Style: single-color stroke, no fill, modern, 28x28px viewBox.
-   Color: {brandColor or "currentColor"}.
+   Style: single-color stroke, no fill, modern, 24x24 viewBox. Color: currentColor.
    Output: raw SVG markup only.
    ```
-4. If Gemini returns a raster PNG instead of SVG: convert using a client-side vectorization step, OR use **Recraft.ai** API which natively produces SVG output.
-5. Display generated icon in a preview. Partner clicks "Gebruik dit icoon" to accept.
-6. On accept: clean the SVG markup, base64-encode with `btoa()`, store in `tile.iconSvg`
+4. If a raster PNG is returned, vectorize client-side OR use **Recraft.ai** (`recraftv3_svg`, `POST https://external.api.recraft.ai/v1/images/generations`) which returns SVG natively.
+5. Preview → "Gebruik dit icoon" → clean markup, `btoa()`, store in `tile.iconSvg`.
 
-**Recraft.ai as SVG-native alternative:**
-- API endpoint for SVG generation: `POST https://external.api.recraft.ai/v1/images/generations`
-- Model: `recraftv3_svg`
-- Returns SVG directly — no rasterization/vectorization step needed
-- Requires Recraft API key (store in generator's config or env)
+**Default prompts per key:**
 
-**Default prompts per tile key:**
-
-| Key | Default prompt hint |
+| Key | Prompt hint |
 |---|---|
 | `solarpanels` | "solar panels on a rooftop, minimal line art" |
-| `heatpump` | "heat pump unit, minimal line art" |
+| `heatpump` | "heat pump outdoor unit, minimal line art" |
 | `homebattery` | "home battery pack, minimal line art" |
 | `carcharger` | "electric car charger, minimal line art" |
-| `heatpump` | "heat pump outdoor unit, minimal line art" |
-| `ems` | "energy management system, circuit with lightning bolt, minimal line art" |
 | `airconditioning` | "air conditioning unit, minimal line art" |
+| `ems` | "energy management system, circuit with lightning bolt, minimal line art" |
 | `floorinsulation` | "cross-section of floor insulation layers, minimal line art" |
 | `wallinsulation` | "brick wall with insulation cavity, minimal line art" |
 | `roofinsulation` | "roof cross-section with insulation, minimal line art" |
@@ -876,28 +834,27 @@ Flow:
 
 - [ ] Three-column layout renders correctly on desktop
 - [ ] All four widget types switch correctly via sidebar
-- [ ] All config sections are present and functional per widget type
+- [ ] All config sections present and functional per widget type
 - [ ] Live preview updates in real-time on every config change
-- [ ] Tile grid renders with correct icons (SVG from embed.js)
-- [ ] Tile add/remove/reorder works
-- [ ] Booking URL tile toggle (booking-url per tile) works
-- [ ] Tile display selector (tiles / large / dropdown / tags) switches preview correctly
-- [ ] Large tile variant shows 4-column radio-circle grid (2×2 on mobile)
-- [ ] Tags chip variant shows colored pill chips with icon, name and × in preview
-- [ ] Dropdown variant shows multi-select dropdown in preview
-- [ ] Booking mode emits `data-show-tiles` (not `data-tile-display`) for tile config
-- [ ] Max 4 tiles enforced in UI — add button disabled when 4 tiles present
-- [ ] Custom SVG icon upload works per tile (file input → base64 → preview)
-- [ ] AI icon generation modal opens, generates, and stores base64 SVG
-- [ ] `data-tile-display` and `data-tiles-label` attributes appear in generated code
-- [ ] `data-tile-{key}-icon-svg` attribute appears when custom icon is set
-- [ ] Dual CTA renders correctly in scan mode preview
-- [ ] Direct contact CTA toggle and sub-fields work
-- [ ] Color picker updates preview in real-time
-- [ ] Gradient toggle adds/removes gradient from preview
-- [ ] Button radius slider updates preview in real-time
-- [ ] Embed code generates correctly for all four modes
-- [ ] Copy button copies code and shows confirmation
+- [ ] Tile/dropdown/tags selectors render with correct SVG icons from embed.js
+- [ ] Dropdown shows the selected icon in a grey badge in the trigger; single-select enforced
+- [ ] Tags chip variant shows pill chips with icon, name and ×
+- [ ] large variant: 4-column radio grid (2×2 mobile)
+- [ ] Selection-mode (single/multi) maps to `data-tiles-max-select`; hidden/forced single for dropdown
+- [ ] Per-tile **primary URL** and **2e CTA URL** fields work; legacy booking-url behind an advanced toggle
+- [ ] Dual CTA: CTA2 routes via `flow`/`booking`/`pico`; auto-hides when no target resolves
+- [ ] `data-cta1-combo-url` / `data-cta2-combo-url` emitted only in multi-select
+- [ ] Global `data-cta2-url` reuse scenario works
+- [ ] AI-chat link section: `data-ai-chat-show` (default false) + `data-ai-chat-text`; preview link is centered, underlined, primary color
+- [ ] Secondary CTA preview is an outline in the primary color (transparent bg)
+- [ ] "(Optioneel)" suffix shown for non-required phone/email
+- [ ] Booking mode emits `data-show-tiles` (not `data-tile-display`)
+- [ ] Max 4 tiles enforced in UI
+- [ ] Custom SVG icon upload + AI generation store base64 SVG
+- [ ] Generator validation mirrors `validateScanConfig` warnings
+- [ ] Environment toggle switches script src between `/Acceptance/` and `/Production/`
+- [ ] Embed code generates correctly for all four modes; copy button works
+- [ ] Color picker, gradient toggle, radius slider update preview in real-time
 - [ ] Mobile layout renders correctly
-- [ ] No TypeScript errors
-- [ ] No console errors
+- [ ] No TypeScript errors, no console errors
+```

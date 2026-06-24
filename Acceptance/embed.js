@@ -75,6 +75,7 @@
     measurementIcons.laadpaal = measurementIcons.carcharger;
     measurementIcons.zon = measurementIcons.solarpanels;
     measurementIcons.advies = measurementIcons.advisormodule;
+    measurementIcons.airco = measurementIcons.airconditioning;
     measurementIcons.ems = `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2ZM11 16V13H8L13 8V11H16L11 16ZM4 12C4 16.4183 7.58172 20 12 20C16.4183 20 20 16.4183 20 12C20 7.58172 16.4183 4 12 4C7.58172 4 4 7.58172 4 12Z" fill="currentColor"/></svg>`;
     measurementIcons.meterkast = `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M4 3C3.44772 3 3 3.44772 3 4V20C3 20.5523 3.44772 21 4 21H20C20.5523 21 21 20.5523 21 20V4C21 3.44772 20.5523 3 20 3H4ZM5 5H19V19H5V5ZM8 8C8 7.44772 8.44772 7 9 7H10C10.5523 7 11 7.44772 11 8C11 8.55228 10.5523 9 10 9H9C8.44772 9 8 8.55228 8 8ZM13 8C13 7.44772 13.4477 7 14 7H15C15.5523 7 16 7.44772 16 8C16 8.55228 15.5523 9 15 9H14C13.4477 9 13 8.55228 13 8ZM9 11C8.44772 11 8 11.4477 8 12C8 12.5523 8.44772 13 9 13H15C15.5523 13 16 12.5523 16 12C16 11.4477 15.5523 11 15 11H9ZM9 15C8.44772 15 8 15.4477 8 16C8 16.5523 8.44772 17 9 17H15C15.5523 17 16 16.5523 16 16C16 15.4477 15.5523 15 15 15H9Z" fill="currentColor"/></svg>`;
 
@@ -93,6 +94,7 @@
             emailLabel: "E-mail",
             dropdownLabel: "Make a choice",
             dropdownPlaceholder: "Make a choice",
+            optional: "(Optional)",
             addressLabel: "Address",
             addressPlaceholder: "Start typing your address...",
             validation: {
@@ -122,6 +124,7 @@
             emailLabel: "E-mail",
             dropdownLabel: "Maak een keuze",
             dropdownPlaceholder: "Maak een keuze",
+            optional: "(Optioneel)",
             addressLabel: "Adres",
             addressPlaceholder: "Begin met typen van het adres...",
             validation: {
@@ -151,6 +154,7 @@
             emailLabel: "E-mail",
             dropdownLabel: "Faites un choix",
             dropdownPlaceholder: "Faites un choix",
+            optional: "(Facultatif)",
             addressLabel: "Adresse",
             addressPlaceholder: "Commencez à taper votre adresse...",
             validation: {
@@ -180,6 +184,7 @@
             emailLabel: "E-Mail",
             dropdownLabel: "Treffen Sie eine Wahl",
             dropdownPlaceholder: "Treffen Sie eine Wahl",
+            optional: "(Optional)",
             addressLabel: "Adresse",
             addressPlaceholder: "Beginnen Sie mit der Eingabe Ihrer Adresse...",
             validation: {
@@ -1623,10 +1628,19 @@
         optionsPanel.className = 'dropdown-options';
         optionsPanel.style.cssText = 'position:absolute;top:100%;left:0;width:100%;background:#fff;border-radius:8px;box-shadow:0 0 20px rgba(5,35,76,0.14);max-height:220px;overflow-y:auto;display:none;z-index:1000;padding:6px;box-sizing:border-box;';
 
+        function iconBadge(tile) {
+            const raw = decodeTileIcon(tile);
+            if (!raw) return '';
+            const svg = raw.replace('<svg', '<svg aria-hidden="true" style="width:18px;height:18px;"');
+            return '<span class="hz-dd-icon-badge">' + svg + '</span>';
+        }
+
         function updateTrigger() {
             const sel = tiles.filter(function (t) { return selectedTilesSet.has(t.key); });
             if (sel.length === 0) {
                 trigger.innerHTML = '<div class="selected-content"><span style="color:#a2acc1;font-weight:500;">Selecteer een product...</span></div>' + CHEVRON;
+            } else if (sel.length === 1) {
+                trigger.innerHTML = '<div class="selected-content" style="display:flex;align-items:center;gap:10px;overflow:hidden;max-width:calc(100% - 24px);">' + iconBadge(sel[0]) + '<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + sel[0].title + '</span></div>' + CHEVRON;
             } else {
                 const names = sel.map(function (t) { return t.title; }).join(', ');
                 trigger.innerHTML = '<div class="selected-content" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:calc(100% - 24px);"><span>' + names + '</span></div>' + CHEVRON;
@@ -1641,15 +1655,15 @@
             optEl.style.cssText = 'padding:10px 12px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;font-size:14px;color:#7585a3;font-weight:500;border-radius:8px;transition:background-color 0.15s;';
             if (isSelected) { optEl.style.backgroundColor = primaryColor; optEl.style.color = contrast; }
 
-            const iconRaw = decodeTileIcon(tile);
-            const icon = iconRaw ? iconRaw.replace('<svg', '<svg aria-hidden="true" style="width:18px;height:18px;flex-shrink:0;margin-right:8px;"') : '';
+            const icon = iconBadge(tile);
 
             const content = document.createElement('div');
             content.className = 'option-content';
-            content.style.cssText = 'display:flex;align-items:center;';
+            content.style.cssText = 'display:flex;align-items:center;gap:10px;';
             content.innerHTML = icon + '<span>' + tile.title + '</span>';
 
             const ck = document.createElement('svg');
+            ck.setAttribute('class', 'dd-check');
             ck.setAttribute('viewBox', '0 0 24 24');
             ck.setAttribute('width', '18');
             ck.setAttribute('height', '18');
@@ -1678,7 +1692,7 @@
                             firstEl.classList.remove('selected');
                             firstEl.style.backgroundColor = '';
                             firstEl.style.color = '#7585a3';
-                            const firstCk = firstEl.querySelector('svg:last-child');
+                            const firstCk = firstEl.querySelector('.dd-check');
                             if (firstCk) firstCk.style.display = 'none';
                         }
                     }
@@ -1921,6 +1935,7 @@
                     title: element.getAttribute('data-tile-' + key + '-title') || key,
                     url: attr.value,
                     bookingUrl: element.getAttribute('data-tile-' + key + '-booking-url') || '',
+                    cta2Url: element.getAttribute('data-tile-' + key + '-cta2-url') || '',
                     iconSvg: element.getAttribute('data-tile-' + key + '-icon-svg') || '',
                 };
             })
@@ -1959,8 +1974,9 @@
     }
 
     function buildContactFieldsHtml(showPhone, showEmail, phoneRequired, emailRequired, selectedLang) {
-        const phoneLabel = selectedLang.phoneLabel + (phoneRequired ? '<span>*</span>' : '');
-        const emailLabel = selectedLang.emailLabel + (emailRequired ? '<span>*</span>' : '');
+        const optionalSuffix = ' <span class="embed-label-optional">' + (selectedLang.optional || '(Optioneel)') + '</span>';
+        const phoneLabel = selectedLang.phoneLabel + (phoneRequired ? '<span>*</span>' : optionalSuffix);
+        const emailLabel = selectedLang.emailLabel + (emailRequired ? '<span>*</span>' : optionalSuffix);
         if (showPhone && showEmail) {
             return '<div class="embed-row"><div class="embed-col"><div class="embed-flex-container">' +
                 '<div class="embed-form-container"><label for="telefoon" class="embed-label-bold">' + phoneLabel + '</label>' +
@@ -3223,34 +3239,82 @@
         const selectedLang = translations[config.language] || translations.nl;
         const dutchVal = translations.dutchValidation;
 
-        const cta1TextScan = element.getAttribute('data-cta1-text-scan') || 'Bereken wat je bespaart';
+        // CTA texts (data-cta1-text is the new unified name; -scan kept for backward-compat)
+        const cta1Text = element.getAttribute('data-cta1-text')
+            || element.getAttribute('data-cta1-text-scan') || 'Bereken wat je bespaart';
         const cta1TextBooking = element.getAttribute('data-cta1-text-booking') || 'Plan een gratis adviesgesprek';
-        const showCta2 = element.getAttribute('data-cta2-show') === 'true';
+        let showCta2 = element.getAttribute('data-cta2-show') === 'true';
         const cta2Text = element.getAttribute('data-cta2-text') || 'Direct contact (30 sec)';
-        const cta2Action = element.getAttribute('data-cta2-action') || 'pico';
+        let cta2Action = element.getAttribute('data-cta2-action') || 'pico';
+
+        // Unified secondary / combination flow URLs
+        const cta2UrlGlobal = element.getAttribute('data-cta2-url') || '';
+        const cta1ComboUrl = element.getAttribute('data-cta1-combo-url') || '';
+        const cta2ComboUrl = element.getAttribute('data-cta2-combo-url') || '';
+
+        // AI-chat text link (decoupled from the CTA2 slot, default off)
+        let aiChatShow = element.getAttribute('data-ai-chat-show') === 'true';
+        let aiChatText = element.getAttribute('data-ai-chat-text') || 'Of chat met onze AI adviseur';
+
+        // Backward-compat: cta2-action="ai-chat" now maps to the dedicated AI-chat link
+        if (cta2Action === 'ai-chat') {
+            console.warn('[HomeZero embed] data-cta2-action="ai-chat" is verouderd; gebruik data-ai-chat-show="true" + data-ai-chat-text.');
+            aiChatShow = true;
+            if (element.getAttribute('data-cta2-text')) aiChatText = cta2Text;
+            showCta2 = false;
+        }
+
         const contactSkipAddress = element.getAttribute('data-contact-skip-address') === 'true';
         const picoKey = element.getAttribute('data-pico-key') || '';
         const picoEnv = element.getAttribute('data-pico-env') || 'production';
         const picoFlowIdOverride = element.getAttribute('data-pico-flow-id') || '';
         const tilesDefault = (element.getAttribute('data-tiles-default') || '').split(',').map(function (k) { return k.trim(); }).filter(Boolean);
-        const tilesMaxSelect = parseInt(element.getAttribute('data-tiles-max-select') || '0', 10) || 0;
+        let tilesMaxSelect = parseInt(element.getAttribute('data-tiles-max-select') || '0', 10) || 0;
         const tileDisplay = element.getAttribute('data-tile-display') || 'large';
-        const tilesLabel = element.getAttribute('data-tiles-label') || 'Producten';
+        const tilesLabel = element.hasAttribute('data-tiles-label')
+            ? element.getAttribute('data-tiles-label') : 'Producten';
+
+        // Dropdown is single-select only
+        if (tileDisplay === 'dropdown' && tilesMaxSelect !== 1) {
+            if (tilesMaxSelect > 1) {
+                console.warn('[HomeZero embed] dropdown is single-select; data-tiles-max-select wordt geforceerd naar 1.');
+            }
+            tilesMaxSelect = 1;
+        }
 
         const tiles = parseTilesFromElement(element);
-        const selectedTilesSet = new Set(tilesDefault.filter(function (k) { return tiles.some(function (t) { return t.key === k; }); }));
+        // Optional preselection via data-tiles-default (comma-separated keys). Not required:
+        // omit it for an empty dropdown/placeholder. Capped to the selection limit so a
+        // single-select dropdown preselects at most one item.
+        let _preselected = tilesDefault.filter(function (k) { return tiles.some(function (t) { return t.key === k; }); });
+        if (tilesMaxSelect > 0) _preselected = _preselected.slice(0, tilesMaxSelect);
+        const selectedTilesSet = new Set(_preselected);
 
-        function getPrimaryTile() {
-            for (let i = 0; i < tiles.length; i++) { if (selectedTilesSet.has(tiles[i].key)) return tiles[i]; }
-            return null;
-        }
+        const ctaCfg = {
+            cta2Action: cta2Action, cta2UrlGlobal: cta2UrlGlobal,
+            cta1ComboUrl: cta1ComboUrl, cta2ComboUrl: cta2ComboUrl,
+        };
 
+        validateScanConfig(tiles, {
+            showCta2: showCta2, cta2Action: cta2Action, tilesMaxSelect: tilesMaxSelect,
+            cta1ComboUrl: cta1ComboUrl, cta2ComboUrl: cta2ComboUrl, cta2UrlGlobal: cta2UrlGlobal,
+        });
+
+        function getSelectedTiles() { return tiles.filter(function (t) { return selectedTilesSet.has(t.key); }); }
+        function getPrimaryTile() { const s = getSelectedTiles(); return s.length ? s[0] : null; }
         function isBookingTileSelected() { const p = getPrimaryTile(); return !!(p && p.bookingUrl); }
 
-        function updateCta1Text() {
-            const btn = form.querySelector('.embed-cta-primary');
-            if (btn) btn.textContent = isBookingTileSelected() ? cta1TextBooking : cta1TextScan;
+        // Keep CTA1 text in sync and toggle CTA2 visibility per current selection
+        function updateCtas() {
+            const c1 = form.querySelector('.embed-cta-primary');
+            if (c1) c1.textContent = isBookingTileSelected() ? cta1TextBooking : cta1Text;
+            const c2 = form.querySelector('.embed-cta-secondary');
+            if (c2 && (cta2Action === 'flow' || cta2Action === 'booking')) {
+                const t2 = resolveCtaTarget(2, getSelectedTiles(), ctaCfg);
+                c2.style.display = (t2 && t2.url) ? '' : 'none';
+            }
         }
+        const updateCta1Text = updateCtas;
 
         addTitleSubtitle(form, config.title, config.subtitle);
 
@@ -3325,7 +3389,7 @@
         cta1Btn.className = 'embed-submit-button embed-cta-primary';
         cta1Btn.style.backgroundColor = config.primaryColor;
         cta1Btn.style.setProperty('border-radius', config.buttonRadius, 'important');
-        cta1Btn.textContent = isBookingTileSelected() ? cta1TextBooking : cta1TextScan;
+        cta1Btn.textContent = isBookingTileSelected() ? cta1TextBooking : cta1Text;
         ctaWrapper.appendChild(cta1Btn);
 
         if (showCta2) {
@@ -3334,47 +3398,24 @@
             cta2Btn.className = 'embed-cta-secondary';
             cta2Btn.style.setProperty('border-radius', config.buttonRadius, 'important');
             cta2Btn.textContent = cta2Text;
+            ctaWrapper.appendChild(cta2Btn);
 
-            if (cta2Action === 'ai-chat') {
-                // Hidden until ChatWidget is detected on the page
-                cta2Btn.style.display = 'none';
-                ctaWrapper.appendChild(cta2Btn);
-
-                const tryShowAiChatBtn = function () {
-                    if (window.ChatWidget) { cta2Btn.style.display = ''; return true; }
-                    return false;
-                };
-
-                // Always register removed-listener regardless of whether ChatWidget is present now
-                window.addEventListener('hz-chatwidget-removed', function () { cta2Btn.style.display = 'none'; });
-
-                if (!tryShowAiChatBtn()) {
-                    let attempts = 0;
-                    const poll = setInterval(function () {
-                        attempts++;
-                        if (tryShowAiChatBtn() || attempts >= 10) clearInterval(poll);
-                    }, 500);
-                    window.addEventListener('hz-chatwidget-ready', function () { tryShowAiChatBtn(); });
-                }
-
-                cta2Btn.addEventListener('click', function () {
-                    if (window.ChatWidget && typeof window.ChatWidget.open === 'function') {
-                        window.ChatWidget.open();
-                    } else {
-                        // Fallback: click the chat toggle button if present in DOM
-                        const toggle = document.querySelector('.chat-widget-toggle, [data-chat-toggle], .hz-chat-toggle');
-                        if (toggle) toggle.click();
-                    }
-                });
-            } else {
-                ctaWrapper.appendChild(cta2Btn);
-                cta2Btn.addEventListener('click', function () {
+            cta2Btn.addEventListener('click', function () {
+                if (cta2Action === 'pico') {
                     handleScanCta2(form, tiles, selectedTilesSet, picoKey, picoEnv, picoFlowIdOverride, contactSkipAddress, config, selectedLang, dutchVal, cta2Btn, cta2Text);
-                });
-            }
+                } else {
+                    handleScanCtaClick(2);
+                }
+            });
         }
 
         form.appendChild(ctaWrapper);
+
+        // AI-chat text link below the bottom CTA (only when explicitly enabled)
+        if (aiChatShow) {
+            form.appendChild(renderAiChatLink(aiChatText, config));
+        }
+
         setupFocusHandlers(form, config.primaryColor);
 
         if (config.googleSearch) {
@@ -3382,63 +3423,81 @@
             if (gInput) setupGoogleAutocomplete(gInput, config.country, config.addressFormat, form, config.language);
         }
 
-        cta1Btn.addEventListener('click', function () {
-            handleScanCta1(form, tiles, selectedTilesSet, config, selectedLang, dutchVal, getPrimaryTile, isBookingTileSelected, cta1TextBooking);
-        });
+        cta1Btn.addEventListener('click', function () { handleScanCtaClick(1); });
+
+        // Initialise CTA1 text + CTA2 visibility for the default selection
+        updateCtas();
+
+        // Shared click handler for flow/booking CTAs (pico handled separately above)
+        function handleScanCtaClick(ctaIndex) {
+            form.querySelectorAll('.embed-validation-message').forEach(function (m) { m.remove(); });
+
+            if (tiles.length > 0 && selectedTilesSet.size === 0) {
+                const selectorEl = form.querySelector('.embed-tile-grid') || form.querySelector('[data-tile-selector]');
+                if (selectorEl) {
+                    const msg = document.createElement('div');
+                    msg.className = 'embed-validation-message';
+                    msg.textContent = 'Selecteer minimaal één product.';
+                    selectorEl.insertAdjacentElement('afterend', msg);
+                }
+                return;
+            }
+
+            const target = resolveCtaTarget(ctaIndex, getSelectedTiles(), ctaCfg);
+            if (!target || !target.url || !isSafeUrl(target.url)) {
+                if (ctaIndex === 1) console.warn('[HomeZero embed] CTA1 heeft geen geldige doel-URL voor de huidige selectie.');
+                return;
+            }
+            redirectToFlow(target, form, config, selectedTilesSet, selectedLang, dutchVal);
+        }
     }
 
-    function handleScanCta1(form, tiles, selectedTilesSet, config, selectedLang, dutchVal, getPrimaryTile, isBookingTileSelected, cta1TextBooking) {
-        form.querySelectorAll('.embed-validation-message').forEach(function (m) { m.remove(); });
+    // Resolve which URL a CTA should route to, given the current selection.
+    // Precedence — CTA1: combo (multi) > tile.url ; CTA2: tile.cta2Url > combo (multi) > global.
+    function resolveCtaTarget(ctaIndex, selectedTiles, ctaCfg) {
+        const n = selectedTiles.length;
+        if (n === 0) return null;
 
-        if (tiles.length > 0 && selectedTilesSet.size === 0) {
-            const selectorEl = form.querySelector('.embed-tile-grid') || form.querySelector('[data-tile-selector]');
-            if (selectorEl) {
-                const msg = document.createElement('div');
-                msg.className = 'embed-validation-message';
-                msg.textContent = 'Selecteer minimaal één product.';
-                selectorEl.insertAdjacentElement('afterend', msg);
+        if (ctaIndex === 1) {
+            if (n > 1) {
+                if (ctaCfg.cta1ComboUrl) return { url: ctaCfg.cta1ComboUrl, action: 'flow' };
+                return selectedTiles[0].url ? { url: selectedTiles[0].url, action: 'flow' } : null;
             }
-            return;
+            const t = selectedTiles[0];
+            if (t.bookingUrl) return { url: t.bookingUrl, action: 'booking' }; // legacy single-button switch
+            return t.url ? { url: t.url, action: 'flow' } : null;
         }
 
-        const primaryTile = getPrimaryTile();
+        // ctaIndex === 2 (only flow/booking route here; pico/ai-chat handled elsewhere)
+        if (ctaCfg.cta2Action !== 'flow' && ctaCfg.cta2Action !== 'booking') return null;
+        const u = n > 1
+            ? (ctaCfg.cta2ComboUrl || ctaCfg.cta2UrlGlobal)
+            : (selectedTiles[0].cta2Url || ctaCfg.cta2UrlGlobal);
+        return u ? { url: u, action: ctaCfg.cta2Action } : null;
+    }
 
-        if (primaryTile && primaryTile.bookingUrl && isSafeUrl(primaryTile.bookingUrl)) {
-            window.open(primaryTile.bookingUrl, '_blank');
-            renderConfirmScreen(form, 'Bedankt!', 'Je wordt doorgestuurd naar de afspraakplanner.', config.primaryColor);
-            return;
-        }
-
-        const addrResult = validateAndGetAddressParams(form, config.googleSearch, config.addressFormat, config.country, selectedLang, dutchVal);
-        if (!addrResult.valid) return;
+    // Build the HomeZero leadflow URL with referral, address, contact, tiles, checkbox, context and query params.
+    function buildLeadflowUrl(baseUrl, form, config, addrParams, selectedTilesSet) {
+        let url = baseUrl;
+        url += '&ReferralURL=' + encodeURIComponent(window.location.href);
+        Object.keys(addrParams).forEach(function (k) { url += '&' + k + '=' + encodeURIComponent(addrParams[k]); });
 
         const phone = form.querySelector('#telefoon');
         const email = form.querySelector('#email');
-        if (!validatePhone(phone, config.phoneRequired, selectedLang)) return;
-        if (!validateEmail(email, config.emailRequired, selectedLang)) return;
-
-        const showCheckbox = !!config.checkboxTitle;
-        const checkbox = form.querySelector('#embed-checkbox');
-        if (showCheckbox && config.checkboxRequired && checkbox && !checkbox.checked) {
-            displayValidationMessage(checkbox, selectedLang.validation.checkbox); return;
-        }
-
-        let url = primaryTile ? primaryTile.url : '';
-        if (!url || !isSafeUrl(url)) return;
-
-        const preopenedWin = config.openNewTab === 'true' ? window.open('about:blank', '_blank') : null;
-
-        url += '&ReferralURL=' + encodeURIComponent(window.location.href);
-        const ap = addrResult.params;
-        Object.keys(ap).forEach(function (k) { url += '&' + k + '=' + encodeURIComponent(ap[k]); });
-
         if (config.installer) url += '&InstallerID=' + encodeURIComponent(config.installer);
         if (config.showPhone && phone && phone.value) url += '&Phone=' + encodeURIComponent(phone.value.replace(/\s+/g, ''));
         if (config.showEmail && email && email.value) url += '&Email=' + encodeURIComponent(email.value);
 
-        url += '&Tiles=' + encodeURIComponent(Array.from(selectedTilesSet).join(','));
-        if (primaryTile) url += '&PrimaryTile=' + encodeURIComponent(primaryTile.key);
+        if (selectedTilesSet && selectedTilesSet.size > 0) {
+            const keys = Array.from(selectedTilesSet);
+            url += '&Tiles=' + encodeURIComponent(keys.join(','));
+            // Always send the primary (first selected) tile — preserves pre-existing behavior
+            // for multi-select leadflows that key off PrimaryTile.
+            url += '&PrimaryTile=' + encodeURIComponent(keys[0]);
+        }
 
+        const showCheckbox = !!config.checkboxTitle;
+        const checkbox = form.querySelector('#embed-checkbox');
         if (showCheckbox && checkbox) {
             if (config.checkboxShorttitle) url += '&checkboxtitle=' + encodeURIComponent(config.checkboxShorttitle);
             url += '&checkboxvalue=' + encodeURIComponent(checkbox.checked ? 'true' : 'false');
@@ -3447,8 +3506,104 @@
 
         const qp = getQueryParams();
         Object.keys(qp).forEach(function (k) { url += '&' + k + '=' + encodeURIComponent(qp[k]); });
+        return url;
+    }
 
+    // Route a resolved CTA target. action="flow" → HomeZero leadflow with full validation + fallback check.
+    // action="booking" → external calendar opened directly (no offline.html fallback).
+    function redirectToFlow(target, form, config, selectedTilesSet, selectedLang, dutchVal) {
+        const phone = form.querySelector('#telefoon');
+        const email = form.querySelector('#email');
+        const showCheckbox = !!config.checkboxTitle;
+        const checkbox = form.querySelector('#embed-checkbox');
+
+        if (target.action === 'booking') {
+            if (!validatePhone(phone, config.phoneRequired, selectedLang)) return;
+            if (!validateEmail(email, config.emailRequired, selectedLang)) return;
+            if (showCheckbox && config.checkboxRequired && checkbox && !checkbox.checked) {
+                displayValidationMessage(checkbox, selectedLang.validation.checkbox); return;
+            }
+            if (!isSafeUrl(target.url)) return;
+
+            let u = target.url;
+            const params = new URLSearchParams();
+            if (config.showPhone && phone && phone.value) params.set('phone', phone.value.replace(/\s+/g, ''));
+            if (config.showEmail && email && email.value) params.set('email', email.value);
+            const ps = params.toString();
+            if (ps) u += (u.includes('?') ? '&' : '?') + ps;
+
+            window.open(u, '_blank');
+            renderConfirmScreen(form, 'Bedankt!', 'Je wordt doorgestuurd naar de afspraakplanner.', config.primaryColor);
+            return;
+        }
+
+        // action === 'flow'
+        const addrResult = validateAndGetAddressParams(form, config.googleSearch, config.addressFormat, config.country, selectedLang, dutchVal);
+        if (!addrResult.valid) return;
+        if (!validatePhone(phone, config.phoneRequired, selectedLang)) return;
+        if (!validateEmail(email, config.emailRequired, selectedLang)) return;
+        if (showCheckbox && config.checkboxRequired && checkbox && !checkbox.checked) {
+            displayValidationMessage(checkbox, selectedLang.validation.checkbox); return;
+        }
+        if (!isSafeUrl(target.url)) return;
+
+        const preopenedWin = config.openNewTab === 'true' ? window.open('about:blank', '_blank') : null;
+        const url = buildLeadflowUrl(target.url, form, config, addrResult.params, selectedTilesSet);
         redirectToUrlWithCheck(url, config.openNewTab, preopenedWin, config.primaryColor);
+    }
+
+    // One-time config sanity checks. Logs clearly and degrades gracefully — never throws.
+    function validateScanConfig(tiles, cfg) {
+        const P = '[HomeZero embed]';
+        if (tiles.length === 0) return;
+
+        const multi = cfg.tilesMaxSelect !== 1;
+        if (multi && !cfg.cta1ComboUrl) {
+            console.warn(P + ' multi-select zonder data-cta1-combo-url: bij meerdere selecties valt CTA1 terug op de eerste maatregel.');
+        }
+        if (cfg.showCta2 && (cfg.cta2Action === 'flow' || cfg.cta2Action === 'booking')) {
+            const anyPerTile = tiles.some(function (t) { return !!t.cta2Url; });
+            if (!anyPerTile && !cfg.cta2UrlGlobal && !cfg.cta2ComboUrl) {
+                console.warn(P + ' data-cta2-show="true" maar geen secundair doel (geen per-tile cta2-url, combo-url of globale cta2-url). CTA2 blijft verborgen.');
+            }
+            if (cfg.cta2UrlGlobal && !isSafeUrl(cfg.cta2UrlGlobal)) {
+                console.warn(P + ' data-cta2-url is geen geldige http(s) URL.');
+            }
+        }
+        tiles.forEach(function (t) {
+            if (!t.url || !isSafeUrl(t.url)) {
+                console.warn(P + ' maatregel "' + t.key + '" heeft geen geldige data-tile-' + t.key + '-url.');
+            }
+        });
+    }
+
+    // Render the AI-chat text link (not a button). Visible only when window.ChatWidget is present.
+    function renderAiChatLink(text, config) {
+        const link = document.createElement('a');
+        link.className = 'embed-ai-chat-link';
+        link.href = '#';
+        link.textContent = text;
+        link.style.color = config.primaryColor;
+        link.style.display = 'none';
+
+        const tryShow = function () { if (window.ChatWidget) { link.style.display = ''; return true; } return false; };
+        window.addEventListener('hz-chatwidget-removed', function () { link.style.display = 'none'; });
+        if (!tryShow()) {
+            let attempts = 0;
+            const poll = setInterval(function () { attempts++; if (tryShow() || attempts >= 10) clearInterval(poll); }, 500);
+            window.addEventListener('hz-chatwidget-ready', function () { tryShow(); });
+        }
+
+        link.addEventListener('click', function (e) {
+            e.preventDefault();
+            if (window.ChatWidget && typeof window.ChatWidget.open === 'function') {
+                window.ChatWidget.open();
+            } else {
+                const toggle = document.querySelector('.chat-widget-toggle, [data-chat-toggle], .hz-chat-toggle');
+                if (toggle) toggle.click();
+            }
+        });
+        return link;
     }
 
     function handleScanCta2(form, tiles, selectedTilesSet, picoKey, picoEnv, picoFlowIdOverride, contactSkipAddress, config, selectedLang, dutchVal, cta2Btn, cta2OrigText) {

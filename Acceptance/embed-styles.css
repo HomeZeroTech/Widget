@@ -556,13 +556,51 @@ hz-embed {
     text-align: center !important;
     box-shadow: none !important;
     text-shadow: none !important;
-    border: 1.5px solid #dadee7 !important;
+    border: 1.5px solid var(--primary-color, #dadee7) !important;
     cursor: pointer !important;
-    background: #f5f7fa !important;
+    background: transparent !important;
 }
 
 .embed-cta-secondary:hover {
     opacity: 0.8 !important;
+}
+
+.embed-label-optional {
+    font-weight: 400;
+    color: #7585a3;
+}
+
+/* ── AI-chat text link ────────────────────────────────────────────────────── */
+
+.embed-ai-chat-link {
+    display: block;
+    margin: 12px auto 0;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: underline;
+    cursor: pointer;
+    color: var(--primary-color, #2A6DF4);
+    background: none;
+    border: none;
+}
+
+.embed-ai-chat-link:hover {
+    opacity: 0.8;
+}
+
+/* ── Dropdown option icon badge ───────────────────────────────────────────── */
+
+.hz-dd-icon-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+    border-radius: 8px;
+    background: #f0f2f5;
+    color: #132039;
 }
 
 /* ── Confirm screen ───────────────────────────────────────────────────────── */
