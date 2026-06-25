@@ -97,6 +97,24 @@
             optional: "(Optional)",
             addressLabel: "Address",
             addressPlaceholder: "Start typing your address...",
+            tileDropdownPlaceholder: "Select a product...",
+            tagsPlaceholder: "Select products...",
+            removeChip: "Remove",
+            tileRequired: "Please select at least one product.",
+            phoneOrEmailRequired: "Please enter a phone number or email address.",
+            errorOutsideArea: "This address is outside the service area.",
+            errorAddressNotFound: "Address not found. Please check your postcode and house number.",
+            errorGeneric: "Something went wrong. Please try again.",
+            confirmTitle: "Thank you!",
+            confirmContactMessage: "We will contact you as soon as possible.",
+            confirmBookingMessage: "You will be redirected to the appointment scheduler.",
+            confirmAppointmentTitle: "Appointment scheduled!",
+            confirmAppointmentMessage: "You will receive a confirmation at the provided address.",
+            confirmBrochureTitle: "Sent!",
+            firstnameLabel: "First name",
+            firstnamePlaceholder: "John",
+            lastnameLabel: "Last name",
+            lastnamePlaceholder: "Smith",
             validation: {
                 city: "Please enter a city.",
                 zipcode: "Please enter a valid zipcode.",
@@ -127,6 +145,24 @@
             optional: "(Optioneel)",
             addressLabel: "Adres",
             addressPlaceholder: "Begin met typen van het adres...",
+            tileDropdownPlaceholder: "Selecteer een product...",
+            tagsPlaceholder: "Selecteer producten...",
+            removeChip: "Verwijder",
+            tileRequired: "Selecteer minimaal één product.",
+            phoneOrEmailRequired: "Vul een telefoonnummer of e-mailadres in.",
+            errorOutsideArea: "Dit adres valt buiten het werkgebied.",
+            errorAddressNotFound: "Adres niet gevonden. Controleer postcode en huisnummer.",
+            errorGeneric: "Er is iets misgegaan. Probeer het opnieuw.",
+            confirmTitle: "Bedankt!",
+            confirmContactMessage: "We nemen zo snel mogelijk contact met je op.",
+            confirmBookingMessage: "Je wordt doorgestuurd naar de afspraakplanner.",
+            confirmAppointmentTitle: "Afspraak gepland!",
+            confirmAppointmentMessage: "Je ontvangt een bevestiging op het opgegeven adres.",
+            confirmBrochureTitle: "Verstuurd!",
+            firstnameLabel: "Voornaam",
+            firstnamePlaceholder: "Jan",
+            lastnameLabel: "Achternaam",
+            lastnamePlaceholder: "de Vries",
             validation: {
                 city: "Vul een stad in.",
                 zipcode: "Vul een geldige postcode in.",
@@ -139,36 +175,6 @@
                 dropdown: "Selecteer een maatregel.",
                 address: "Vul een geldig adres in.",
                 checkbox: "Vink aan om door te gaan.",
-            },
-        },
-        fr: {
-            city: "Ville",
-            zipcode: "Code Postal",
-            street: "Rue",
-            housenumber: "Numéro de Maison",
-            cityPlaceholder: "Paris",
-            zipcodePlaceholder: "75001",
-            streetPlaceholder: "Rue de Rivoli",
-            housenumberPlaceholder: "1",
-            phoneLabel: "Numéro de Téléphone",
-            emailLabel: "E-mail",
-            dropdownLabel: "Faites un choix",
-            dropdownPlaceholder: "Faites un choix",
-            optional: "(Facultatif)",
-            addressLabel: "Adresse",
-            addressPlaceholder: "Commencez à taper votre adresse...",
-            validation: {
-                city: "Veuillez entrer une ville.",
-                zipcode: "Veuillez entrer un code postal valide.",
-                street: "Veuillez entrer une rue.",
-                housenumber: "Veuillez entrer un numéro de maison valide.",
-                phone: "Veuillez entrer un numéro de téléphone valide.",
-                phoneRequired: "Veuillez entrer un numéro de téléphone.",
-                email: "Veuillez entrer une adresse e-mail valide.",
-                emailRequired: "Veuillez entrer une adresse e-mail.",
-                dropdown: "Veuillez sélectionner une option.",
-                address: "Veuillez entrer une adresse valide.",
-                checkbox: "Veuillez cocher cette case pour continuer.",
             },
         },
         de: {
@@ -187,6 +193,24 @@
             optional: "(Optional)",
             addressLabel: "Adresse",
             addressPlaceholder: "Beginnen Sie mit der Eingabe Ihrer Adresse...",
+            tileDropdownPlaceholder: "Produkt auswählen...",
+            tagsPlaceholder: "Produkte auswählen...",
+            removeChip: "Entfernen",
+            tileRequired: "Bitte wählen Sie mindestens ein Produkt aus.",
+            phoneOrEmailRequired: "Bitte geben Sie eine Telefonnummer oder E-Mail-Adresse ein.",
+            errorOutsideArea: "Diese Adresse liegt außerhalb des Servicegebiets.",
+            errorAddressNotFound: "Adresse nicht gefunden. Bitte überprüfen Sie PLZ und Hausnummer.",
+            errorGeneric: "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.",
+            confirmTitle: "Danke!",
+            confirmContactMessage: "Wir melden uns so schnell wie möglich bei Ihnen.",
+            confirmBookingMessage: "Sie werden zum Terminplaner weitergeleitet.",
+            confirmAppointmentTitle: "Termin vereinbart!",
+            confirmAppointmentMessage: "Sie erhalten eine Bestätigung an die angegebene Adresse.",
+            confirmBrochureTitle: "Gesendet!",
+            firstnameLabel: "Vorname",
+            firstnamePlaceholder: "Max",
+            lastnameLabel: "Nachname",
+            lastnamePlaceholder: "Müller",
             validation: {
                 city: "Bitte geben Sie eine Stadt ein.",
                 zipcode: "Bitte geben Sie eine gültige Postleitzahl ein.",
@@ -552,7 +576,6 @@
         const languageMap = {
             nl: "nl-NL",
             en: "en-US",
-            fr: "fr-FR",
             de: "de-DE",
         };
 
@@ -1594,7 +1617,7 @@
         return grid;
     }
 
-    function renderTileDropdown(tiles, selectedTilesSet, primaryColor, maxSelect, label, onChange) {
+    function renderTileDropdown(tiles, selectedTilesSet, primaryColor, maxSelect, label, onChange, selectedLang) {
         function contrastColor(hex) {
             hex = hex.replace('#', '');
             const r = parseInt(hex.substr(0, 2), 16), g = parseInt(hex.substr(2, 2), 16), b = parseInt(hex.substr(4, 2), 16);
@@ -1638,7 +1661,8 @@
         function updateTrigger() {
             const sel = tiles.filter(function (t) { return selectedTilesSet.has(t.key); });
             if (sel.length === 0) {
-                trigger.innerHTML = '<div class="selected-content"><span style="color:#a2acc1;font-weight:500;">Selecteer een product...</span></div>' + CHEVRON;
+                const placeholder = (selectedLang && selectedLang.tileDropdownPlaceholder) ? selectedLang.tileDropdownPlaceholder : 'Selecteer een product...';
+                trigger.innerHTML = '<div class="selected-content"><span style="color:#a2acc1;font-weight:500;">' + placeholder + '</span></div>' + CHEVRON;
             } else if (sel.length === 1) {
                 trigger.innerHTML = '<div class="selected-content" style="display:flex;align-items:center;gap:10px;overflow:hidden;max-width:calc(100% - 24px);">' + iconBadge(sel[0]) + '<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + sel[0].title + '</span></div>' + CHEVRON;
             } else {
@@ -1763,7 +1787,7 @@
         return wrap;
     }
 
-    function renderTileTagsSelect(tiles, selectedTilesSet, primaryColor, maxSelect, label, onChange) {
+    function renderTileTagsSelect(tiles, selectedTilesSet, primaryColor, maxSelect, label, onChange, selectedLang) {
         const wrap = document.createElement('div');
         wrap.className = 'embed-form-container';
         wrap.setAttribute('data-tile-selector', 'true');
@@ -1784,7 +1808,7 @@
         chipsArea.style.cssText = 'display:flex;flex-wrap:wrap;gap:6px;align-items:center;flex:1;min-width:0;';
 
         const placeholder = document.createElement('span');
-        placeholder.textContent = 'Selecteer producten...';
+        placeholder.textContent = (selectedLang && selectedLang.tagsPlaceholder) ? selectedLang.tagsPlaceholder : 'Selecteer producten...';
         placeholder.style.cssText = 'color:#a2acc1;font-size:14px;font-weight:500;line-height:1;pointer-events:none;';
 
         const optionsPanel = document.createElement('div');
@@ -1814,7 +1838,7 @@
 
             const removeBtn = document.createElement('button');
             removeBtn.type = 'button';
-            removeBtn.setAttribute('aria-label', 'Verwijder ' + tile.title);
+            removeBtn.setAttribute('aria-label', ((selectedLang && selectedLang.removeChip) ? selectedLang.removeChip : 'Verwijder') + ' ' + tile.title);
             removeBtn.innerHTML = '<svg viewBox="0 0 10 10" width="11" height="11" fill="none" aria-hidden="true"><path d="M1.5 1.5L8.5 8.5M8.5 1.5L1.5 8.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
             removeBtn.style.cssText = 'background:none;border:none;padding:0;cursor:pointer;display:flex;align-items:center;color:rgba(255,255,255,0.8);flex-shrink:0;margin-left:1px;';
             removeBtn.addEventListener('mouseenter', function () { removeBtn.style.color = '#fff'; });
@@ -2122,8 +2146,9 @@
         form.appendChild(header);
     }
 
-    function showPicoError(form, err, primaryColor, ctaBtn, ctaOriginalText, addressFieldSelector) {
+    function showPicoError(form, err, primaryColor, ctaBtn, ctaOriginalText, addressFieldSelector, selectedLang) {
         if (ctaBtn) { ctaBtn.disabled = false; ctaBtn.textContent = ctaOriginalText; }
+        const lang = selectedLang || translations.nl;
         const errMsg = (err && err.message) ? err.message.toLowerCase() : '';
         const addressErrors = ['building', 'address not found', 'could not find'];
         const areaErrors = ['operating area'];
@@ -2132,7 +2157,7 @@
         if ((isAddressErr || isAreaErr) && addressFieldSelector) {
             const field = form.querySelector(addressFieldSelector);
             if (field) {
-                const msg = isAreaErr ? 'Dit adres valt buiten het werkgebied.' : 'Adres niet gevonden. Controleer postcode en huisnummer.';
+                const msg = isAreaErr ? lang.errorOutsideArea : lang.errorAddressNotFound;
                 displayValidationMessage(field, msg);
                 return;
             }
@@ -2141,7 +2166,7 @@
         if (prevErr) prevErr.remove();
         const errEl = document.createElement('div');
         errEl.className = 'embed-inline-error';
-        errEl.textContent = 'Er is iets misgegaan. Probeer het opnieuw.';
+        errEl.textContent = lang.errorGeneric;
         form.appendChild(errEl);
     }
 
@@ -3286,7 +3311,8 @@
         const picoEnv = element.getAttribute('data-pico-env') || 'production';
         const picoFlowIdOverride = element.getAttribute('data-pico-flow-id') || '';
         const tilesDefault = (element.getAttribute('data-tiles-default') || '').split(',').map(function (k) { return k.trim(); }).filter(Boolean);
-        let tilesMaxSelect = parseInt(element.getAttribute('data-tiles-max-select') || '0', 10) || 0;
+        let tilesMaxSelect = parseInt(element.getAttribute('data-tiles-max-select') || '0', 10);
+        if (isNaN(tilesMaxSelect) || tilesMaxSelect < 0) tilesMaxSelect = 0;
         const tileDisplay = element.getAttribute('data-tile-display') || 'large';
         const tilesLabel = element.hasAttribute('data-tiles-label')
             ? element.getAttribute('data-tiles-label') : 'Producten';
@@ -3349,10 +3375,10 @@
             const header = form.querySelector('.embed-header');
             const refNode = header ? header.nextSibling : form.firstChild;
             if (tileDisplay === 'dropdown') {
-                const ddWrap = renderTileDropdown(tiles, selectedTilesSet, config.primaryColor, tilesMaxSelect, tilesLabel, updateCta1Text);
+                const ddWrap = renderTileDropdown(tiles, selectedTilesSet, config.primaryColor, tilesMaxSelect, tilesLabel, updateCta1Text, selectedLang);
                 form.insertBefore(ddWrap, refNode);
             } else if (tileDisplay === 'tags') {
-                const tagsWrap = renderTileTagsSelect(tiles, selectedTilesSet, config.primaryColor, tilesMaxSelect, tilesLabel, updateCta1Text);
+                const tagsWrap = renderTileTagsSelect(tiles, selectedTilesSet, config.primaryColor, tilesMaxSelect, tilesLabel, updateCta1Text, selectedLang);
                 form.insertBefore(tagsWrap, refNode);
             } else if (tileDisplay === 'large') {
                 const grid = renderTileLargeGrid(tiles, selectedTilesSet, config.primaryColor, function (key, tileEl) {
@@ -3454,7 +3480,7 @@
                 if (selectorEl) {
                     const msg = document.createElement('div');
                     msg.className = 'embed-validation-message';
-                    msg.textContent = 'Selecteer minimaal één product.';
+                    msg.textContent = selectedLang.tileRequired;
                     selectorEl.insertAdjacentElement('afterend', msg);
                 }
                 return;
@@ -3550,7 +3576,7 @@
             if (ps) u += (u.includes('?') ? '&' : '?') + ps;
 
             window.open(u, '_blank');
-            renderConfirmScreen(form, 'Bedankt!', 'Je wordt doorgestuurd naar de afspraakplanner.', config.primaryColor);
+            renderConfirmScreen(form, selectedLang.confirmTitle, selectedLang.confirmBookingMessage, config.primaryColor);
             return;
         }
 
@@ -3636,7 +3662,7 @@
         let isValid = true;
         if (!phoneVal && !emailVal) {
             const target = phone || email;
-            if (target) displayValidationMessage(target, 'Vul een telefoonnummer of e-mailadres in.');
+            if (target) displayValidationMessage(target, selectedLang.phoneOrEmailRequired);
             isValid = false;
         }
         if (phoneVal && !validatePhone(phone, false, selectedLang)) isValid = false;
@@ -3677,11 +3703,11 @@
 
         submitPicoApi(picoKey, picoEnv, payload)
             .then(function () {
-                renderConfirmScreen(form, 'Bedankt!', 'We nemen zo snel mogelijk contact met je op.', config.primaryColor);
+                renderConfirmScreen(form, selectedLang.confirmTitle, selectedLang.confirmContactMessage, config.primaryColor);
             })
             .catch(function (err) {
                 const addrSelector = config.addressFormat === 'dutch' ? '#postcode' : '#city';
-                showPicoError(form, err, config.primaryColor, cta2Btn, cta2OrigText, addrSelector);
+                showPicoError(form, err, config.primaryColor, cta2Btn, cta2OrigText, addrSelector, selectedLang);
             });
     }
 
@@ -3711,15 +3737,17 @@
 
         if (tileDisplay !== 'none') {
             const tiles = parseTilesFromElement(element);
-            const selectedTilesSet = new Set(tilesDefault.filter(function (k) { return tiles.some(function (t) { return t.key === k; }); }));
+            let _preselected = tilesDefault.filter(function (k) { return tiles.some(function (t) { return t.key === k; }); });
+            if (tilesMaxSelect > 0) _preselected = _preselected.slice(0, tilesMaxSelect);
+            const selectedTilesSet = new Set(_preselected);
             if (tiles.length > 0) {
                 const header = form.querySelector('.embed-header');
                 const refNode = header ? header.nextSibling : form.firstChild;
                 if (tileDisplay === 'dropdown') {
-                    const ddWrap = renderTileDropdown(tiles, selectedTilesSet, config.primaryColor, tilesMaxSelect, tilesLabel, null);
+                    const ddWrap = renderTileDropdown(tiles, selectedTilesSet, config.primaryColor, tilesMaxSelect, tilesLabel, null, selectedLang);
                     form.insertBefore(ddWrap, refNode);
                 } else if (tileDisplay === 'tags') {
-                    const tagsWrap = renderTileTagsSelect(tiles, selectedTilesSet, config.primaryColor, tilesMaxSelect, tilesLabel, null);
+                    const tagsWrap = renderTileTagsSelect(tiles, selectedTilesSet, config.primaryColor, tilesMaxSelect, tilesLabel, null, selectedLang);
                     form.insertBefore(tagsWrap, refNode);
                 } else if (tileDisplay === 'large') {
                     const grid = renderTileLargeGrid(tiles, selectedTilesSet, config.primaryColor, function (key, tileEl) {
@@ -3799,7 +3827,7 @@
             }
 
             window.open(targetUrl, '_blank');
-            renderConfirmScreen(form, 'Afspraak gepland!', 'Je ontvangt een bevestiging op het opgegeven adres.', config.primaryColor);
+            renderConfirmScreen(form, selectedLang.confirmAppointmentTitle, selectedLang.confirmAppointmentMessage, config.primaryColor);
         });
     }
 
@@ -3825,10 +3853,10 @@
 
         if (showName) {
             form.innerHTML += '<div class="embed-row"><div class="embed-col"><div class="embed-flex-container">' +
-                '<div class="embed-form-container"><label for="firstname" class="embed-label-bold">Voornaam</label>' +
-                '<input type="text" id="firstname" class="embed-input-field" placeholder="Jan" maxlength="100"></div>' +
-                '<div class="embed-form-container"><label for="lastname" class="embed-label-bold">Achternaam</label>' +
-                '<input type="text" id="lastname" class="embed-input-field" placeholder="de Vries" maxlength="100"></div>' +
+                '<div class="embed-form-container"><label for="firstname" class="embed-label-bold">' + selectedLang.firstnameLabel + '</label>' +
+                '<input type="text" id="firstname" class="embed-input-field" placeholder="' + selectedLang.firstnamePlaceholder + '" maxlength="100"></div>' +
+                '<div class="embed-form-container"><label for="lastname" class="embed-label-bold">' + selectedLang.lastnameLabel + '</label>' +
+                '<input type="text" id="lastname" class="embed-input-field" placeholder="' + selectedLang.lastnamePlaceholder + '" maxlength="100"></div>' +
                 '</div></div></div>';
         }
 
@@ -3918,11 +3946,11 @@
 
             submitPicoApi(picoKey, picoEnv, payload)
                 .then(function () {
-                    renderConfirmScreen(form, 'Verstuurd!', successMessage, config.primaryColor);
+                    renderConfirmScreen(form, selectedLang.confirmBrochureTitle, successMessage, config.primaryColor);
                 })
                 .catch(function (err) {
                     const addrSelector = addressFormat === 'dutch' ? '#postcode' : '#city';
-                    showPicoError(form, err, config.primaryColor, cta1Btn, cta1Text, showAddress ? addrSelector : null);
+                    showPicoError(form, err, config.primaryColor, cta1Btn, cta1Text, showAddress ? addrSelector : null, selectedLang);
                 });
         });
     }
