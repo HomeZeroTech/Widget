@@ -1,87 +1,889 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="nl">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HomeZero Widget - Local Test</title>
+    <title>HomeZero Widget — Alle Modes</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            max-width: 800px;
+            max-width: 860px;
             margin: 0 auto;
             padding: 40px 20px;
-            background: #f5f5f5;
+            background: #f0f2f5;
         }
 
-        h1 {
-            color: #333;
-            margin-bottom: 24px;
+        h1 { color: #132039; margin-bottom: 8px; }
+        .page-subtitle { color: #7585a3; margin-bottom: 40px; font-size: 15px; }
+
+        .section {
+            margin-bottom: 48px;
         }
 
-        .info {
-            background: #e3f2fd;
-            border-left: 4px solid #2196f3;
-            padding: 12px 16px;
-            margin-bottom: 30px;
-            border-radius: 0 4px 4px 0;
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
         }
+
+        .mode-badge {
+            background: #132039;
+            color: #fff;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .mode-badge.scan   { background: #2A6DF4; }
+        .mode-badge.booking { background: #7c3aed; }
+        .mode-badge.brochure { background: #059669; }
+        .mode-badge.classic { background: #132039; }
+
+        h2 { color: #132039; margin: 0; font-size: 18px; }
 
         .widget-container {
             background: white;
             padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            margin-bottom: 12px;
         }
 
-        .config-section {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #eee;
-        }
-
-        .config-section h2 {
-            font-size: 16px;
-            color: #666;
-            margin-bottom: 10px;
-        }
-
-        pre {
-            background: #263238;
-            color: #aed581;
+        .code-block {
+            background: #1e2a3a;
+            color: #a8d8a8;
             padding: 16px;
-            border-radius: 4px;
+            border-radius: 8px;
             overflow-x: auto;
-            font-size: 13px;
+            font-size: 12px;
+            line-height: 1.6;
+            font-family: 'Courier New', monospace;
+        }
+
+        .code-block details summary {
+            cursor: pointer;
+            color: #7bafd4;
+            font-size: 12px;
+            user-select: none;
+        }
+
+        .divider {
+            border: none;
+            border-top: 1px solid #e5e7eb;
+            margin: 48px 0;
+        }
+
+        .gradient-demo .widget-container {
+            background: linear-gradient(135deg, #f8faff 0%, #fff 100%);
         }
     </style>
 </head>
 
 <body>
-    <h1>HomeZero Widget - Local Test</h1>
+    <h1>HomeZero Widget — Alle Modes</h1>
+    <p class="page-subtitle">Test pagina voor alle vier widget configuraties: classic, scan, booking en brochure.</p>
 
-    <div class="widget-container">
-        <hz-embed src="https://homezero-accp.mendixcloud.com/link/start?id=5fc267a2-d867-4b72-ad76-2546f5019f9f"
-            data-open-new-tab="true" data-button-text="Scan" data-button-radius="10px" data-color="#004DF5"
-            data-title="Titel" data-subtitle="Subtitel test hallo daar"
-            data-checkbox-title="Ik ga akkoord met de voorwaarden" data-checkbox-shorttitle="terms_accepted"
-            data-checkbox-required="true"></hz-embed>
+    <!-- ── CLASSIC MODE ─────────────────────────────────────────────────── -->
+    <div class="section">
+        <div class="section-header">
+            <span class="mode-badge classic">Classic</span>
+            <h2>Classic — adresformulier + dropdown</h2>
+        </div>
+        <div class="widget-container">
+            <hz-embed
+                src="https://homezero-accp.mendixcloud.com/link/start?id=5fc267a2-d867-4b72-ad76-2546f5019f9f"
+                data-mode="classic"
+                data-open-new-tab="true"
+                data-button-text="Start Scan"
+                data-button-radius="10px"
+                data-color="#2A6DF4"
+                data-title="Bereken jouw besparing"
+                data-subtitle="In 2 minuten weet je wat jij kunt besparen"
+                data-show-phone="true"
+                data-show-email="true"
+                data-checkbox-title="Ik ga akkoord met de voorwaarden"
+                data-checkbox-shorttitle="terms_accepted"
+                data-checkbox-required="true"
+            ></hz-embed>
+        </div>
+        <details class="code-block">
+            <summary>▶ Bekijk embed code</summary>
+            <pre>&lt;hz-embed
+  src="https://homezero-accp.mendixcloud.com/link/start?id=5fc267a2-d867-4b72-ad76-2546f5019f9f"
+  data-mode="classic"
+  data-open-new-tab="true"
+  data-button-text="Start Scan"
+  data-button-radius="10px"
+  data-color="#2A6DF4"
+  data-title="Bereken jouw besparing"
+  data-subtitle="In 2 minuten weet je wat jij kunt besparen"
+  data-show-phone="true"
+  data-show-email="true"
+  data-checkbox-title="Ik ga akkoord met de voorwaarden"
+  data-checkbox-shorttitle="terms_accepted"
+  data-checkbox-required="true"
+&gt;&lt;/hz-embed&gt;</pre>
+        </details>
     </div>
 
-    <div class="config-section">
-        <h2>Current Configuration</h2>
-        <pre><code>&lt;hz-embed
-    src="https://homezero-accp.mendixcloud.com/link/start?id=5fc267a2-d867-4b72-ad76-2546f5019f9f"
-    data-open-new-tab="true"
-    data-button-text="Scan"
-    data-button-radius="10px"
-    data-color="#004DF5"
-    data-title="Titel"
-    data-subtitle="Subtitel test hallo daar"
-    data-checkbox-title="Ik ga akkoord met de voorwaarden"
-    data-checkbox-shorttitle="terms_accepted"
-    data-checkbox-required="true"
-&gt;&lt;/hz-embed&gt;</code></pre>
+    <hr class="divider">
+
+    <!-- ── SCAN MODE ────────────────────────────────────────────────────── -->
+    <div class="section">
+        <div class="section-header">
+            <span class="mode-badge scan">Scan</span>
+            <h2>Scan — Tegels + adres + dual CTA</h2>
+        </div>
+        <div class="widget-container">
+            <hz-embed
+                data-mode="scan"
+                data-color="#2A6DF4"
+                data-gradient-from="#2A6DF4"
+                data-gradient-to="#1a4fc4"
+                data-button-radius="10px"
+                data-open-new-tab="true"
+                data-title="Ook besparen met duurzame energie?"
+                data-subtitle="Onafhankelijk advies voor jouw situatie"
+
+                data-tile-solarpanels-url="https://homezero-accp.mendixcloud.com/link/start?id=5fc267a2-d867-4b72-ad76-2546f5019f9f"
+                data-tile-solarpanels-title="Zonnepanelen"
+                data-tile-homebattery-url="https://homezero-accp.mendixcloud.com/link/start?id=5fc267a2-d867-4b72-ad76-2546f5019f9f"
+                data-tile-homebattery-title="Thuisbatterij"
+                data-tile-heatpump-url="https://homezero-accp.mendixcloud.com/link/start?id=5fc267a2-d867-4b72-ad76-2546f5019f9f"
+                data-tile-heatpump-title="Warmtepomp"
+                data-tile-carcharger-url="https://homezero-accp.mendixcloud.com/link/start?id=5fc267a2-d867-4b72-ad76-2546f5019f9f"
+                data-tile-carcharger-title="Laadpaal"
+                data-tile-carcharger-booking-url="https://calendly.com/homezero/adviesgesprek"
+
+                data-tiles-default="solarpanels,homebattery"
+                data-cta1-text-scan="Bereken wat je bespaart"
+                data-cta1-text-booking="Plan een gratis adviesgesprek"
+
+                data-cta2-show="true"
+                data-cta2-text="Direct contact (30 sec)"
+                data-contact-skip-address="true"
+
+                data-pico-key="test-api-key"
+                data-pico-env="acceptance"
+
+                data-address-format="dutch"
+                data-show-phone="true"
+                data-show-email="true"
+            ></hz-embed>
+        </div>
+        <details class="code-block">
+            <summary>▶ Bekijk embed code</summary>
+            <pre>&lt;!--
+  data-cta2-action (default: "pico") stuurt een direct-contact lead via de Pico API.
+  Daarvoor is data-pico-key vereist. Zonder key werkt CTA2 niet.
+  Alternatief: data-cta2-action="ai-chat" opent de AI chatwidget (geen Pico key nodig).
+--&gt;
+&lt;hz-embed
+  data-mode="scan"
+  data-color="#2A6DF4"
+  data-gradient-from="#2A6DF4"
+  data-gradient-to="#1a4fc4"
+  data-tile-solarpanels-url="https://..."
+  data-tile-solarpanels-title="Zonnepanelen"
+  data-tile-homebattery-url="https://..."
+  data-tile-homebattery-title="Thuisbatterij"
+  data-tiles-default="solarpanels,homebattery"
+  data-cta1-text-scan="Bereken wat je bespaart"
+  data-cta1-text-booking="Plan een gratis adviesgesprek"
+  data-cta2-show="true"
+  data-cta2-text="Direct contact (30 sec)"
+  data-cta2-action="pico"
+  data-contact-skip-address="true"
+  data-pico-key="your-api-key"
+  data-pico-env="production"
+  data-show-phone="true"
+  data-show-email="true"
+&gt;&lt;/hz-embed&gt;</pre>
+        </details>
+    </div>
+
+    <!-- Scan met korte alias-keys -->
+    <div class="section">
+        <div class="section-header">
+            <span class="mode-badge scan">Scan</span>
+            <h2>Scan — Grote tegels / alias keys (max 4, radio select)</h2>
+        </div>
+        <div class="widget-container">
+            <hz-embed
+                data-mode="scan"
+                data-color="#e8a020"
+                data-button-radius="14px"
+                data-open-new-tab="false"
+                data-title="Grip op jouw eigen energie"
+                data-subtitle="Waar heb je interesse in? Meer opties mogelijk"
+
+                data-tile-display="large"
+
+                data-tile-batterij-url="https://homezero-accp.mendixcloud.com/link/start?id=5fc267a2-d867-4b72-ad76-2546f5019f9f"
+                data-tile-batterij-title="Thuisbatterij"
+                data-tile-zon-url="https://homezero-accp.mendixcloud.com/link/start?id=5fc267a2-d867-4b72-ad76-2546f5019f9f"
+                data-tile-zon-title="Zonnepanelen"
+                data-tile-laadpaal-url="https://homezero-accp.mendixcloud.com/link/start?id=5fc267a2-d867-4b72-ad76-2546f5019f9f"
+                data-tile-laadpaal-title="Laadpaal"
+                data-tile-meterkast-url="https://homezero-accp.mendixcloud.com/link/start?id=5fc267a2-d867-4b72-ad76-2546f5019f9f"
+                data-tile-meterkast-title="Groepenkast"
+
+                data-tiles-default="batterij"
+                data-cta1-text-scan="Vind jouw thuisbatterij"
+
+                data-address-format="dutch"
+                data-show-phone="false"
+                data-show-email="true"
+            ></hz-embed>
+        </div>
+        <details class="code-block">
+            <summary>▶ Bekijk embed code</summary>
+            <pre>&lt;!--
+  data-tile-display="large": grote tegels met radio-cirkel, max 4 tegels zichtbaar.
+  Op mobiel automatisch 2x2 grid.
+--&gt;
+&lt;hz-embed
+  data-mode="scan"
+  data-color="#e8a020"
+  data-tile-display="large"
+  data-tile-batterij-url="https://..."
+  data-tile-batterij-title="Thuisbatterij"
+  data-tile-zon-url="https://..."
+  data-tile-zon-title="Zonnepanelen"
+  data-tile-laadpaal-url="https://..."
+  data-tile-laadpaal-title="Laadpaal"
+  data-tile-meterkast-url="https://..."
+  data-tile-meterkast-title="Groepenkast"
+  data-tiles-default="batterij"
+  data-cta1-text-scan="Vind jouw thuisbatterij"
+  data-show-email="true"
+&gt;&lt;/hz-embed&gt;</pre>
+        </details>
+    </div>
+
+    <!-- Scan met dropdown (single select) -->
+    <div class="section">
+        <div class="section-header">
+            <span class="mode-badge scan">Scan</span>
+            <h2>Scan — Dropdown (één product)</h2>
+        </div>
+        <div class="widget-container">
+            <hz-embed
+                data-mode="scan"
+                data-color="#2A6DF4"
+                data-gradient-from="#2A6DF4"
+                data-gradient-to="#1a4fc4"
+                data-button-radius="10px"
+                data-open-new-tab="true"
+                data-title="Bereken jouw besparing"
+                data-subtitle="Kies een product en vul je adres in"
+
+                data-tile-display="dropdown"
+                data-tiles-label="Welk product wil je berekenen?"
+
+                data-tile-solarpanels-url="https://homezero-accp.mendixcloud.com/link/start?id=5fc267a2-d867-4b72-ad76-2546f5019f9f"
+                data-tile-solarpanels-title="Zonnepanelen"
+                data-tile-homebattery-url="https://homezero-accp.mendixcloud.com/link/start?id=5fc267a2-d867-4b72-ad76-2546f5019f9f"
+                data-tile-homebattery-title="Thuisbatterij"
+                data-tile-heatpump-url="https://homezero-accp.mendixcloud.com/link/start?id=5fc267a2-d867-4b72-ad76-2546f5019f9f"
+                data-tile-heatpump-title="Warmtepomp"
+                data-tile-carcharger-url="https://homezero-accp.mendixcloud.com/link/start?id=5fc267a2-d867-4b72-ad76-2546f5019f9f"
+                data-tile-carcharger-title="Laadpaal"
+
+                data-tiles-max-select="1"
+                data-cta1-text-scan="Bereken wat je bespaart"
+
+                data-address-format="dutch"
+                data-show-phone="false"
+                data-show-email="true"
+            ></hz-embed>
+        </div>
+        <details class="code-block">
+            <summary>▶ Bekijk embed code</summary>
+            <pre>&lt;hz-embed
+  data-mode="scan"
+  data-color="#2A6DF4"
+  data-tile-display="dropdown"
+  data-tiles-label="Welk product wil je berekenen?"
+  data-tiles-max-select="1"
+  data-tile-solarpanels-url="https://..."
+  data-tile-solarpanels-title="Zonnepanelen"
+  data-tile-homebattery-url="https://..."
+  data-tile-homebattery-title="Thuisbatterij"
+  data-cta1-text-scan="Bereken wat je bespaart"
+  data-address-format="dutch"
+  data-show-email="true"
+&gt;&lt;/hz-embed&gt;</pre>
+        </details>
+    </div>
+
+    <!-- ── FEENSTRA: dropdown single-select + dual-flow per maatregel ─────── -->
+    <div class="section">
+        <div class="section-header">
+            <span class="mode-badge scan">Scan</span>
+            <h2>Feenstra — Dropdown + 2 CTA's per maatregel (dual-flow)</h2>
+        </div>
+        <p style="margin:0 0 12px;font-size:14px;color:#7585a3;">
+            Eén titel, dropdown (single-select) met ingebouwde iconen. Per maatregel een offerte-flow (CTA1)
+            <strong>en</strong> een adviesgesprek-flow (CTA2) via <code>data-tile-{key}-cta2-url</code>.
+            Maatregelen zonder <code>cta2-url</code> (hier: Zonnestroomboiler) tonen automatisch één knop.
+            De AI-chat verschijnt als losse tekstlink onder de onderste knop zodra de ChatWidget aanwezig is.
+        </p>
+        <div style="margin-bottom:16px;display:flex;align-items:center;gap:12px;">
+            <button onclick="
+                if(window.ChatWidget){
+                    delete window.ChatWidget;
+                    window.dispatchEvent(new CustomEvent('hz-chatwidget-removed'));
+                    this.textContent='▶ Simuleer ChatWidget aan';
+                    this.style.background='#f0f4fa';
+                } else {
+                    window.ChatWidget = { open: function(){ alert('ChatWidget.open() aangeroepen!'); } };
+                    window.dispatchEvent(new CustomEvent('hz-chatwidget-ready'));
+                    this.textContent='⏹ Verwijder ChatWidget simulatie';
+                    this.style.background='#d1fae5';
+                }
+            " style="padding:8px 16px;border-radius:8px;border:1px solid #dadee7;background:#f0f4fa;font-size:13px;font-weight:500;cursor:pointer;">
+                ▶ Simuleer ChatWidget aan
+            </button>
+            <span style="font-size:12px;color:#7585a3;">Zonder ChatWidget blijft de tekstlink verborgen.</span>
+        </div>
+        <div class="widget-container">
+            <hz-embed
+                data-mode="scan"
+                data-color="#e8762a"
+                data-button-radius="24px"
+                data-open-new-tab="true"
+                data-title="Waarin ben je geïnteresseerd?"
+
+                data-tile-display="dropdown"
+                data-tiles-max-select="1"
+                data-tiles-label=""
+                data-tiles-default="airco"
+
+                data-tile-airco-title="Airco"
+                data-tile-airco-url="https://homezero-accp.mendixcloud.com/link/start?id=5fc267a2-d867-4b72-ad76-2546f5019f9f&flow=offerte-airco"
+                data-tile-airco-cta2-url="https://homezero-accp.mendixcloud.com/link/start?id=5fc267a2-d867-4b72-ad76-2546f5019f9f&flow=advies-airco"
+
+                data-tile-batterij-title="Thuisbatterij"
+                data-tile-batterij-url="https://homezero-accp.mendixcloud.com/link/start?id=5fc267a2-d867-4b72-ad76-2546f5019f9f&flow=offerte-batterij"
+                data-tile-batterij-cta2-url="https://homezero-accp.mendixcloud.com/link/start?id=5fc267a2-d867-4b72-ad76-2546f5019f9f&flow=advies-batterij"
+
+                data-tile-zon-title="Zonnepanelen"
+                data-tile-zon-url="https://homezero-accp.mendixcloud.com/link/start?id=5fc267a2-d867-4b72-ad76-2546f5019f9f&flow=offerte-zon"
+                data-tile-zon-cta2-url="https://homezero-accp.mendixcloud.com/link/start?id=5fc267a2-d867-4b72-ad76-2546f5019f9f&flow=advies-zon"
+
+                data-tile-solarboiler-title="Zonnestroomboiler"
+                data-tile-solarboiler-url="https://homezero-accp.mendixcloud.com/link/start?id=5fc267a2-d867-4b72-ad76-2546f5019f9f&flow=offerte-boiler"
+
+                data-cta1-text="Direct een offerte"
+                data-cta2-show="true"
+                data-cta2-action="flow"
+                data-cta2-text="Adviesgesprek aanvraag"
+
+                data-address-format="dutch"
+                data-show-email="true"
+
+                data-ai-chat-show="true"
+                data-ai-chat-text="Of chat met Fleur de Ai adviseur"
+            ></hz-embed>
+        </div>
+        <details class="code-block">
+            <summary>▶ Bekijk embed code</summary>
+            <pre>&lt;!--
+  Dual-flow: per maatregel een offerte-flow (data-tile-{key}-url) + adviesgesprek-flow (data-tile-{key}-cta2-url).
+  data-cta2-action="flow"   = HomeZero-leadflow (mét adresvelden + offline.html-fallback)
+  data-cta2-action="booking"= externe agenda (Calendly/Google), opent direct zonder fallback
+  Maatregel zonder cta2-url toont automatisch maar één knop.
+--&gt;
+&lt;hz-embed
+  data-mode="scan"
+  data-color="#e8762a"
+  data-title="Waarin ben je geïnteresseerd?"
+  data-tile-display="dropdown"
+  data-tiles-max-select="1"
+
+  data-tile-airco-title="Airco"
+  data-tile-airco-url="https://...offerte-airco"
+  data-tile-airco-cta2-url="https://...advies-airco"
+  data-tile-solarboiler-title="Zonnestroomboiler"
+  data-tile-solarboiler-url="https://...offerte-boiler"   &lt;!-- geen cta2-url ⇒ 1 knop --&gt;
+
+  data-cta1-text="Direct een offerte"
+  data-cta2-show="true"
+  data-cta2-action="flow"
+  data-cta2-text="Adviesgesprek aanvraag"
+
+  data-address-format="dutch"
+  data-show-email="true"
+
+  data-ai-chat-show="true"
+  data-ai-chat-text="Of chat met Fleur de Ai adviseur"
+&gt;&lt;/hz-embed&gt;</pre>
+        </details>
+    </div>
+
+    <!-- ── Multi-select tegels met combinatie-leadflows ──────────────────── -->
+    <div class="section">
+        <div class="section-header">
+            <span class="mode-badge scan">Scan</span>
+            <h2>Scan — Multi-select tegels + combinatie-flows</h2>
+        </div>
+        <p style="margin:0 0 12px;font-size:14px;color:#7585a3;">
+            Meerdere tegels mogelijk. 1 geselecteerd → de flow van díe tegel; meerdere geselecteerd →
+            <code>data-cta1-combo-url</code> (1 combinatie-leadflow). De secundaire CTA gebruikt hier een
+            globale generieke flow (<code>data-cta2-url</code>) die voor alle maatregelen herbruikt wordt.
+        </p>
+        <div class="widget-container">
+            <hz-embed
+                data-mode="scan"
+                data-color="#2A6DF4"
+                data-button-radius="10px"
+                data-open-new-tab="true"
+                data-title="Waar wil je mee besparen?"
+                data-subtitle="Selecteer alles wat van toepassing is"
+
+                data-tile-display="large"
+
+                data-tile-zon-title="Zonnepanelen"
+                data-tile-zon-url="https://homezero-accp.mendixcloud.com/link/start?id=5fc267a2-d867-4b72-ad76-2546f5019f9f&flow=zon"
+                data-tile-batterij-title="Thuisbatterij"
+                data-tile-batterij-url="https://homezero-accp.mendixcloud.com/link/start?id=5fc267a2-d867-4b72-ad76-2546f5019f9f&flow=batterij"
+                data-tile-heatpump-title="Warmtepomp"
+                data-tile-heatpump-url="https://homezero-accp.mendixcloud.com/link/start?id=5fc267a2-d867-4b72-ad76-2546f5019f9f&flow=warmtepomp"
+                data-tile-laadpaal-title="Laadpaal"
+                data-tile-laadpaal-url="https://homezero-accp.mendixcloud.com/link/start?id=5fc267a2-d867-4b72-ad76-2546f5019f9f&flow=laadpaal"
+
+                data-tiles-default="zon"
+                data-cta1-combo-url="https://homezero-accp.mendixcloud.com/link/start?id=5fc267a2-d867-4b72-ad76-2546f5019f9f&flow=combinatie"
+                data-cta1-text="Bereken mijn besparing"
+
+                data-cta2-show="true"
+                data-cta2-action="flow"
+                data-cta2-text="Plan een gratis adviesgesprek"
+                data-cta2-url="https://homezero-accp.mendixcloud.com/link/start?id=5fc267a2-d867-4b72-ad76-2546f5019f9f&flow=adviesgesprek"
+
+                data-address-format="dutch"
+                data-show-email="true"
+            ></hz-embed>
+        </div>
+        <details class="code-block">
+            <summary>▶ Bekijk embed code</summary>
+            <pre>&lt;hz-embed
+  data-mode="scan"
+  data-tile-display="large"        &lt;!-- max-select weglaten = multi --&gt;
+  data-tile-zon-url="https://...zon"
+  data-tile-batterij-url="https://...batterij"
+  ...
+  data-cta1-text="Bereken mijn besparing"
+  data-cta1-combo-url="https://...combinatie"   &lt;!-- bij &gt;1 selectie --&gt;
+  data-cta2-show="true"
+  data-cta2-action="flow"
+  data-cta2-text="Plan een gratis adviesgesprek"
+  data-cta2-url="https://...adviesgesprek"      &lt;!-- globale generieke 2e flow --&gt;
+&gt;&lt;/hz-embed&gt;</pre>
+        </details>
+    </div>
+
+    <!-- Scan met dropdown (multi-select) -->
+    <div class="section">
+        <div class="section-header">
+            <span class="mode-badge scan">Scan</span>
+            <h2>Scan — Dropdown (meerdere producten)</h2>
+        </div>
+        <div class="widget-container">
+            <hz-embed
+                data-mode="scan"
+                data-color="#e8367c"
+                data-gradient-from="#e8367c"
+                data-gradient-to="#f08a3e"
+                data-button-radius="10px"
+                data-open-new-tab="true"
+                data-title="Meerdere producten berekenen?"
+                data-subtitle="Selecteer alles wat van toepassing is"
+
+                data-tile-display="dropdown"
+                data-tiles-label="Selecteer uw producten (meerdere mogelijk)"
+
+                data-tile-solarpanels-url="https://homezero-accp.mendixcloud.com/link/start?id=5fc267a2-d867-4b72-ad76-2546f5019f9f"
+                data-tile-solarpanels-title="Zonnepanelen"
+                data-tile-homebattery-url="https://homezero-accp.mendixcloud.com/link/start?id=5fc267a2-d867-4b72-ad76-2546f5019f9f"
+                data-tile-homebattery-title="Thuisbatterij"
+                data-tile-heatpump-url="https://homezero-accp.mendixcloud.com/link/start?id=5fc267a2-d867-4b72-ad76-2546f5019f9f"
+                data-tile-heatpump-title="Warmtepomp"
+                data-tile-carcharger-url="https://homezero-accp.mendixcloud.com/link/start?id=5fc267a2-d867-4b72-ad76-2546f5019f9f"
+                data-tile-carcharger-title="Laadpaal"
+
+                data-tiles-default="solarpanels,homebattery"
+                data-cta1-text-scan="Bereken mijn besparing"
+
+                data-address-format="dutch"
+                data-show-phone="false"
+                data-show-email="true"
+                data-email-required="true"
+            ></hz-embed>
+        </div>
+        <details class="code-block">
+            <summary>▶ Bekijk embed code</summary>
+            <pre>&lt;hz-embed
+  data-mode="scan"
+  data-color="#e8367c"
+  data-tile-display="dropdown"
+  data-tiles-label="Selecteer uw producten (meerdere mogelijk)"
+  data-tiles-default="solarpanels,homebattery"
+  data-tile-solarpanels-url="https://..."
+  data-tile-solarpanels-title="Zonnepanelen"
+  ...
+  data-cta1-text-scan="Bereken mijn besparing"
+  data-show-email="true"
+&gt;&lt;/hz-embed&gt;</pre>
+        </details>
+    </div>
+
+    <!-- Scan met tags (chip multi-select) -->
+    <div class="section">
+        <div class="section-header">
+            <span class="mode-badge scan">Scan</span>
+            <h2>Scan — Tags (chip multi-select)</h2>
+        </div>
+        <div class="widget-container">
+            <hz-embed
+                data-mode="scan"
+                data-color="#0d9f6e"
+                data-gradient-from="#0d9f6e"
+                data-gradient-to="#059669"
+                data-button-radius="10px"
+                data-open-new-tab="true"
+                data-title="Kies uw producten"
+                data-subtitle="Selecteer wat u wilt berekenen"
+
+                data-tile-display="tags"
+                data-tiles-label="Producten (meerdere mogelijk)"
+
+                data-tile-solarpanels-url="https://homezero-accp.mendixcloud.com/link/start?id=5fc267a2-d867-4b72-ad76-2546f5019f9f"
+                data-tile-solarpanels-title="Zonnepanelen"
+                data-tile-homebattery-url="https://homezero-accp.mendixcloud.com/link/start?id=5fc267a2-d867-4b72-ad76-2546f5019f9f"
+                data-tile-homebattery-title="Thuisbatterij"
+                data-tile-heatpump-url="https://homezero-accp.mendixcloud.com/link/start?id=5fc267a2-d867-4b72-ad76-2546f5019f9f"
+                data-tile-heatpump-title="Warmtepomp"
+                data-tile-carcharger-url="https://homezero-accp.mendixcloud.com/link/start?id=5fc267a2-d867-4b72-ad76-2546f5019f9f"
+                data-tile-carcharger-title="Laadpaal"
+
+                data-tiles-default="solarpanels,homebattery"
+                data-cta1-text-scan="Bereken wat je bespaart"
+
+                data-address-format="dutch"
+                data-show-phone="false"
+                data-show-email="true"
+            ></hz-embed>
+        </div>
+        <details class="code-block">
+            <summary>▶ Bekijk embed code</summary>
+            <pre>&lt;hz-embed
+  data-mode="scan"
+  data-color="#0d9f6e"
+  data-tile-display="tags"
+  data-tiles-label="Producten (meerdere mogelijk)"
+  data-tiles-default="solarpanels,homebattery"
+  data-tile-solarpanels-url="https://..."
+  data-tile-solarpanels-title="Zonnepanelen"
+  data-tile-homebattery-url="https://..."
+  data-tile-homebattery-title="Thuisbatterij"
+  ...
+  data-cta1-text-scan="Bereken wat je bespaart"
+  data-show-email="true"
+&gt;&lt;/hz-embed&gt;</pre>
+        </details>
+    </div>
+
+    <hr class="divider">
+
+    <!-- ── BOOKING MODE ─────────────────────────────────────────────────── -->
+    <div class="section">
+        <div class="section-header">
+            <span class="mode-badge booking">Booking</span>
+            <h2>Booking — Afspraak inplannen</h2>
+        </div>
+        <div class="widget-container">
+            <hz-embed
+                data-mode="booking"
+                data-color="#7c3aed"
+                data-button-radius="10px"
+                data-title="Plan een gratis adviesgesprek"
+                data-subtitle="Kies een moment dat jou uitkomt — gesprek duurt ±15 minuten"
+                data-booking-url="https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ2AZv7F8B0JNeYUeAQL8L5YQPEzN0zwNDGZcDGdPKWTL4bHmODFvx_hognxvyw5qQ79hy2m4geB"
+                data-cta1-text="Kies een moment"
+                data-show-phone="true"
+                data-phone-required="true"
+                data-show-email="true"
+                data-pass-to-url="true"
+                data-open-new-tab="true"
+            ></hz-embed>
+        </div>
+        <details class="code-block">
+            <summary>▶ Bekijk embed code</summary>
+            <pre>&lt;hz-embed
+  data-mode="booking"
+  data-color="#7c3aed"
+  data-title="Plan een gratis adviesgesprek"
+  data-subtitle="Kies een moment dat jou uitkomt"
+  data-booking-url="https://calendly.com/..."
+  data-booking-provider="calendly"
+  data-cta1-text="Kies een moment"
+  data-show-phone="true"
+  data-phone-required="true"
+  data-show-email="true"
+  data-pass-to-url="true"
+  data-open-new-tab="true"
+&gt;&lt;/hz-embed&gt;</pre>
+        </details>
+    </div>
+
+    <!-- Booking met tegels -->
+    <div class="section">
+        <div class="section-header">
+            <span class="mode-badge booking">Booking</span>
+            <h2>Booking — Met productopties</h2>
+        </div>
+        <div class="widget-container">
+            <hz-embed
+                data-mode="booking"
+                data-color="#7c3aed"
+                data-gradient-from="#7c3aed"
+                data-gradient-to="#4f46e5"
+                data-button-radius="10px"
+                data-title="Plan een gesprek"
+                data-subtitle="Selecteer je interesse en plan direct een afspraak"
+                data-booking-url="https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ2AZv7F8B0JNeYUeAQL8L5YQPEzN0zwNDGZcDGdPKWTL4bHmODFvx_hognxvyw5qQ79hy2m4geB"
+                data-cta1-text="Plan een afspraak"
+                data-show-tiles="true"
+                data-tile-solarpanels-url="https://homezero-accp.mendixcloud.com/link/start?id=5fc267a2-d867-4b72-ad76-2546f5019f9f"
+                data-tile-solarpanels-title="Zonnepanelen"
+                data-tile-homebattery-url="https://homezero-accp.mendixcloud.com/link/start?id=5fc267a2-d867-4b72-ad76-2546f5019f9f"
+                data-tile-homebattery-title="Thuisbatterij"
+                data-tile-heatpump-url="https://homezero-accp.mendixcloud.com/link/start?id=5fc267a2-d867-4b72-ad76-2546f5019f9f"
+                data-tile-heatpump-title="Warmtepomp"
+                data-show-phone="true"
+                data-phone-required="true"
+                data-pass-to-url="true"
+            ></hz-embed>
+        </div>
+    </div>
+
+    <!-- Scan met custom SVG iconen via data-tile-{key}-icon-svg -->
+    <div class="section">
+        <div class="section-header">
+            <span class="mode-badge scan">Scan</span>
+            <h2>Scan — Custom iconen via base64 SVG attribuut</h2>
+        </div>
+        <p style="margin:0 0 12px;font-size:14px;color:#7585a3;">
+            Elk tegel-icoon kan overschreven worden via <code>data-tile-{key}-icon-svg</code> met een base64-gecodeerde SVG.
+            De ingebouwde iconen worden alleen als fallback gebruikt.
+        </p>
+        <div class="widget-container">
+            <hz-embed
+                data-mode="scan"
+                data-color="#0d9f6e"
+                data-gradient-from="#0d9f6e"
+                data-gradient-to="#059669"
+                data-button-radius="10px"
+                data-title="Custom iconen demo"
+                data-subtitle="Deze tegels gebruiken aangepaste SVG iconen"
+
+                data-tile-solarpanels-url="https://homezero-accp.mendixcloud.com/link/start?id=5fc267a2-d867-4b72-ad76-2546f5019f9f"
+                data-tile-solarpanels-title="Zonnepanelen"
+                data-tile-solarpanels-icon-svg="PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cmVjdCB4PSIyIiB5PSI3IiB3aWR0aD0iMjAiIGhlaWdodD0iMTQiIHJ4PSIyIi8+PGxpbmUgeDE9IjIiIHkxPSIxMiIgeDI9IjIyIiB5Mj0iMTIiLz48bGluZSB4MT0iNyIgeTE9IjciIHgyPSI3IiB5Mj0iMjEiLz48bGluZSB4MT0iMTIiIHkxPSI3IiB4Mj0iMTIiIHkyPSIyMSIvPjxsaW5lIHgxPSIxNyIgeTE9IjciIHgyPSIxNyIgeTI9IjIxIi8+PHBhdGggZD0iTTcgNyBRMTIgMiAxNyA3Ii8+PC9zdmc+"
+
+                data-tile-homebattery-url="https://homezero-accp.mendixcloud.com/link/start?id=5fc267a2-d867-4b72-ad76-2546f5019f9f"
+                data-tile-homebattery-title="Thuisbatterij"
+                data-tile-homebattery-icon-svg="PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cmVjdCB4PSI0IiB5PSI2IiB3aWR0aD0iMTYiIGhlaWdodD0iMTQiIHJ4PSIyIi8+PGxpbmUgeDE9IjkiIHkxPSIzIiB4Mj0iOSIgeTI9IjYiLz48bGluZSB4MT0iMTUiIHkxPSIzIiB4Mj0iMTUiIHkyPSI2Ii8+PHBvbHlsaW5lIHBvaW50cz0iOCAxNCAxMiAxMCAxMiAxNCAxNiAxMCIvPjwvc3ZnPg=="
+
+                data-tile-heatpump-url="https://homezero-accp.mendixcloud.com/link/start?id=5fc267a2-d867-4b72-ad76-2546f5019f9f"
+                data-tile-heatpump-title="Warmtepomp"
+                data-tile-heatpump-icon-svg="PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cmVjdCB4PSIyIiB5PSI0IiB3aWR0aD0iMjAiIGhlaWdodD0iMTYiIHJ4PSIzIi8+PGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iNCIvPjxwYXRoIGQ9Ik0xMiA4IEwxMiA0IE0xMiAxNiBMMTIgMjAgTTggMTIgTDIgMTIgTTE2IDEyIEwyMiAxMiIvPjwvc3ZnPg=="
+
+                data-tile-carcharger-url="https://homezero-accp.mendixcloud.com/link/start?id=5fc267a2-d867-4b72-ad76-2546f5019f9f"
+                data-tile-carcharger-title="Laadpaal"
+
+                data-address-format="dutch"
+                data-show-email="true"
+                data-cta1-text-scan="Bereken wat je bespaart"
+            ></hz-embed>
+        </div>
+        <details class="code-block">
+            <summary>▶ Bekijk embed code</summary>
+            <pre>&lt;!--
+  data-tile-{key}-icon-svg = base64-gecodeerde SVG string
+  Genereer met: btoa(svgString) in JavaScript
+  Of via Lovable generator: upload SVG of genereer met AI
+--&gt;
+&lt;hz-embed
+  data-mode="scan"
+  data-color="#0d9f6e"
+
+  data-tile-solarpanels-url="https://..."
+  data-tile-solarpanels-title="Zonnepanelen"
+  data-tile-solarpanels-icon-svg="PHN2ZyB4bWxu..."
+
+  data-tile-homebattery-url="https://..."
+  data-tile-homebattery-title="Thuisbatterij"
+  data-tile-homebattery-icon-svg="PHN2ZyB4bWxu..."
+
+  data-tile-heatpump-url="https://..."
+  data-tile-heatpump-title="Warmtepomp"
+  data-tile-heatpump-icon-svg="PHN2ZyB4bWxu..."
+
+  data-tile-carcharger-url="https://..."
+  data-tile-carcharger-title="Laadpaal"
+  &lt;!-- carcharger gebruikt ingebouwd icoon als fallback --&gt;
+
+  data-show-email="true"
+&gt;&lt;/hz-embed&gt;</pre>
+        </details>
+    </div>
+
+    <!-- Scan met AI chat CTA2 -->
+    <div class="section">
+        <div class="section-header">
+            <span class="mode-badge scan">Scan</span>
+            <h2>Scan — met AI Adviseur CTA (detectie)</h2>
+        </div>
+        <p style="margin:0 0 12px;font-size:14px;color:#7585a3;">
+            De tweede knop verschijnt alleen als <code>window.ChatWidget</code> aanwezig is op de pagina.
+            Gebruik de toggle hieronder om de ChatWidget te simuleren.
+        </p>
+        <div style="margin-bottom:16px;display:flex;align-items:center;gap:12px;">
+            <button onclick="
+                if(window.ChatWidget){
+                    delete window.ChatWidget;
+                    window.dispatchEvent(new CustomEvent('hz-chatwidget-removed'));
+                    this.textContent='▶ Simuleer ChatWidget aan';
+                    this.style.background='#f0f4fa';
+                } else {
+                    window.ChatWidget = { open: function(){ alert('ChatWidget.open() aangeroepen!'); } };
+                    window.dispatchEvent(new CustomEvent('hz-chatwidget-ready'));
+                    this.textContent='⏹ Verwijder ChatWidget simulatie';
+                    this.style.background='#d1fae5';
+                }
+            " style="padding:8px 16px;border-radius:8px;border:1px solid #dadee7;background:#f0f4fa;font-size:13px;font-weight:500;cursor:pointer;">
+                ▶ Simuleer ChatWidget aan
+            </button>
+            <span style="font-size:12px;color:#7585a3;">De knop verschijnt direct zodra je de simulatie aanzet — geen refresh nodig.</span>
+        </div>
+        <div class="widget-container">
+            <hz-embed
+                data-mode="scan"
+                data-color="#2A6DF4"
+                data-gradient-from="#2A6DF4"
+                data-gradient-to="#1a4fc4"
+                data-button-radius="10px"
+                data-title="Bereken jouw besparing"
+                data-subtitle="Vul je adres in en ontdek je opties"
+
+                data-tile-solarpanels-url="https://homezero-accp.mendixcloud.com/link/start?id=5fc267a2-d867-4b72-ad76-2546f5019f9f"
+                data-tile-solarpanels-title="Zonnepanelen"
+                data-tile-heatpump-url="https://homezero-accp.mendixcloud.com/link/start?id=5fc267a2-d867-4b72-ad76-2546f5019f9f"
+                data-tile-heatpump-title="Warmtepomp"
+
+                data-address-format="dutch"
+                data-show-email="true"
+                data-cta1-text-scan="Bereken wat je bespaart"
+
+                data-cta2-show="true"
+                data-cta2-text="of start een chat met onze AI adviseur"
+                data-cta2-action="ai-chat"
+            ></hz-embed>
+        </div>
+        <details class="code-block">
+            <summary>▶ Bekijk embed code</summary>
+            <pre>&lt;!-- ChatWidget moet ook op de pagina staan --&gt;
+&lt;link rel="stylesheet" href="https://homezerotech.github.io/files/salesagent/widget.css"&gt;
+&lt;script src="https://homezerotech.github.io/files/salesagent/widget.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+  ChatWidget.init({ chatbotApiUrl: '...', apiKey: '...' });
+&lt;/script&gt;
+
+&lt;hz-embed
+  data-mode="scan"
+  data-color="#2A6DF4"
+  data-cta2-show="true"
+  data-cta2-text="of start een chat met onze AI adviseur"
+  data-cta2-action="ai-chat"
+  ...
+&gt;&lt;/hz-embed&gt;</pre>
+        </details>
+    </div>
+
+    <hr class="divider">
+
+    <!-- ── BROCHURE MODE ─────────────────────────────────────────────────── -->
+    <div class="section">
+        <div class="section-header">
+            <span class="mode-badge brochure">Brochure</span>
+            <h2>Brochure — Compact nieuwsbrief (alleen e-mail)</h2>
+        </div>
+        <div class="widget-container">
+            <hz-embed
+                data-mode="brochure"
+                data-color="#059669"
+                data-button-radius="10px"
+                data-title="Ontvang onze thuisbatterij brochure"
+                data-subtitle="Direct in jouw inbox — volledig gratis"
+                data-pico-key="test-api-key"
+                data-pico-env="acceptance"
+                data-pico-flow-id="5fc267a2-d867-4b72-ad76-2546f5019f9f"
+                data-cta1-text="Stuur mij de brochure"
+                data-show-name="false"
+                data-show-phone="false"
+                data-success-message="De brochure is onderweg naar jouw inbox!"
+            ></hz-embed>
+        </div>
+        <details class="code-block">
+            <summary>▶ Bekijk embed code</summary>
+            <pre>&lt;hz-embed
+  data-mode="brochure"
+  data-color="#059669"
+  data-title="Ontvang onze thuisbatterij brochure"
+  data-subtitle="Direct in jouw inbox — volledig gratis"
+  data-pico-key="your-api-key"
+  data-pico-env="production"
+  data-pico-flow-id="5fc267a2-d867-4b72-ad76-2546f5019f9f"
+  data-cta1-text="Stuur mij de brochure"
+  data-success-message="De brochure is onderweg naar jouw inbox!"
+&gt;&lt;/hz-embed&gt;</pre>
+        </details>
+    </div>
+
+    <!-- Brochure met adres -->
+    <div class="section">
+        <div class="section-header">
+            <span class="mode-badge brochure">Brochure</span>
+            <h2>Brochure — Met naam, telefoon en adres</h2>
+        </div>
+        <div class="widget-container">
+            <hz-embed
+                data-mode="brochure"
+                data-color="#059669"
+                data-gradient-from="#059669"
+                data-gradient-to="#0d9488"
+                data-button-radius="10px"
+                data-title="Vraag de warmtepomp brochure aan"
+                data-subtitle="Ontvang alle informatie over warmtepompen"
+                data-pico-key="test-api-key"
+                data-pico-env="acceptance"
+                data-pico-flow-id="5fc267a2-d867-4b72-ad76-2546f5019f9f"
+                data-cta1-text="Stuur mij de brochure"
+                data-show-name="true"
+                data-show-phone="true"
+                data-show-address="true"
+                data-address-format="dutch"
+                data-success-message="Bedankt! De brochure is onderweg."
+            ></hz-embed>
+        </div>
     </div>
 
     <!-- Load local embed.js -->

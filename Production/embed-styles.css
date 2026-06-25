@@ -357,3 +357,396 @@ hz-embed {
     font-size: 18px;
     margin: 0 0 16px 0;
 }
+
+/* Checkbox styling */
+.embed-checkbox-container {
+    margin-bottom: 16px;
+    align-items: flex-start !important;
+}
+
+.embed-checkbox-label {
+    display: inline-flex;
+    align-items: flex-start;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1.5;
+    gap: 10px;
+    position: relative;
+}
+
+.embed-checkbox-input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.embed-checkbox-custom {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    border: 2px solid #dadee7;
+    border-radius: 4px;
+    background-color: #fff;
+    transition: all 0.15s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 2px;
+}
+
+.embed-checkbox-custom svg {
+    width: 14px;
+    height: 14px;
+    opacity: 0;
+    transform: scale(0.5);
+    transition: all 0.15s ease-in-out;
+    color: #fff;
+    stroke-width: 3.5;
+}
+
+.embed-checkbox-input:checked ~ .embed-checkbox-custom {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.embed-checkbox-input:checked ~ .embed-checkbox-custom svg {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.embed-checkbox-label:hover .embed-checkbox-custom {
+    border-color: var(--primary-color);
+    background-color: color-mix(in srgb, var(--primary-color) 8%, transparent);
+}
+
+.embed-checkbox-input:checked + .embed-checkbox-custom:hover,
+.embed-checkbox-label:hover .embed-checkbox-input:checked ~ .embed-checkbox-custom {
+    background-color: color-mix(in srgb, var(--primary-color) 85%, black);
+    border-color: color-mix(in srgb, var(--primary-color) 85%, black);
+}
+
+.embed-checkbox-input:focus-visible ~ .embed-checkbox-custom {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+.embed-checkbox-text {
+    color: #132039;
+    font-weight: 500;
+    padding-top: 1px;
+}
+
+.embed-checkbox-required {
+    color: #132039;
+    margin-left: 2px;
+}
+
+.embed-checkbox-container .embed-validation-message {
+    margin-top: 6px;
+    margin-left: 0;
+}
+
+/* ── Tile grid ────────────────────────────────────────────────────────────── */
+
+.embed-tile-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.embed-tile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 8px 10px;
+    border: 1.5px solid #dadee7;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+    background: #fff;
+    position: relative;
+    gap: 6px;
+    text-align: center;
+    user-select: none;
+    min-height: 74px;
+    color: #132039;
+}
+
+.embed-tile:hover {
+    border-color: var(--primary-color);
+    background: color-mix(in srgb, var(--primary-color) 7%, #fff);
+}
+
+.embed-tile.selected {
+    background: var(--primary-gradient, var(--primary-color));
+    border-color: transparent;
+    color: #fff;
+}
+
+.embed-tile-icon {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.embed-tile-icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+.embed-tile-label {
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.25;
+    color: inherit;
+}
+
+.embed-tile-checkmark {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 16px;
+    height: 16px;
+    background: rgba(255, 255, 255, 0.28);
+    border-radius: 50%;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.embed-tile.selected .embed-tile-checkmark {
+    display: flex;
+}
+
+/* ── Dual CTA wrapper ─────────────────────────────────────────────────────── */
+
+.embed-cta-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.embed-cta-primary {
+    /* Inherits .embed-submit-button styles */
+}
+
+.embed-cta-secondary {
+    width: 100% !important;
+    margin: 0 !important;
+    font-size: 16px !important;
+    line-height: 140% !important;
+    padding: 13px 40px !important;
+    border-radius: 10px !important;
+    font-weight: 500 !important;
+    color: #132039 !important;
+    transition: opacity 0.2s ease-in-out;
+    text-align: center !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    border: 1.5px solid var(--primary-color, #dadee7) !important;
+    cursor: pointer !important;
+    background: transparent !important;
+}
+
+.embed-cta-secondary:hover {
+    opacity: 0.8 !important;
+}
+
+.embed-label-optional {
+    font-weight: 400;
+    color: #7585a3;
+}
+
+/* ── AI-chat text link ────────────────────────────────────────────────────── */
+
+.embed-ai-chat-link {
+    display: block;
+    margin: 12px auto 0;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: underline;
+    cursor: pointer;
+    color: var(--primary-color, #2A6DF4);
+    background: none;
+    border: none;
+}
+
+.embed-ai-chat-link:hover {
+    opacity: 0.8;
+}
+
+/* ── Dropdown option icon badge ───────────────────────────────────────────── */
+
+.hz-dd-icon-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+    border-radius: 8px;
+    background: #f0f2f5;
+    color: #132039;
+}
+
+/* ── Confirm screen ───────────────────────────────────────────────────────── */
+
+.embed-confirm {
+    text-align: center;
+    padding: 32px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.embed-confirm-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    color: #fff;
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+.embed-confirm-title {
+    font-size: 22px;
+    font-weight: 600;
+    color: #132039;
+    margin: 0;
+}
+
+.embed-confirm-message {
+    font-size: 16px;
+    color: #7585a3;
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* ── Inline API error ─────────────────────────────────────────────────────── */
+
+.embed-inline-error {
+    color: #fd3118;
+    font-size: 14px;
+    text-align: center;
+    padding: 8px 0 0;
+    line-height: 1.5;
+}
+
+/* ── Large tile grid (max 4, radio circles) ──────────────────────────────── */
+
+.embed-tile-grid-large {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+@container (max-width: 379px) {
+    .embed-tile-grid-large {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.embed-tile-large {
+    padding: 16px 10px 14px;
+    border-radius: 14px;
+    min-height: 100px;
+    gap: 8px;
+}
+
+.embed-tile-large .embed-tile-icon {
+    width: 36px;
+    height: 36px;
+}
+
+.embed-tile-large .embed-tile-icon svg {
+    width: 36px;
+    height: 36px;
+}
+
+.embed-tile-large .embed-tile-label {
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.embed-tile-large:hover {
+    border-color: var(--primary-color) !important;
+    /* no background fill on hover — only border */
+}
+
+.embed-tile-large.selected {
+    /* override: tinted bg + colored border, NOT full fill */
+    background: color-mix(in srgb, var(--primary-color) 8%, #fff) !important;
+    border-color: var(--primary-color) !important;
+    border-width: 2px;
+    color: var(--primary-color);
+}
+
+.embed-tile-radio {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #dadee7;
+    border-radius: 50%;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.18s ease;
+    flex-shrink: 0;
+    box-sizing: border-box;
+}
+
+/* ── Tag / chip multi-select ──────────────────────────────────────────────── */
+
+.embed-tags-field {
+    min-height: 46px;
+    border: 1px solid #dadee7;
+    border-radius: 8px;
+    background: #fff;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    cursor: default;
+    transition: border-color 0.2s ease-in-out;
+    box-sizing: border-box;
+    position: relative;
+}
+
+.embed-tags-field:hover {
+    border-color: var(--primary-color);
+}
+
+.embed-tag-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 8px 4px 4px;
+    border-radius: 20px;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: default;
+    flex-shrink: 0;
+    max-width: 180px;
+}
