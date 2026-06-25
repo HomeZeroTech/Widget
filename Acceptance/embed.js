@@ -598,10 +598,14 @@
                 const inputWrapper = document.createElement("div");
                 inputWrapper.className = "address-input-wrapper";
 
+                const _addrDropdownId = 'hz-addr-dd-' + Math.random().toString(36).slice(2, 8);
+
                 // Update the input styling
                 input.className =
                     "embed-input-field address-autocomplete-input";
                 input.setAttribute("autocomplete", "off");
+                input.setAttribute("aria-autocomplete", "list");
+                input.setAttribute("aria-controls", _addrDropdownId);
 
                 const dropdownIcon = document.createElement("div");
                 dropdownIcon.className = "dropdown-icon";
@@ -613,6 +617,8 @@
 
                 const dropdown = document.createElement("div");
                 dropdown.className = "dropdown-options address-dropdown";
+                dropdown.id = _addrDropdownId;
+                dropdown.setAttribute('role', 'listbox');
 
                 // First remove the input from its current parent
                 originalParent.removeChild(input);
@@ -725,9 +731,11 @@
                         const placePrediction = suggestion.placePrediction;
                         const option = document.createElement("div");
                         option.className = "dropdown-option address-option";
+                        option.setAttribute('role', 'option');
+                        option.setAttribute('aria-selected', 'false');
 
                         const svgWrapper = document.createElement("span");
-                        svgWrapper.innerHTML = `<svg class="location-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="currentColor"/></svg>`;
+                        svgWrapper.innerHTML = `<svg class="location-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="currentColor"/></svg>`;
 
                         const content = document.createElement("div");
                         content.className = "option-content";
@@ -1430,10 +1438,12 @@
         const confirm = document.createElement('div');
         confirm.className = 'embed-confirm';
         confirm.innerHTML =
-            '<div class="embed-confirm-icon" style="background:' + primaryColor + '">&#10003;</div>' +
-            '<h3 class="embed-confirm-title">' + title + '</h3>' +
+            '<div class="embed-confirm-icon" style="background:' + primaryColor + '" aria-hidden="true">&#10003;</div>' +
+            '<h3 class="embed-confirm-title" tabindex="-1">' + title + '</h3>' +
             '<p class="embed-confirm-message">' + message + '</p>';
         form.appendChild(confirm);
+        const heading = confirm.querySelector('h3');
+        if (heading) heading.focus();
     }
 
     function ensureTileStyles() {
@@ -1451,7 +1461,8 @@
             tileEl.style.background = primaryColor;
         }
         tileEl.style.borderColor = 'transparent';
-        tileEl.style.color = '#fff';
+        tileEl.style.color = 'var(--contrast-color, #fff)';
+        tileEl.setAttribute('aria-checked', 'true');
         const ck = tileEl.querySelector('.embed-tile-checkmark');
         if (ck) ck.style.display = 'flex';
     }
@@ -1460,6 +1471,7 @@
         tileEl.style.background = '#fff';
         tileEl.style.borderColor = '#dadee7';
         tileEl.style.color = '#132039';
+        tileEl.setAttribute('aria-checked', 'false');
         const ck = tileEl.querySelector('.embed-tile-checkmark');
         if (ck) ck.style.display = 'none';
     }
@@ -1479,6 +1491,7 @@
 
         const grid = document.createElement('div');
         grid.className = 'embed-tile-grid';
+        grid.setAttribute('role', 'group');
         grid.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:8px;margin-bottom:16px;width:100%;box-sizing:border-box;';
 
         tiles.forEach(function (tile) {
@@ -1486,6 +1499,10 @@
             const tileEl = document.createElement('div');
             tileEl.className = 'embed-tile' + (isSelected ? ' selected' : '');
             tileEl.setAttribute('data-tile-key', tile.key);
+            tileEl.setAttribute('role', 'checkbox');
+            tileEl.setAttribute('aria-checked', isSelected ? 'true' : 'false');
+            tileEl.setAttribute('aria-label', tile.title);
+            tileEl.tabIndex = 0;
             tileEl.style.cssText = 'display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px 8px 10px;border:1.5px solid #dadee7;border-radius:10px;cursor:pointer;background:#fff;position:relative;gap:6px;text-align:center;user-select:none;min-height:74px;color:#132039;box-sizing:border-box;transition:background 0.18s ease,border-color 0.18s ease,color 0.18s ease;';
 
             // Icon wrapper — fixed 28×28, overflow hidden so SVG cannot escape
@@ -1523,6 +1540,9 @@
             if (isSelected) applyTileSelectedStyle(tileEl, primaryColor, gradientFrom, gradientTo);
 
             tileEl.addEventListener('click', function () { onSelect(tile.key, tileEl); });
+            tileEl.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); tileEl.click(); }
+            });
             grid.appendChild(tileEl);
         });
 
@@ -1534,6 +1554,7 @@
         tileEl.style.borderWidth = '2px';
         tileEl.style.background = 'color-mix(in srgb, ' + primaryColor + ' 8%, #fff)';
         tileEl.style.color = primaryColor;
+        tileEl.setAttribute('aria-checked', 'true');
         const circle = tileEl.querySelector('.embed-tile-radio');
         if (circle) {
             circle.style.borderColor = primaryColor;
@@ -1548,6 +1569,7 @@
         tileEl.style.borderWidth = '1.5px';
         tileEl.style.background = '#fff';
         tileEl.style.color = '#132039';
+        tileEl.setAttribute('aria-checked', 'false');
         const circle = tileEl.querySelector('.embed-tile-radio');
         if (circle) {
             circle.style.borderColor = '#dadee7';
@@ -1563,6 +1585,7 @@
 
         const grid = document.createElement('div');
         grid.className = 'embed-tile-grid embed-tile-grid-large';
+        grid.setAttribute('role', 'radiogroup');
         // 4 cols full-width desktop, @container 2 cols mobile — matches address row width
         grid.style.cssText = 'display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px;width:100%;box-sizing:border-box;';
 
@@ -1571,6 +1594,10 @@
             const tileEl = document.createElement('div');
             tileEl.className = 'embed-tile embed-tile-large' + (isSelected ? ' selected' : '');
             tileEl.setAttribute('data-tile-key', tile.key);
+            tileEl.setAttribute('role', 'radio');
+            tileEl.setAttribute('aria-checked', isSelected ? 'true' : 'false');
+            tileEl.setAttribute('aria-label', tile.title);
+            tileEl.tabIndex = 0;
             tileEl.style.cssText = 'display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px 10px 14px;border:1.5px solid #dadee7;border-radius:14px;cursor:pointer;background:#fff;position:relative;gap:8px;text-align:center;user-select:none;min-height:100px;color:#132039;box-sizing:border-box;transition:background 0.18s ease,border-color 0.18s ease,color 0.18s ease;';
 
             const iconWrap = document.createElement('div');
@@ -1611,6 +1638,9 @@
                 if (!selectedTilesSet.has(tile.key)) tileEl.style.borderColor = '#dadee7';
             });
             tileEl.addEventListener('click', function () { onSelect(tile.key, tileEl); });
+            tileEl.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); tileEl.click(); }
+            });
             grid.appendChild(tileEl);
         });
 
@@ -1645,10 +1675,18 @@
         const trigger = document.createElement('div');
         trigger.className = 'dropdown-selected';
         trigger.tabIndex = 0;
+        trigger.setAttribute('role', 'combobox');
+        trigger.setAttribute('aria-haspopup', 'listbox');
+        trigger.setAttribute('aria-expanded', 'false');
+        const _ddPanelId = 'hz-dd-panel-' + Math.random().toString(36).slice(2, 8);
+        trigger.setAttribute('aria-controls', _ddPanelId);
         trigger.style.cssText = 'padding:12px;border:1px solid #dadee7;border-radius:8px;background:#fff;display:flex;align-items:center;justify-content:space-between;color:#132039;font-size:14px;font-weight:500;cursor:pointer;transition:border-color 0.2s;';
 
         const optionsPanel = document.createElement('div');
         optionsPanel.className = 'dropdown-options';
+        optionsPanel.id = _ddPanelId;
+        optionsPanel.setAttribute('role', 'listbox');
+        if (maxSelect !== 1) optionsPanel.setAttribute('aria-multiselectable', 'true');
         optionsPanel.style.cssText = 'position:absolute;top:100%;left:0;width:100%;background:#fff;border-radius:8px;box-shadow:0 0 20px rgba(5,35,76,0.14);max-height:220px;overflow-y:auto;display:none;z-index:1000;padding:6px;box-sizing:border-box;';
 
         function iconBadge(tile) {
@@ -1662,7 +1700,7 @@
             const sel = tiles.filter(function (t) { return selectedTilesSet.has(t.key); });
             if (sel.length === 0) {
                 const placeholder = (selectedLang && selectedLang.tileDropdownPlaceholder) ? selectedLang.tileDropdownPlaceholder : 'Selecteer een product...';
-                trigger.innerHTML = '<div class="selected-content"><span style="color:#a2acc1;font-weight:500;">' + placeholder + '</span></div>' + CHEVRON;
+                trigger.innerHTML = '<div class="selected-content"><span style="color:#767c8a;font-weight:500;">' + placeholder + '</span></div>' + CHEVRON;
             } else if (sel.length === 1) {
                 trigger.innerHTML = '<div class="selected-content" style="display:flex;align-items:center;gap:10px;overflow:hidden;max-width:calc(100% - 24px);">' + iconBadge(sel[0]) + '<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + sel[0].title + '</span></div>' + CHEVRON;
             } else {
@@ -1676,6 +1714,8 @@
             const optEl = document.createElement('div');
             optEl.className = 'dropdown-option' + (isSelected ? ' selected' : '');
             optEl.setAttribute('data-tile-key', tile.key);
+            optEl.setAttribute('role', 'option');
+            optEl.setAttribute('aria-selected', isSelected ? 'true' : 'false');
             optEl.style.cssText = 'padding:10px 12px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;font-size:14px;color:#7585a3;font-weight:500;border-radius:8px;transition:background-color 0.15s;';
             if (isSelected) { optEl.style.backgroundColor = primaryColor; optEl.style.color = contrast; }
 
@@ -1704,6 +1744,7 @@
                 if (selectedTilesSet.has(tile.key)) {
                     selectedTilesSet.delete(tile.key);
                     optEl.classList.remove('selected');
+                    optEl.setAttribute('aria-selected', 'false');
                     optEl.style.backgroundColor = '';
                     optEl.style.color = '#7585a3';
                     ck.style.display = 'none';
@@ -1714,6 +1755,7 @@
                         const firstEl = optionsPanel.querySelector('[data-tile-key="' + firstKey + '"]');
                         if (firstEl) {
                             firstEl.classList.remove('selected');
+                            firstEl.setAttribute('aria-selected', 'false');
                             firstEl.style.backgroundColor = '';
                             firstEl.style.color = '#7585a3';
                             const firstCk = firstEl.querySelector('.dd-check');
@@ -1722,6 +1764,7 @@
                     }
                     selectedTilesSet.add(tile.key);
                     optEl.classList.add('selected');
+                    optEl.setAttribute('aria-selected', 'true');
                     optEl.style.backgroundColor = primaryColor;
                     optEl.style.color = contrast;
                     ck.style.display = 'block';
@@ -1754,6 +1797,7 @@
             const isOpen = optionsPanel.style.display === 'block';
             optionsPanel.style.display = isOpen ? 'none' : 'block';
             trigger.classList.toggle('open', !isOpen);
+            trigger.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
             trigger.style.borderColor = isOpen ? '#dadee7' : primaryColor;
         });
 
@@ -1764,6 +1808,7 @@
             } else if (e.key === 'Escape') {
                 optionsPanel.style.display = 'none';
                 trigger.classList.remove('open');
+                trigger.setAttribute('aria-expanded', 'false');
                 trigger.style.borderColor = '#dadee7';
             }
         });
@@ -1773,6 +1818,7 @@
             if (!dropdown.contains(e.target)) {
                 optionsPanel.style.display = 'none';
                 trigger.classList.remove('open');
+                trigger.setAttribute('aria-expanded', 'false');
                 trigger.style.borderColor = '#dadee7';
             }
         };
@@ -1802,6 +1848,8 @@
 
         const fieldBox = document.createElement('div');
         fieldBox.className = 'embed-tags-field';
+        fieldBox.tabIndex = 0;
+        fieldBox.setAttribute('role', 'group');
         fieldBox.style.cssText = 'min-height:46px;border:1px solid #dadee7;border-radius:8px;background:#fff;display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:8px 12px;cursor:default;transition:border-color 0.2s;box-sizing:border-box;position:relative;';
 
         const chipsArea = document.createElement('div');
@@ -1809,9 +1857,11 @@
 
         const placeholder = document.createElement('span');
         placeholder.textContent = (selectedLang && selectedLang.tagsPlaceholder) ? selectedLang.tagsPlaceholder : 'Selecteer producten...';
-        placeholder.style.cssText = 'color:#a2acc1;font-size:14px;font-weight:500;line-height:1;pointer-events:none;';
+        placeholder.style.cssText = 'color:#767c8a;font-size:14px;font-weight:500;line-height:1;pointer-events:none;';
 
         const optionsPanel = document.createElement('div');
+        optionsPanel.setAttribute('role', 'listbox');
+        optionsPanel.setAttribute('aria-multiselectable', 'true');
         optionsPanel.style.cssText = 'position:absolute;top:calc(100% + 2px);left:0;width:100%;background:#fff;border-radius:8px;box-shadow:0 0 20px rgba(5,35,76,0.14);max-height:220px;overflow-y:auto;display:none;z-index:1000;padding:6px;box-sizing:border-box;';
 
         function renderChip(tile) {
@@ -1819,7 +1869,7 @@
             const chip = document.createElement('div');
             chip.className = 'embed-tag-chip';
             chip.setAttribute('data-chip-key', tile.key);
-            chip.style.cssText = 'display:inline-flex;align-items:center;gap:5px;padding:4px 8px 4px 4px;border-radius:20px;background:' + primaryColor + ';color:#fff;font-size:13px;font-weight:500;cursor:default;flex-shrink:0;max-width:180px;';
+            chip.style.cssText = 'display:inline-flex;align-items:center;gap:5px;padding:4px 8px 4px 4px;border-radius:20px;background:' + primaryColor + ';color:var(--contrast-color, #fff);font-size:13px;font-weight:500;cursor:default;flex-shrink:0;max-width:180px;';
 
             const iconCircle = document.createElement('span');
             iconCircle.style.cssText = 'width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,0.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;';
@@ -1828,7 +1878,7 @@
                 const svg = iconCircle.querySelector('svg');
                 if (svg) {
                     svg.removeAttribute('width'); svg.removeAttribute('height');
-                    svg.style.cssText = 'width:14px;height:14px;min-width:14px;display:block;color:#fff;';
+                    svg.style.cssText = 'width:14px;height:14px;min-width:14px;display:block;color:var(--contrast-color, #fff);';
                 }
             }
 
@@ -1840,9 +1890,9 @@
             removeBtn.type = 'button';
             removeBtn.setAttribute('aria-label', ((selectedLang && selectedLang.removeChip) ? selectedLang.removeChip : 'Verwijder') + ' ' + tile.title);
             removeBtn.innerHTML = '<svg viewBox="0 0 10 10" width="11" height="11" fill="none" aria-hidden="true"><path d="M1.5 1.5L8.5 8.5M8.5 1.5L1.5 8.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
-            removeBtn.style.cssText = 'background:none;border:none;padding:0;cursor:pointer;display:flex;align-items:center;color:rgba(255,255,255,0.8);flex-shrink:0;margin-left:1px;';
-            removeBtn.addEventListener('mouseenter', function () { removeBtn.style.color = '#fff'; });
-            removeBtn.addEventListener('mouseleave', function () { removeBtn.style.color = 'rgba(255,255,255,0.8)'; });
+            removeBtn.style.cssText = 'background:none;border:none;padding:0;cursor:pointer;display:flex;align-items:center;color:var(--contrast-color, #fff);opacity:0.8;flex-shrink:0;margin-left:1px;';
+            removeBtn.addEventListener('mouseenter', function () { removeBtn.style.opacity = '1'; });
+            removeBtn.addEventListener('mouseleave', function () { removeBtn.style.opacity = '0.8'; });
             removeBtn.addEventListener('click', function (e) {
                 e.stopPropagation();
                 selectedTilesSet.delete(tile.key);
@@ -1883,6 +1933,8 @@
             available.forEach(function (tile) {
                 const iconRaw = decodeTileIcon(tile);
                 const optEl = document.createElement('div');
+                optEl.setAttribute('role', 'option');
+                optEl.setAttribute('aria-selected', 'false');
                 optEl.style.cssText = 'padding:8px 12px;display:flex;align-items:center;gap:10px;cursor:pointer;font-size:14px;color:#132039;font-weight:500;border-radius:8px;transition:background-color 0.15s;';
 
                 if (iconRaw) {
@@ -1970,29 +2022,29 @@
         if (googleSearch) {
             return '<div class="embed-row"><div class="embed-col"><div class="embed-form-container">' +
                 '<label for="google-address" class="embed-label-bold">' + selectedLang.addressLabel + '*</label>' +
-                '<input type="text" id="google-address" class="embed-input-field" placeholder="' + selectedLang.addressPlaceholder + '" data-address-format="' + addressFormat + '" data-country="' + country + '">' +
+                '<input type="text" id="google-address" class="embed-input-field" aria-required="true" placeholder="' + selectedLang.addressPlaceholder + '" data-address-format="' + addressFormat + '" data-country="' + country + '">' +
                 '</div></div></div>';
         } else if (addressFormat === 'dutch') {
             return '<div class="embed-row"><div class="embed-col"><div class="embed-address-container">' +
                 '<div class="embed-form-container"><label for="postcode" class="embed-label-bold">Postcode*</label>' +
-                '<input type="text" id="postcode" class="embed-input-field" placeholder="1234AB" maxlength="7"></div>' +
+                '<input type="text" id="postcode" class="embed-input-field" aria-required="true" placeholder="1234AB" maxlength="7"></div>' +
                 '<div class="embed-form-container"><label for="huisnummer" class="embed-label-bold">Huisnummer*</label>' +
-                '<input type="text" inputmode="numeric" id="huisnummer" class="embed-input-field" placeholder="1" maxlength="10"></div>' +
+                '<input type="text" inputmode="numeric" id="huisnummer" class="embed-input-field" aria-required="true" placeholder="1" maxlength="10"></div>' +
                 '<div class="embed-form-container"><label for="toevoeging" class="embed-label-bold">Toevoeging</label>' +
                 '<input type="text" id="toevoeging" class="embed-input-field" placeholder="A" maxlength="10"></div>' +
                 '</div></div></div>';
         } else {
             return '<div class="embed-row"><div class="embed-col"><div class="embed-flex-container">' +
                 '<div class="embed-form-container embed-street"><label for="street" class="embed-label-bold">' + selectedLang.street + '*</label>' +
-                '<input type="text" id="street" class="embed-input-field" placeholder="' + selectedLang.streetPlaceholder + '" maxlength="100"></div>' +
+                '<input type="text" id="street" class="embed-input-field" aria-required="true" placeholder="' + selectedLang.streetPlaceholder + '" maxlength="100"></div>' +
                 '<div class="embed-form-container embed-housenumber"><label for="housenumber" class="embed-label-bold">' + selectedLang.housenumber + '*</label>' +
-                '<input type="text" id="housenumber" class="embed-input-field" placeholder="' + selectedLang.housenumberPlaceholder + '" maxlength="20"></div>' +
+                '<input type="text" id="housenumber" class="embed-input-field" aria-required="true" placeholder="' + selectedLang.housenumberPlaceholder + '" maxlength="20"></div>' +
                 '</div></div></div>' +
                 '<div class="embed-row"><div class="embed-col"><div class="embed-flex-container">' +
                 '<div class="embed-form-container embed-zipcode"><label for="zipcode" class="embed-label-bold">' + selectedLang.zipcode + '*</label>' +
-                '<input type="text" id="zipcode" class="embed-input-field" placeholder="' + selectedLang.zipcodePlaceholder + '" maxlength="20"></div>' +
+                '<input type="text" id="zipcode" class="embed-input-field" aria-required="true" placeholder="' + selectedLang.zipcodePlaceholder + '" maxlength="20"></div>' +
                 '<div class="embed-form-container embed-city"><label for="city" class="embed-label-bold">' + selectedLang.city + '*</label>' +
-                '<input type="text" id="city" class="embed-input-field" placeholder="' + selectedLang.cityPlaceholder + '" maxlength="100"></div>' +
+                '<input type="text" id="city" class="embed-input-field" aria-required="true" placeholder="' + selectedLang.cityPlaceholder + '" maxlength="100"></div>' +
                 '</div></div></div>';
         }
     }
@@ -2004,18 +2056,18 @@
         if (showPhone && showEmail) {
             return '<div class="embed-row"><div class="embed-col"><div class="embed-flex-container">' +
                 '<div class="embed-form-container"><label for="telefoon" class="embed-label-bold">' + phoneLabel + '</label>' +
-                '<input type="tel" id="telefoon" class="embed-input-field" placeholder="0612345678" maxlength="20"></div>' +
+                '<input type="tel" id="telefoon" class="embed-input-field"' + (phoneRequired ? ' aria-required="true"' : '') + ' placeholder="0612345678" maxlength="20"></div>' +
                 '<div class="embed-form-container"><label for="email" class="embed-label-bold">' + emailLabel + '</label>' +
-                '<input type="email" id="email" class="embed-input-field" placeholder="jandevries@gmail.com" maxlength="100"></div>' +
+                '<input type="email" id="email" class="embed-input-field"' + (emailRequired ? ' aria-required="true"' : '') + ' placeholder="jandevries@gmail.com" maxlength="100"></div>' +
                 '</div></div></div>';
         } else if (showPhone) {
             return '<div class="embed-row"><div class="embed-col"><div class="embed-form-container">' +
                 '<label for="telefoon" class="embed-label-bold">' + phoneLabel + '</label>' +
-                '<input type="tel" id="telefoon" class="embed-input-field" placeholder="0612345678" maxlength="20"></div></div></div>';
+                '<input type="tel" id="telefoon" class="embed-input-field"' + (phoneRequired ? ' aria-required="true"' : '') + ' placeholder="0612345678" maxlength="20"></div></div></div>';
         } else if (showEmail) {
             return '<div class="embed-row"><div class="embed-col"><div class="embed-form-container">' +
                 '<label for="email" class="embed-label-bold">' + emailLabel + '</label>' +
-                '<input type="email" id="email" class="embed-input-field" placeholder="jandevries@gmail.com" maxlength="100"></div></div></div>';
+                '<input type="email" id="email" class="embed-input-field"' + (emailRequired ? ' aria-required="true"' : '') + ' placeholder="jandevries@gmail.com" maxlength="100"></div></div></div>';
         }
         return '';
     }
@@ -2025,7 +2077,7 @@
             '<label class="embed-checkbox-label">' +
             '<input type="checkbox" id="embed-checkbox" class="embed-checkbox-input">' +
             '<span class="embed-checkbox-custom">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
             '<polyline points="20 6 9 17 4 12"></polyline></svg></span>' +
             '<span class="embed-checkbox-text"></span></label>' +
             '</div></div></div>';
@@ -2360,6 +2412,22 @@
                 } else {
                     form.style.setProperty('--primary-gradient', primaryColor);
                 }
+
+                // Set --contrast-color for text on primary/gradient backgrounds
+                (function () {
+                    function _lum(hex) {
+                        hex = (hex || '2A6DF4').replace('#', '');
+                        var r = parseInt(hex.slice(0, 2), 16) || 0;
+                        var g = parseInt(hex.slice(2, 4), 16) || 0;
+                        var b = parseInt(hex.slice(4, 6), 16) || 0;
+                        return (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+                    }
+                    var avgLum = _lum(primaryColor);
+                    if (gradientFrom && gradientTo) {
+                        avgLum = (_lum(sanitizeColor(gradientFrom)) + _lum(sanitizeColor(gradientTo))) / 2;
+                    }
+                    form.style.setProperty('--contrast-color', avgLum > 0.5 ? '#132039' : '#ffffff');
+                })();
 
                 // Mode routing — non-classic modes handled by dedicated functions
                 const widgetMode = element.getAttribute('data-mode') || 'classic';
@@ -3072,6 +3140,7 @@
     function displayValidationMessage(inputElement, message) {
         const messageElement = document.createElement("div");
         messageElement.className = "embed-validation-message";
+        messageElement.setAttribute("role", "alert");
         messageElement.textContent = message;
 
         // For the custom dropdown, insert validation message below the element
@@ -3156,11 +3225,22 @@
              </svg>
          `;
 
+        // Set initial ARIA state
+        selected.setAttribute("role", "combobox");
+        selected.setAttribute("aria-haspopup", "listbox");
+        selected.setAttribute("aria-expanded", "false");
+        options.setAttribute("role", "listbox");
+        optionItems.forEach((opt) => {
+            opt.setAttribute("role", "option");
+            opt.setAttribute("aria-selected", opt.classList.contains("selected") ? "true" : "false");
+        });
+
         // Toggle dropdown on click
         selected.addEventListener("click", (e) => {
             e.stopPropagation(); // Prevent the click from bubbling up
-            options.classList.toggle("show");
+            const isNowOpen = options.classList.toggle("show");
             selected.classList.toggle("open");
+            selected.setAttribute("aria-expanded", isNowOpen ? "true" : "false");
             selected.style.borderColor = ""; // Clear red border on interaction
             const validationMessage = selected.parentElement.nextElementSibling;
             if (
@@ -3177,6 +3257,7 @@
             if (!selected.contains(e.target) && !options.contains(e.target)) {
                 options.classList.remove("show");
                 selected.classList.remove("open");
+                selected.setAttribute("aria-expanded", "false");
             }
         });
 
@@ -3192,8 +3273,9 @@
                 const value = option.getAttribute("data-value");
 
                 // Remove selected class from all options
-                optionItems.forEach((opt) => opt.classList.remove("selected"));
+                optionItems.forEach((opt) => { opt.classList.remove("selected"); opt.setAttribute("aria-selected", "false"); });
                 option.classList.add("selected");
+                option.setAttribute("aria-selected", "true");
 
                 // Update selected content with icon and text inside a flex container
                 const svgElement = option.querySelector(".option-content svg");
@@ -3220,6 +3302,7 @@
                 selected.setAttribute("data-value", value);
                 options.classList.remove("show");
                 selected.classList.remove("open");
+                selected.setAttribute("aria-expanded", "false");
             });
         });
 
