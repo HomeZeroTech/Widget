@@ -301,6 +301,39 @@
         return s.color !== "" ? color : "#2A6DF4";
     }
 
+    // WCAG relative luminance of a hex color (0 = black, 1 = white).
+    function relativeLuminance(hex) {
+        hex = (hex || "").replace("#", "");
+        if (hex.length === 3) {
+            hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+        }
+        const channels = [0, 2, 4].map(function (i) {
+            let c = parseInt(hex.substr(i, 2), 16) / 255;
+            if (isNaN(c)) c = 0;
+            return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+        });
+        return 0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2];
+    }
+
+    // WCAG contrast ratio between two relative luminance values.
+    function contrastRatio(lum1, lum2) {
+        const hi = Math.max(lum1, lum2);
+        const lo = Math.min(lum1, lum2);
+        return (hi + 0.05) / (lo + 0.05);
+    }
+
+    // Pick the most readable text color (dark navy or white) for a background,
+    // choosing whichever yields the higher WCAG contrast ratio. Accepts an
+    // optional precomputed luminance (e.g. the average of a gradient's stops).
+    function getReadableTextColor(bgColor, bgLuminance) {
+        const DARK = "#132039";
+        const LIGHT = "#ffffff";
+        const lum = typeof bgLuminance === "number" ? bgLuminance : relativeLuminance(bgColor);
+        const darkRatio = contrastRatio(lum, relativeLuminance(DARK));
+        const lightRatio = contrastRatio(lum, relativeLuminance(LIGHT));
+        return darkRatio >= lightRatio ? DARK : LIGHT;
+    }
+
     function isSafeUrl(url) {
         try {
             const parsed = new URL(url);
@@ -1648,12 +1681,7 @@
     }
 
     function renderTileDropdown(tiles, selectedTilesSet, primaryColor, maxSelect, label, onChange, selectedLang) {
-        function contrastColor(hex) {
-            hex = hex.replace('#', '');
-            const r = parseInt(hex.substr(0, 2), 16), g = parseInt(hex.substr(2, 2), 16), b = parseInt(hex.substr(4, 2), 16);
-            return (0.299 * r + 0.587 * g + 0.114 * b) / 255 > 0.5 ? '#132039' : '#fff';
-        }
-        const contrast = contrastColor(primaryColor);
+        const contrast = getReadableTextColor(primaryColor);
 
         const CHEVRON = '<svg class="chevron-icon" viewBox="5 7 14 10" width="14px" height="14px" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 16l-6-6 1.41-1.41L12 13.17l4.59-4.58L18 10l-6 6z"></path></svg>';
 
@@ -2413,20 +2441,14 @@
                     form.style.setProperty('--primary-gradient', primaryColor);
                 }
 
-                // Set --contrast-color for text on primary/gradient backgrounds
+                // Set --contrast-color for text on primary/gradient backgrounds.
+                // Uses the WCAG contrast ratio to pick whichever of dark/white is more readable.
                 (function () {
-                    function _lum(hex) {
-                        hex = (hex || '2A6DF4').replace('#', '');
-                        var r = parseInt(hex.slice(0, 2), 16) || 0;
-                        var g = parseInt(hex.slice(2, 4), 16) || 0;
-                        var b = parseInt(hex.slice(4, 6), 16) || 0;
-                        return (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-                    }
-                    var avgLum = _lum(primaryColor);
+                    var lum = relativeLuminance(primaryColor);
                     if (gradientFrom && gradientTo) {
-                        avgLum = (_lum(sanitizeColor(gradientFrom)) + _lum(sanitizeColor(gradientTo))) / 2;
+                        lum = (relativeLuminance(sanitizeColor(gradientFrom)) + relativeLuminance(sanitizeColor(gradientTo))) / 2;
                     }
-                    form.style.setProperty('--contrast-color', avgLum > 0.5 ? '#132039' : '#ffffff');
+                    form.style.setProperty('--contrast-color', getReadableTextColor(null, lum));
                 })();
 
                 // Mode routing — non-classic modes handled by dedicated functions
@@ -3191,28 +3213,14 @@
         const optionItems = form.querySelectorAll(".dropdown-option");
         const preselectedId = element.getAttribute("data-preselected-option");
 
-        // Add function to determine contrast color
-        function getContrastColor(hexcolor) {
-            // Remove the # if present
-            hexcolor = hexcolor.replace("#", "");
-
-            // Convert to RGB
-            const r = parseInt(hexcolor.substr(0, 2), 16);
-            const g = parseInt(hexcolor.substr(2, 2), 16);
-            const b = parseInt(hexcolor.substr(4, 2), 16);
-
-            // Calculate luminance
-            const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-
-            // Return black or white based on luminance
-            return luminance > 0.5 ? "#132039" : "#ffffff";
-        }
-
-        // Set the contrast color CSS variable
-        const primaryColor = getComputedStyle(form)
-            .getPropertyValue("--primary-color")
-            .trim();
-        const contrastColor = getContrastColor(primaryColor);
+        // Set the contrast color CSS variable using the WCAG-based helper.
+        // Read the inline style first: getComputedStyle returns "" here because
+        // the form is not attached to the DOM yet when this runs.
+        const primaryColor = (
+            form.style.getPropertyValue("--primary-color") ||
+            getComputedStyle(form).getPropertyValue("--primary-color")
+        ).trim();
+        const contrastColor = getReadableTextColor(primaryColor);
         form.style.setProperty("--contrast-color", contrastColor);
 
         // Update selected content with icon and text inside a flex container - Initial state uses placeholder
