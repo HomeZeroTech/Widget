@@ -273,6 +273,16 @@ hz-embed {
     margin-right: 8px;
 }
 
+/* Icon badge: the icon is centered by the badge's flexbox, so no inline margin,
+   and it keeps its own color even when the option is selected. */
+.hz-dd-icon-badge svg {
+    margin-right: 0;
+}
+
+.dropdown-option.selected .hz-dd-icon-badge svg {
+    color: #132039;
+}
+
 .dropdown-selected .selected-icon {
     width: 16px;
     height: 16px;

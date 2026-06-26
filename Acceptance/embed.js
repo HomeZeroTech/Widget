@@ -1717,7 +1717,11 @@
         if (maxSelect !== 1) optionsPanel.setAttribute('aria-multiselectable', 'true');
         optionsPanel.style.cssText = 'position:absolute;top:100%;left:0;width:100%;background:#fff;border-radius:8px;box-shadow:0 0 20px rgba(5,35,76,0.14);max-height:220px;overflow-y:auto;display:none;z-index:1000;padding:6px;box-sizing:border-box;';
 
+        // Only show icons when every tile has one; otherwise hide all
+        const allHaveIcons = tiles.length > 0 && tiles.every(function (t) { return !!decodeTileIcon(t); });
+
         function iconBadge(tile) {
+            if (!allHaveIcons) return '';
             const raw = decodeTileIcon(tile);
             if (!raw) return '';
             const svg = raw.replace('<svg', '<svg aria-hidden="true" style="width:18px;height:18px;"');
@@ -2858,6 +2862,11 @@
                             };
                         });
 
+                    // Only show icons when every option has one; otherwise hide all
+                    const allHaveIcons =
+                        measurementOptions.length > 0 &&
+                        measurementOptions.every((option) => option.icon);
+
                     // Custom dropdown HTML using translated labels/placeholder
                     form.innerHTML += `
                         <div class="embed-row">
@@ -2875,7 +2884,7 @@
                                                 .map(
                                                     (option) => `
                                                 <div class="dropdown-option" data-value="${option.url}">
-                                                    ${option.icon}
+                                                    ${allHaveIcons ? option.icon : ""}
                                                     <span>${option.title}</span>
                                                 </div>
                                             `,
