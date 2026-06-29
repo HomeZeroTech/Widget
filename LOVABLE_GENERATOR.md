@@ -122,7 +122,7 @@ These are the **only** style attributes settable via the embed code. Everything 
 | Primaire kleur | Color picker + hex input | Default: `#2A6DF4`. Drives primary button fill, tile-selection accents, the **secondary CTA outline**, and the AI-chat link color. Sanitized server-side via `sanitizeColor()`; invalid colors fall back to `#2A6DF4`. `data-color` |
 | Kleurverloop (gradient) | Toggle + two color pickers | When enabled, shows "Van kleur" and "Naar kleur". Used for tile-selection background. `data-gradient-from` / `data-gradient-to` |
 | Knop afronding | Slider (0–24px) + label "px" | Default: 10. Applies to both CTAs. `data-button-radius` |
-| Taal | Segmented control: NL / EN / FR / DE | Default: NL. Drives field labels, the "(Optioneel)" suffix and validation messages. `data-language` |
+| Taal | Segmented control: NL / EN / DE | Default: NL. Drives field labels, the "(Optioneel)" suffix and validation messages. `data-language` |
 | Link openen | Toggle: "In nieuw tabblad" | Default: off. `data-open-new-tab` |
 
 ### Section 2: Inhoud (Content)
@@ -339,9 +339,11 @@ Applies `--primary-color`, `--primary-gradient`, `--button-radius` as CSS variab
 
 #### `TileSelector` (scan mode)
 Renders one of three variants based on display style:
-- **large:** 4-column full-width grid, radio circle, tinted-bg selection (`color-mix(in srgb, primary 8%, #fff)`), 2×2 on mobile.
+- **large:** 4-column full-width grid, radio circle (top-right), 2×2 on mobile.
+  - Hover: border turns to `var(--primary-color)` only — **no background tint on hover**.
+  - Selected: `background: color-mix(in srgb, var(--primary-color) 8%, #fff)`, `border: 2px solid var(--primary-color)`, `color: var(--primary-color)` (text in primary color, NOT white).
 - **dropdown:** single trigger showing the selected icon in a **grey rounded badge** + name; options list with the same icon badge per row and a checkmark on the selected row. Single-select.
-- **tags:** chip multi-select — selected items appear as colored pills (icon + name + ×).
+- **tags:** chip multi-select — selected items appear as colored pills (icon + name + ×). Chip style: `background: var(--primary-color)`, `color: var(--contrast-color)` (WCAG-dynamic, see below).
 
 #### `AddressField` (scan + classic mode)
 ```
@@ -357,9 +359,9 @@ Renders phone and/or email inputs. Non-required fields show a "(Optioneel)" suff
 ```
 Props: cta1Text, cta2Text, showCta2, cta2Resolvable, primaryColor, gradient?, buttonRadius
 
-Primary button: full width, gradient or solid primary color, rounded.
+Primary button: full width, gradient or solid primary color, rounded. Text color: var(--contrast-color) — auto-picked for WCAG contrast (white or #132039).
 Secondary button: full width, TRANSPARENT background, 1.5px solid primary-color border,
-  primary-color text (outline style). Hidden when !cta2Resolvable for current selection.
+  #132039 text (dark navy — NOT primary color). Hidden when !cta2Resolvable for current selection.
 Spacing: 8px between buttons.
 ```
 
@@ -386,12 +388,29 @@ Use **inline SVG** copied from the `measurementIcons` object in `embed.js`. Must
 - Input border: `1px solid #dadee7`, radius `8px`, padding `12px`
 - Inputs: `14px`, weight `500`. Labels: `12px`, weight `500`, color `#132039`
 - Optional-suffix: weight `400`, color `#7585a3`
-- Validation message: `14px`, color `#fd3118`
-- Primary button: `16px`, weight `500`, padding `13px 40px`, no box-shadow
-- Secondary button (outline): transparent bg, `1.5px solid var(--primary-color)`, text `var(--primary-color)`
+- Validation message: `14px`, color `#b91c1c`
+- Primary button: `16px`, weight `500`, padding `13px 40px`, no box-shadow. Text: `var(--contrast-color)` (WCAG auto).
+- Secondary button (outline): transparent bg, `1.5px solid var(--primary-color)`, text `#132039` (dark navy — NOT primary color)
 - AI-chat link: `14px`, weight `500`, underline, `color: var(--primary-color)`, centered, `margin-top: 12px`
 - Dropdown icon badge: `32×32`, radius `8px`, background `#f0f2f5`
 - Hover (buttons/link): `opacity: 0.8`
+- **`--contrast-color` (WCAG dynamic):** Auto-calculated at init from the primary color. Picks `#ffffff` or `#132039` — whichever gives the higher WCAG contrast ratio against the primary color. Used for: primary button text, small-tile selected text, tag-chip text, checkbox checkmark. Implement in preview:
+  ```ts
+  function relativeLuminance(hex: string): number {
+    hex = hex.replace('#', '');
+    const [r, g, b] = [0, 2, 4].map(i => {
+      const c = parseInt(hex.slice(i, i+2), 16) / 255;
+      return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+    });
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  }
+  function getContrastColor(primary: string): string {
+    const lum = relativeLuminance(primary);
+    const darkRatio = (lum + 0.05) / (relativeLuminance('#132039') + 0.05);
+    const lightRatio = (1.05) / (lum + 0.05);
+    return lightRatio >= darkRatio ? '#ffffff' : '#132039';
+  }
+  ```
 
 ---
 
@@ -458,7 +477,7 @@ interface WidgetConfig {
   gradientFrom?: string;
   gradientTo?: string;
   buttonRadius: number;     // px, default 10
-  language: 'nl' | 'en' | 'fr' | 'de';
+  language: 'nl' | 'en' | 'de';
   openNewTab: boolean;
 
   // Content

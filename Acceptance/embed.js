@@ -1483,30 +1483,29 @@
         if (document.getElementById('hz-tile-styles')) return;
         const s = document.createElement('style');
         s.id = 'hz-tile-styles';
-        s.textContent = '.embed-tile-grid{display:grid!important;grid-template-columns:repeat(auto-fill,minmax(84px,1fr))!important;gap:8px!important;margin-bottom:16px!important;width:100%!important}.embed-tile-grid-large{grid-template-columns:repeat(4,1fr)!important}@container (max-width:379px){.embed-tile-grid-large{grid-template-columns:repeat(2,1fr)!important}}.embed-tile:hover{border-color:var(--primary-color)!important;background:color-mix(in srgb,var(--primary-color) 7%,#fff)!important}.embed-tile-large:hover{border-color:var(--primary-color)!important}.embed-cta-secondary:hover{opacity:.8!important}.embed-tags-field:hover{border-color:var(--primary-color)!important}';
+        s.textContent = '.embed-tile-grid{display:grid!important;grid-template-columns:repeat(auto-fill,minmax(84px,1fr))!important;gap:16px!important;margin-bottom:16px!important;width:100%!important;box-sizing:border-box!important}.embed-tile-grid-large{grid-template-columns:repeat(4,1fr)!important}@container (max-width:379px){.embed-tile-grid-large{grid-template-columns:repeat(2,1fr)!important}}.embed-tile{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;padding:12px 8px 10px!important;border-radius:10px!important;border-width:1.5px!important;border-style:solid!important;border-color:#dadee7!important;cursor:pointer!important;background:#fff!important;position:relative!important;gap:6px!important;text-align:center!important;user-select:none!important;min-height:74px!important;color:#132039!important;box-sizing:border-box!important;transition:background 0.18s ease,border-color 0.18s ease,color 0.18s ease!important}.embed-tile:hover{border-color:var(--primary-color)!important;background:color-mix(in srgb,var(--primary-color) 7%,#fff)!important}.embed-tile-icon{width:28px!important;height:28px!important;min-width:28px!important;min-height:28px!important;max-width:28px!important;max-height:28px!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-shrink:0!important;overflow:hidden!important}.embed-tile-icon svg{width:28px!important;height:28px!important;min-width:28px!important;min-height:28px!important;display:block!important;flex-shrink:0!important}.embed-tile-label{font-size:11px!important;font-weight:600!important;line-height:1.25!important;color:inherit!important}.embed-tile-checkmark{position:absolute!important;top:5px!important;right:5px!important;width:16px!important;height:16px!important;background:rgba(255,255,255,0.28)!important;border-radius:50%!important;display:none!important;align-items:center!important;justify-content:center!important}.embed-tile-large{padding:16px 10px 14px!important;border-radius:14px!important;min-height:100px!important;gap:8px!important}.embed-tile-large:hover{border-color:var(--primary-color)!important}.embed-tile-large .embed-tile-icon{width:36px!important;height:36px!important;min-width:36px!important;min-height:36px!important;max-width:36px!important;max-height:36px!important}.embed-tile-large .embed-tile-icon svg{width:36px!important;height:36px!important;min-width:36px!important;min-height:36px!important}.embed-tile-large .embed-tile-label{font-size:12px!important;font-weight:700!important}.embed-tile-radio{position:absolute!important;top:8px!important;right:8px!important;width:20px!important;height:20px!important;border-width:2px!important;border-style:solid!important;border-color:#dadee7!important;border-radius:50%!important;background:#fff!important;display:flex!important;align-items:center!important;justify-content:center!important;transition:all 0.18s ease!important;flex-shrink:0!important;box-sizing:border-box!important}.embed-cta-secondary:hover{opacity:.8!important}.embed-tags-field:hover{border-color:var(--primary-color)!important}';
         document.head.appendChild(s);
     }
 
     function applyTileSelectedStyle(tileEl, primaryColor, gradientFrom, gradientTo) {
-        if (gradientFrom && gradientTo) {
-            tileEl.style.background = 'linear-gradient(135deg, ' + gradientFrom + ' 0%, ' + gradientTo + ' 100%)';
-        } else {
-            tileEl.style.background = primaryColor;
-        }
-        tileEl.style.borderColor = 'transparent';
-        tileEl.style.color = 'var(--contrast-color, #fff)';
+        var bg = (gradientFrom && gradientTo)
+            ? 'linear-gradient(135deg, ' + gradientFrom + ' 0%, ' + gradientTo + ' 100%)'
+            : primaryColor;
+        tileEl.style.setProperty('background', bg, 'important');
+        tileEl.style.setProperty('border-color', 'transparent', 'important');
+        tileEl.style.setProperty('color', 'var(--contrast-color, #fff)', 'important');
         tileEl.setAttribute('aria-checked', 'true');
         const ck = tileEl.querySelector('.embed-tile-checkmark');
-        if (ck) ck.style.display = 'flex';
+        if (ck) ck.style.setProperty('display', 'flex', 'important');
     }
 
     function clearTileSelectedStyle(tileEl) {
-        tileEl.style.background = '#fff';
-        tileEl.style.borderColor = '#dadee7';
-        tileEl.style.color = '#132039';
+        tileEl.style.removeProperty('background');
+        tileEl.style.removeProperty('border-color');
+        tileEl.style.removeProperty('color');
         tileEl.setAttribute('aria-checked', 'false');
         const ck = tileEl.querySelector('.embed-tile-checkmark');
-        if (ck) ck.style.display = 'none';
+        if (ck) ck.style.removeProperty('display');
     }
 
     function decodeTileIcon(tile) {
@@ -1525,7 +1524,6 @@
         const grid = document.createElement('div');
         grid.className = 'embed-tile-grid';
         grid.setAttribute('role', 'group');
-        grid.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:8px;margin-bottom:16px;width:100%;box-sizing:border-box;';
 
         tiles.forEach(function (tile) {
             const isSelected = selectedTilesSet.has(tile.key);
@@ -1536,12 +1534,10 @@
             tileEl.setAttribute('aria-checked', isSelected ? 'true' : 'false');
             tileEl.setAttribute('aria-label', tile.title);
             tileEl.tabIndex = 0;
-            tileEl.style.cssText = 'display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px 8px 10px;border:1.5px solid #dadee7;border-radius:10px;cursor:pointer;background:#fff;position:relative;gap:6px;text-align:center;user-select:none;min-height:74px;color:#132039;box-sizing:border-box;transition:background 0.18s ease,border-color 0.18s ease,color 0.18s ease;';
 
             // Icon wrapper — fixed 28×28, overflow hidden so SVG cannot escape
             const iconWrap = document.createElement('div');
             iconWrap.className = 'embed-tile-icon';
-            iconWrap.style.cssText = 'width:28px;height:28px;min-width:28px;min-height:28px;max-width:28px;max-height:28px;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;';
 
             const iconRaw = decodeTileIcon(tile);
             if (iconRaw) {
@@ -1550,20 +1546,17 @@
                 if (svg) {
                     svg.removeAttribute('width');
                     svg.removeAttribute('height');
-                    svg.style.cssText = 'width:28px;height:28px;min-width:28px;min-height:28px;display:block;flex-shrink:0;';
                 }
             }
 
             // Label
             const label = document.createElement('span');
             label.className = 'embed-tile-label';
-            label.style.cssText = 'font-size:11px;font-weight:600;line-height:1.25;color:inherit;';
             label.textContent = tile.title;
 
             // Checkmark badge
             const ck = document.createElement('span');
             ck.className = 'embed-tile-checkmark';
-            ck.style.cssText = 'position:absolute;top:5px;right:5px;width:16px;height:16px;background:rgba(255,255,255,0.28);border-radius:50%;display:none;align-items:center;justify-content:center;';
             ck.innerHTML = '<svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1 5L4 8L9 2" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
             tileEl.appendChild(iconWrap);
@@ -1583,30 +1576,30 @@
     }
 
     function applyTileLargeSelectedStyle(tileEl, primaryColor) {
-        tileEl.style.borderColor = primaryColor;
-        tileEl.style.borderWidth = '2px';
-        tileEl.style.background = 'color-mix(in srgb, ' + primaryColor + ' 8%, #fff)';
-        tileEl.style.color = primaryColor;
+        tileEl.style.setProperty('border-color', primaryColor, 'important');
+        tileEl.style.setProperty('border-width', '2px', 'important');
+        tileEl.style.setProperty('background', 'color-mix(in srgb, ' + primaryColor + ' 8%, #fff)', 'important');
+        tileEl.style.setProperty('color', primaryColor, 'important');
         tileEl.setAttribute('aria-checked', 'true');
         const circle = tileEl.querySelector('.embed-tile-radio');
         if (circle) {
-            circle.style.borderColor = primaryColor;
-            circle.style.backgroundColor = primaryColor;
+            circle.style.setProperty('border-color', primaryColor, 'important');
+            circle.style.setProperty('background-color', primaryColor, 'important');
             const ck = circle.querySelector('svg');
             if (ck) ck.style.opacity = '1';
         }
     }
 
     function clearTileLargeSelectedStyle(tileEl) {
-        tileEl.style.borderColor = '#dadee7';
-        tileEl.style.borderWidth = '1.5px';
-        tileEl.style.background = '#fff';
-        tileEl.style.color = '#132039';
+        tileEl.style.removeProperty('border-color');
+        tileEl.style.removeProperty('border-width');
+        tileEl.style.removeProperty('background');
+        tileEl.style.removeProperty('color');
         tileEl.setAttribute('aria-checked', 'false');
         const circle = tileEl.querySelector('.embed-tile-radio');
         if (circle) {
-            circle.style.borderColor = '#dadee7';
-            circle.style.backgroundColor = '#fff';
+            circle.style.removeProperty('border-color');
+            circle.style.removeProperty('background-color');
             const ck = circle.querySelector('svg');
             if (ck) ck.style.opacity = '0';
         }
@@ -1619,8 +1612,6 @@
         const grid = document.createElement('div');
         grid.className = 'embed-tile-grid embed-tile-grid-large';
         grid.setAttribute('role', 'radiogroup');
-        // 4 cols full-width desktop, @container 2 cols mobile — matches address row width
-        grid.style.cssText = 'display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px;width:100%;box-sizing:border-box;';
 
         visibleTiles.forEach(function (tile) {
             const isSelected = selectedTilesSet.has(tile.key);
@@ -1631,11 +1622,9 @@
             tileEl.setAttribute('aria-checked', isSelected ? 'true' : 'false');
             tileEl.setAttribute('aria-label', tile.title);
             tileEl.tabIndex = 0;
-            tileEl.style.cssText = 'display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px 10px 14px;border:1.5px solid #dadee7;border-radius:14px;cursor:pointer;background:#fff;position:relative;gap:8px;text-align:center;user-select:none;min-height:100px;color:#132039;box-sizing:border-box;transition:background 0.18s ease,border-color 0.18s ease,color 0.18s ease;';
 
             const iconWrap = document.createElement('div');
             iconWrap.className = 'embed-tile-icon';
-            iconWrap.style.cssText = 'width:36px;height:36px;min-width:36px;min-height:36px;max-width:36px;max-height:36px;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;';
 
             const iconRaw = decodeTileIcon(tile);
             if (iconRaw) {
@@ -1643,19 +1632,16 @@
                 const svg = iconWrap.querySelector('svg');
                 if (svg) {
                     svg.removeAttribute('width'); svg.removeAttribute('height');
-                    svg.style.cssText = 'width:36px;height:36px;min-width:36px;min-height:36px;display:block;flex-shrink:0;';
                 }
             }
 
             const label = document.createElement('span');
             label.className = 'embed-tile-label';
-            label.style.cssText = 'font-size:12px;font-weight:700;line-height:1.25;color:inherit;';
             label.textContent = tile.title;
 
             // Radio circle top-right
             const circle = document.createElement('span');
             circle.className = 'embed-tile-radio';
-            circle.style.cssText = 'position:absolute;top:8px;right:8px;width:20px;height:20px;border:2px solid #dadee7;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;transition:all 0.18s ease;flex-shrink:0;box-sizing:border-box;';
             circle.innerHTML = '<svg width="10" height="10" viewBox="0 0 10 10" fill="none" style="opacity:0;transition:opacity 0.18s ease;" aria-hidden="true"><path d="M1.5 5L3.5 7.5L8.5 2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
             tileEl.appendChild(iconWrap);
@@ -1665,10 +1651,10 @@
             if (isSelected) applyTileLargeSelectedStyle(tileEl, primaryColor);
 
             tileEl.addEventListener('mouseenter', function () {
-                if (!selectedTilesSet.has(tile.key)) tileEl.style.borderColor = primaryColor;
+                if (!selectedTilesSet.has(tile.key)) tileEl.style.setProperty('border-color', primaryColor, 'important');
             });
             tileEl.addEventListener('mouseleave', function () {
-                if (!selectedTilesSet.has(tile.key)) tileEl.style.borderColor = '#dadee7';
+                if (!selectedTilesSet.has(tile.key)) tileEl.style.removeProperty('border-color');
             });
             tileEl.addEventListener('click', function () { onSelect(tile.key, tileEl); });
             tileEl.addEventListener('keydown', function (e) {
