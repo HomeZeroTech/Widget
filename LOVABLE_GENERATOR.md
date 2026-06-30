@@ -6,7 +6,15 @@ Build a **widget configuration tool** that allows HomeZero partners to visually 
 
 This tool replaces the "Pico Widget Generator" prototype at `flowmatchwidgetgenerator.lovable.app`. It must have a significantly more complete configuration surface and an accurate live preview.
 
-> **What changed in this revision (read first):**
+> **What changed 30 June 2026 (read first — newest revision):**
+> - **Per-measurement & combination CTA *texts*** (not just URLs). CTA1/CTA2 labels can now be set per tile (`data-tile-{key}-cta1-text` / `-cta2-text`), per combination (`data-cta1-combo-text` / `data-cta2-combo-text`) and globally (`data-cta1-text` / `data-cta2-text`). Resolution order: **combo → tile → global**.
+> - **CTA icons (optional leading icon per CTA).** A base64 SVG can be placed on each CTA, with the same precedence: per-tile (`data-tile-{key}-cta1-icon-svg` / `-cta2-icon-svg`), per-combination (`data-cta1-combo-icon-svg` / `data-cta2-combo-icon-svg`) and global (`data-cta1-icon-svg` / `data-cta2-icon-svg`). No default icon — text-only when unset. Size is fixed by the stylesheet (18×18); supplied `width`/`height` are stripped.
+> - **Checkbox link.** `data-checkbox-title` now supports inline markdown links `[label](url)`, rendered as real anchors (class `embed-checkbox-link`).
+> - **Block styling.** The widget can paint its own card: `data-bg-color`, `data-bg-opacity` (0–1, background only), `data-block-radius`, `data-block-padding`, `data-block-border` (full CSS shorthand; use `solid`/`none`).
+> - **Customisable input placeholders** for every field (`data-*-placeholder`); an explicitly-set (even empty) value overrides the default.
+> - See `upgrade_Lovable_30juni.md` for the partner-facing embed reference of these additions.
+>
+> **What changed in the previous revision:**
 > - **Unified dual-CTA model.** Scan mode now supports **1 or 2 CTAs that route to two different leadflows** per measurement. CTA2 is no longer Pico-only: it can route to a HomeZero leadflow (`flow`) or an external calendar (`booking`), per-tile, per-combination, or a global fallback.
 > - **AI-chat is now a separate text link** (not a button, not the CTA2 slot). Controlled by `data-ai-chat-show` (default **false**) + `data-ai-chat-text`. Shown as a centered underlined link under the bottom CTA, only when `window.ChatWidget` is present.
 > - **Selection modes are explicit:** tiles = single or multi, **dropdown = single only**, tags = single or multi.
@@ -125,6 +133,16 @@ These are the **only** style attributes settable via the embed code. Everything 
 | Taal | Segmented control: NL / EN / DE | Default: NL. Drives field labels, the "(Optioneel)" suffix and validation messages. `data-language` |
 | Link openen | Toggle: "In nieuw tabblad" | Default: off. `data-open-new-tab` |
 
+**Blok-styling (kaart)** — optional sub-group "Eigen kaart-stijl". When enabled the widget paints its own panel; when all left empty the widget stays transparent (inherits the host page).
+
+| Field | Component | Notes |
+|---|---|---|
+| Achtergrondkleur | Color picker + hex | `data-bg-color`. Any valid CSS color; invalid values ignored. |
+| Achtergrond-transparantie | Slider 0–1 (step 0.05) | `data-bg-opacity`. Affects **background only** (via `color-mix`); text/buttons stay fully opaque. Only meaningful together with `data-bg-color`. |
+| Hoekafronding (kaart) | Slider 0–40px | `data-block-radius`, e.g. `18px`. |
+| Binnenmarge | Slider/number px | `data-block-padding`, e.g. `24px`. Defaults to `20px` when a background is set. |
+| Rand | Width slider + color + style select | Emit as a single `data-block-border` CSS shorthand, e.g. `1px solid #16a34a`. **Style options: `solid` / `none` only** (dashed/dotted intentionally removed). `none` (or width 0) ⇒ emit `data-block-border="none"`. |
+
 ### Section 2: Inhoud (Content)
 
 | Field | Component | Notes |
@@ -172,9 +190,13 @@ Show a list of configurable tiles. Each row:
 | Label | Text input | Tile display name. `data-tile-{key}-title` |
 | Primaire flow URL | URL input | CTA1 target for this measurement (the "offerte"-flow). `data-tile-{key}-url` |
 | 2e CTA flow URL | URL input (collapsible) | CTA2 target for this measurement (the "adviesgesprek"-flow). Reveal via toggle "Aparte 2e CTA per maatregel". `data-tile-{key}-cta2-url`. Leave empty to fall back to the global 2e CTA URL; if neither exists, CTA2 is hidden for that measurement → automatically **1 button**. |
+| CTA1-tekst (deze maatregel) | Text input (collapsible) | Override of the CTA1 label when only this tile is selected. `data-tile-{key}-cta1-text`. Empty ⇒ falls back to the global `data-cta1-text`. |
+| CTA2-tekst (deze maatregel) | Text input (collapsible) | Override of the CTA2 label for this tile. `data-tile-{key}-cta2-text`. Empty ⇒ falls back to the global `data-cta2-text`. |
+| CTA1-icoon (deze maatregel) | File upload + AI button | Optional leading icon on CTA1 for this tile, base64 SVG in `data-tile-{key}-cta1-icon-svg`. No icon when empty. See "AI Iconen Genereren". |
+| CTA2-icoon (deze maatregel) | File upload + AI button | Optional leading icon on CTA2 for this tile, base64 SVG in `data-tile-{key}-cta2-icon-svg`. |
 | Booking URL (legacy) | URL input (collapsible, advanced) | `data-tile-{key}-booking-url`. **Legacy single-button switch:** when set and selected, CTA1 itself becomes a booking button (opens this URL directly) and uses `data-cta1-text-booking`. Prefer the new "2e CTA flow URL" for dual-flow. Show a deprecation hint. |
 | Standaard geselecteerd | Checkbox | Adds key to `data-tiles-default` |
-| Aangepast icoon | File upload + AI button | Custom SVG icon, base64 in `data-tile-{key}-icon-svg`. Built-in icon used as fallback. See "AI Iconen Genereren". |
+| Aangepast tegel-icoon | File upload + AI button | Custom **tile** SVG icon (the icon in the selector, not on the CTA), base64 in `data-tile-{key}-icon-svg`. Built-in icon used as fallback. See "AI Iconen Genereren". |
 
 **Supported icon types** (show in add modal with icons):
 
@@ -217,6 +239,14 @@ The widget resolves CTA targets at click time based on the current selection (`r
 
 **Reusing one leadflow everywhere:** set a single `data-cta2-url` (e.g. a generic "plan adviesgesprek" leadflow or a direct Calendly link) and leave per-tile/combo URLs empty. Every measurement then shows the same secondary CTA.
 
+**CTA labels & icons (separate from routing).** The *text* and *icon* of each CTA resolve independently from the *URL*, but with the same shape:
+
+- **CTA1 text:** >1 selected → `data-cta1-combo-text` else `data-cta1-text`; 1 selected → `data-tile-{key}-cta1-text` else `data-cta1-text`; else `data-cta1-text`.
+- **CTA2 text:** >1 selected → `data-cta2-combo-text` else `data-cta2-text`; 1 selected → `data-tile-{key}-cta2-text` else `data-cta2-text`; else `data-cta2-text`.
+- **CTA1/CTA2 icon:** identical precedence with `*-combo-icon-svg` / `data-tile-{key}-cta{n}-icon-svg` / `data-cta{n}-icon-svg`. Icons are optional — when nothing resolves the CTA is text-only.
+
+So a partner can give e.g. Warmtepomp its own button text *and* icon, a "combinatie"-label when multiple measurements are picked, and a generic global fallback for everything else — all without touching the routing URLs.
+
 **Generator scenarios to support (all expressible):**
 1. *Feenstra (dropdown, dual-flow per maatregel):* `data-tile-display="dropdown"`, `data-tiles-max-select="1"`, per tile `-url` + `-cta2-url`, `data-cta2-show="true"`, `data-cta2-action="flow"`. One measurement without `-cta2-url` → shows a single button.
 2. *Multi-select met combinatie-flows:* `data-tile-display="large"` (multi), per tile `-url`, `data-cta1-combo-url` for >1, `data-cta2-action="flow"` + global `data-cta2-url` (reused).
@@ -233,9 +263,24 @@ The available fields differ by widget type.
 | Adresveld | Adresveld (altijd aan) | — | Format: "Nederlands" (`data-address-format="dutch"`, standaard → Postcode + Huisnummer + Toevoeging) / "Internationaal" (`data-address-format="international"`) / "Google autocomplete" (`data-google-search="true"` + `data-country="nl"`). |
 | Mobielveld | Mobiel nummer | `data-show-phone="true"` | Sub-toggle: "Verplicht" → `data-phone-required="true"`. Niet-verplicht toont label "(Optioneel)". |
 | E-mailveld | E-mailadres | `data-show-email="true"` | Sub-toggle: "Verplicht" → `data-email-required="true"`. Niet-verplicht toont label "(Optioneel)". |
-| Toestemmingsvak | Toestemming checkbox | `data-checkbox-title="..."` | Sub-toggle: "Verplicht" → `data-checkbox-required="true"`. Verkorte sleutel: `data-checkbox-shorttitle="..."` (meegestuurd als URL-param `checkboxtitle`). |
+| Toestemmingsvak | Toestemming checkbox | `data-checkbox-title="..."` | Sub-toggle: "Verplicht" → `data-checkbox-required="true"`. Verkorte sleutel: `data-checkbox-shorttitle="..."` (meegestuurd als URL-param `checkboxtitle`). **Inline link:** `data-checkbox-title` ondersteunt markdown `[label](url)`, bv. `Ik ga akkoord met de [privacyverklaring](https://homezero.nl/privacy)` → gerenderd als echte link (class `embed-checkbox-link`). |
 
 > The "(Optioneel)" suffix is added automatically by the widget for any shown-but-not-required phone/email field, translated per `data-language`.
+
+**Placeholders (per veld, optioneel).** Each input's placeholder can be overridden. Rule: an **explicitly-set** attribute (even an empty string `""`) overrides the default; an **absent** attribute keeps the default. Surface these as advanced "Placeholder" text fields under each field toggle.
+
+| Attribuut | Default |
+|---|---|
+| `data-address-placeholder` | taalafhankelijk |
+| `data-postcode-placeholder` | `1234AB` |
+| `data-huisnummer-placeholder` | `1` |
+| `data-toevoeging-placeholder` | `A` (zet `""` om leeg te tonen) |
+| `data-street-placeholder` | taalafhankelijk |
+| `data-housenumber-placeholder` | taalafhankelijk |
+| `data-zipcode-placeholder` | taalafhankelijk |
+| `data-city-placeholder` | taalafhankelijk |
+| `data-phone-placeholder` | `0612345678` |
+| `data-email-placeholder` | `jandevries@gmail.com` |
 
 **Booking mode fields:**
 
@@ -261,9 +306,12 @@ The available fields differ by widget type.
 
 | Field | Component | Notes |
 |---|---|---|
-| Knoptekst | Text input | Default: "Bereken wat je bespaart". `data-cta1-text` (legacy alias `data-cta1-text-scan` still read). For Feenstra: "Direct een offerte". |
+| Knoptekst | Text input | Default: "Bereken wat je bespaart". `data-cta1-text` (legacy alias `data-cta1-text-scan` still read). For Feenstra: "Direct een offerte". Global fallback label. |
 | Knoptekst (booking, legacy) | Text input | Default: "Plan een gratis adviesgesprek". `data-cta1-text-booking`. Only used by the legacy per-tile `booking-url` switch. |
+| CTA1-icoon (globaal) | File upload + AI button | Optional leading icon (base64 SVG) used as the global fallback for CTA1. `data-cta1-icon-svg`. |
 | Combinatie-flow URL | URL input | Shown when selection-mode is multi. `data-cta1-combo-url` — target when >1 tile selected. |
+| Combinatie-tekst | Text input (multi only) | CTA1 label when >1 tile selected. `data-cta1-combo-text`. Falls back to `data-cta1-text`. |
+| Combinatie-icoon | File upload (multi only) | CTA1 icon when >1 tile selected. `data-cta1-combo-icon-svg`. |
 
 **CTA 2 (secundair — optioneel):**
 
@@ -271,10 +319,13 @@ Toggle "Secundaire CTA" → `data-cta2-show="true"`. When enabled:
 
 | Field | Component | Notes |
 |---|---|---|
-| CTA 2 tekst | Text input | Default: "Direct contact (30 sec)". For Feenstra: "Adviesgesprek aanvraag". `data-cta2-text` |
+| CTA 2 tekst | Text input | Default: "Direct contact (30 sec)". For Feenstra: "Adviesgesprek aanvraag". `data-cta2-text`. Global fallback label. |
+| CTA 2 icoon (globaal) | File upload + AI button | Optional leading icon (base64 SVG) used as the global fallback for CTA2. `data-cta2-icon-svg`. |
 | CTA 2 actie | Segmented control | "Leadflow" (`flow`) / "Externe agenda" (`booking`) / "Direct contact (Pico)" (`pico`). `data-cta2-action` |
 | ↳ Globale 2e flow URL | URL input (flow/booking) | `data-cta2-url`. Fallback target for all measurements + for combinations. For `booking`, a Calendly/Google Calendar URL. |
 | ↳ Combinatie 2e flow URL | URL input (flow/booking, multi only) | `data-cta2-combo-url`. Target for CTA2 when >1 tile selected. |
+| ↳ Combinatie 2e tekst | Text input (multi only) | CTA2 label when >1 tile selected. `data-cta2-combo-text`. Falls back to `data-cta2-text`. |
+| ↳ Combinatie 2e icoon | File upload (multi only) | CTA2 icon when >1 tile selected. `data-cta2-combo-icon-svg`. |
 | ↳ Adres overslaan | Toggle (alleen bij Pico) | `data-contact-skip-address` |
 | ↳ Pico API key | Password (alleen bij Pico) | `data-pico-key` (lives in Advanced; warn here if empty) |
 
@@ -506,14 +557,20 @@ interface WidgetConfig {
   checkboxRequired: boolean;
 
   // CTAs (scan)
-  cta1Text: string;                // default "Bereken wat je bespaart"
+  cta1Text: string;                // default "Bereken wat je bespaart" (global fallback label)
   cta1TextBooking: string;         // legacy booking-url switch
   cta1ComboUrl: string;            // CTA1 target when >1 selected
+  cta1ComboText: string;           // CTA1 label when >1 selected — data-cta1-combo-text
+  cta1IconSvg: string;             // global CTA1 icon (base64) — data-cta1-icon-svg
+  cta1ComboIconSvg: string;        // CTA1 icon when >1 selected — data-cta1-combo-icon-svg
   showCta2: boolean;
-  cta2Text: string;
+  cta2Text: string;                // global fallback label
   cta2Action: 'flow' | 'booking' | 'pico';
   cta2Url: string;                 // global secondary target (flow/booking)
   cta2ComboUrl: string;            // CTA2 target when >1 selected
+  cta2ComboText: string;           // CTA2 label when >1 selected — data-cta2-combo-text
+  cta2IconSvg: string;             // global CTA2 icon (base64) — data-cta2-icon-svg
+  cta2ComboIconSvg: string;        // CTA2 icon when >1 selected — data-cta2-combo-icon-svg
   contactSkipAddress: boolean;     // pico only
 
   // CTAs (booking + brochure)
@@ -534,6 +591,19 @@ interface WidgetConfig {
   picoEnv: 'production' | 'acceptance';
   picoFlowId: string;
 
+  // Block styling (card) — all optional; empty ⇒ transparent/inherit
+  bgColor: string;                 // data-bg-color
+  bgOpacity: number | null;        // data-bg-opacity, 0–1 (background only)
+  blockRadius: string;             // data-block-radius, e.g. "18px"
+  blockPadding: string;            // data-block-padding, e.g. "24px"
+  blockBorder: string;             // data-block-border CSS shorthand, e.g. "1px solid #16a34a" | "none"
+
+  // Input placeholders — undefined keeps default; "" emits an empty placeholder
+  placeholders: Partial<Record<
+    'address' | 'postcode' | 'huisnummer' | 'toevoeging' | 'street' |
+    'housenumber' | 'zipcode' | 'city' | 'phone' | 'email', string
+  >>;
+
   // Advanced
   installer: string;
   context: string;
@@ -547,9 +617,13 @@ interface TileConfig {
   title: string;        // e.g. "Airco"
   url: string;          // CTA1 primary leadflow URL — data-tile-{key}-url
   cta2Url?: string;     // CTA2 secondary leadflow URL — data-tile-{key}-cta2-url
+  cta1Text?: string;    // per-tile CTA1 label — data-tile-{key}-cta1-text
+  cta2Text?: string;    // per-tile CTA2 label — data-tile-{key}-cta2-text
+  cta1IconSvg?: string; // base64 SVG, per-tile CTA1 icon — data-tile-{key}-cta1-icon-svg
+  cta2IconSvg?: string; // base64 SVG, per-tile CTA2 icon — data-tile-{key}-cta2-icon-svg
   bookingUrl?: string;  // legacy CTA1 booking switch — data-tile-{key}-booking-url
   isDefault: boolean;
-  iconSvg?: string;     // base64 custom SVG — data-tile-{key}-icon-svg
+  iconSvg?: string;     // base64 custom TILE icon (selector) — data-tile-{key}-icon-svg
 }
 ```
 
@@ -616,6 +690,10 @@ function generateEmbedCode(config: WidgetConfig): string {
       if (tile.url) attrs.push([`data-tile-${tile.key}-url`, tile.url]);
       attrs.push([`data-tile-${tile.key}-title`, tile.title]);
       if (tile.cta2Url) attrs.push([`data-tile-${tile.key}-cta2-url`, tile.cta2Url]);
+      if (tile.cta1Text) attrs.push([`data-tile-${tile.key}-cta1-text`, tile.cta1Text]);
+      if (tile.cta2Text) attrs.push([`data-tile-${tile.key}-cta2-text`, tile.cta2Text]);
+      if (tile.cta1IconSvg) attrs.push([`data-tile-${tile.key}-cta1-icon-svg`, tile.cta1IconSvg]);
+      if (tile.cta2IconSvg) attrs.push([`data-tile-${tile.key}-cta2-icon-svg`, tile.cta2IconSvg]);
       if (tile.bookingUrl) attrs.push([`data-tile-${tile.key}-booking-url`, tile.bookingUrl]);
       if (tile.iconSvg) attrs.push([`data-tile-${tile.key}-icon-svg`, tile.iconSvg]);
     });
@@ -642,7 +720,10 @@ function generateEmbedCode(config: WidgetConfig): string {
 
     // CTA1
     if (config.cta1Text !== 'Bereken wat je bespaart') attrs.push(['data-cta1-text', config.cta1Text]);
+    if (config.cta1IconSvg) attrs.push(['data-cta1-icon-svg', config.cta1IconSvg]);
     if (maxSelect !== 1 && config.cta1ComboUrl) attrs.push(['data-cta1-combo-url', config.cta1ComboUrl]);
+    if (maxSelect !== 1 && config.cta1ComboText) attrs.push(['data-cta1-combo-text', config.cta1ComboText]);
+    if (maxSelect !== 1 && config.cta1ComboIconSvg) attrs.push(['data-cta1-combo-icon-svg', config.cta1ComboIconSvg]);
     if (config.tiles.some(t => t.bookingUrl) && config.cta1TextBooking !== 'Plan een gratis adviesgesprek') {
       attrs.push(['data-cta1-text-booking', config.cta1TextBooking]);
     }
@@ -651,10 +732,13 @@ function generateEmbedCode(config: WidgetConfig): string {
     if (config.showCta2) {
       attrs.push(['data-cta2-show', 'true']);
       if (config.cta2Text) attrs.push(['data-cta2-text', config.cta2Text]);
+      if (config.cta2IconSvg) attrs.push(['data-cta2-icon-svg', config.cta2IconSvg]);
       attrs.push(['data-cta2-action', config.cta2Action]); // flow | booking | pico
       if (config.cta2Action !== 'pico') {
         if (config.cta2Url) attrs.push(['data-cta2-url', config.cta2Url]);
         if (maxSelect !== 1 && config.cta2ComboUrl) attrs.push(['data-cta2-combo-url', config.cta2ComboUrl]);
+        if (maxSelect !== 1 && config.cta2ComboText) attrs.push(['data-cta2-combo-text', config.cta2ComboText]);
+        if (maxSelect !== 1 && config.cta2ComboIconSvg) attrs.push(['data-cta2-combo-icon-svg', config.cta2ComboIconSvg]);
       } else if (config.contactSkipAddress) {
         attrs.push(['data-contact-skip-address', 'true']);
       }
@@ -706,12 +790,31 @@ function generateEmbedCode(config: WidgetConfig): string {
     if (config.picoFlowId) attrs.push(['data-pico-flow-id', config.picoFlowId]);
   }
 
-  // Checkbox
+  // Checkbox (title may contain inline markdown links [label](url))
   if (config.checkboxTitle) {
     attrs.push(['data-checkbox-title', config.checkboxTitle]);
     if (config.checkboxShortTitle) attrs.push(['data-checkbox-shorttitle', config.checkboxShortTitle]);
     if (config.checkboxRequired) attrs.push(['data-checkbox-required', 'true']);
   }
+
+  // Block styling (card) — all optional
+  if (config.bgColor) attrs.push(['data-bg-color', config.bgColor]);
+  if (config.bgOpacity != null && config.bgOpacity < 1) attrs.push(['data-bg-opacity', String(config.bgOpacity)]);
+  if (config.blockRadius) attrs.push(['data-block-radius', config.blockRadius]);
+  if (config.blockPadding) attrs.push(['data-block-padding', config.blockPadding]);
+  if (config.blockBorder) attrs.push(['data-block-border', config.blockBorder]);
+
+  // Input placeholders — emit only keys the partner set (incl. explicit "")
+  const phKeys: Record<string, string> = {
+    address: 'data-address-placeholder', postcode: 'data-postcode-placeholder',
+    huisnummer: 'data-huisnummer-placeholder', toevoeging: 'data-toevoeging-placeholder',
+    street: 'data-street-placeholder', housenumber: 'data-housenumber-placeholder',
+    zipcode: 'data-zipcode-placeholder', city: 'data-city-placeholder',
+    phone: 'data-phone-placeholder', email: 'data-email-placeholder',
+  };
+  Object.entries(config.placeholders || {}).forEach(([k, v]) => {
+    if (v !== undefined && phKeys[k]) attrs.push([phKeys[k], v]); // "" is intentional and respected
+  });
 
   // Advanced
   if (config.installer) attrs.push(['data-installer', config.installer]);
@@ -754,7 +857,7 @@ HTML5 drag API. Reordering updates the order of `data-tile-*` groups in the outp
 
 ## Header
 
-White, `56px`, border-bottom `1px solid #e5e7eb`. Left: logo + "Widget Generator". Right: `v2.1` badge + the "Acceptatie / Productie" environment toggle.
+White, `56px`, border-bottom `1px solid #e5e7eb`. Left: logo + "Widget Generator". Right: `v2.2` badge + the "Acceptatie / Productie" environment toggle.
 
 ---
 
@@ -806,6 +909,8 @@ Show below the preview: "De preview is een benadering. Exacte weergave kan vari�
 ## AI Iconen Genereren
 
 Each tile can have a custom SVG icon instead of the built-in one. The widget reads `data-tile-{key}-icon-svg`, base64-decodes it with `atob()`, and renders it inline. Built-in icon is the fallback.
+
+> **The exact same upload/AI flow feeds the CTA icons** (`data-cta{n}-icon-svg`, `data-cta{n}-combo-icon-svg`, `data-tile-{key}-cta{n}-icon-svg`). For CTA icons: use a `viewBox` and **no** `width`/`height` (the stylesheet sizes them at 18×18 and strips any width/height), and prefer `stroke="currentColor"` / `fill="currentColor"` so the icon follows the button color. Store the base64 in the matching config field. No hosting is needed — the SVG travels inside the embed code.
 
 ### How custom icons work in the widget
 1. `parseTilesFromElement()` reads `data-tile-{key}-icon-svg` → `tile.iconSvg`.
@@ -864,6 +969,11 @@ Each tile can have a custom SVG icon instead of the built-in one. The widget rea
 - [ ] Dual CTA: CTA2 routes via `flow`/`booking`/`pico`; auto-hides when no target resolves
 - [ ] `data-cta1-combo-url` / `data-cta2-combo-url` emitted only in multi-select
 - [ ] Global `data-cta2-url` reuse scenario works
+- [ ] Per-tile / combo / global **CTA texts** emit correctly and resolve combo→tile→global in preview
+- [ ] Per-tile / combo / global **CTA icons** (base64 SVG) upload + AI generate; preview shows leading icon at 18×18, text-only when unset
+- [ ] **Block styling** (`data-bg-color`, `data-bg-opacity`, `data-block-radius`, `data-block-padding`, `data-block-border`) emits and previews; border style limited to solid/none
+- [ ] **Checkbox markdown link** `[label](url)` renders as an anchor in preview
+- [ ] **Placeholder** overrides emit (incl. explicit empty `""`); absent keys keep defaults
 - [ ] AI-chat link section: `data-ai-chat-show` (default false) + `data-ai-chat-text`; preview link is centered, underlined, primary color
 - [ ] Secondary CTA preview is an outline in the primary color (transparent bg)
 - [ ] "(Optioneel)" suffix shown for non-required phone/email
