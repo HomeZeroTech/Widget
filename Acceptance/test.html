@@ -111,6 +111,88 @@
     <h1>HomeZero Widget — Alle Modes</h1>
     <p class="page-subtitle">Test pagina voor alle widget configuraties: classic, scan, booking en brochure.</p>
 
+    <!-- ── LIVE PLAYGROUND: widget-stijl ──────────────────────────────────── -->
+    <div class="section">
+        <div class="section-header">
+            <span class="mode-badge scan">Playground</span>
+            <h2>Live playground — achtergrond, opacity, border &amp; afronding</h2>
+        </div>
+        <p class="page-subtitle" style="margin-top:-8px">Sleep aan de controls; het widget-blok hieronder past direct aan. De bijbehorende <code>data-*</code> attributen verschijnen in het codeblok.</p>
+
+        <div style="display:flex; gap:24px; flex-wrap:wrap; align-items:flex-start;">
+            <!-- Controls -->
+            <div style="flex:0 0 280px; background:#fff; border:1px solid #e2e6ee; border-radius:12px; padding:18px; display:flex; flex-direction:column; gap:16px;">
+                <label style="display:flex; flex-direction:column; gap:6px; font-size:13px; font-weight:600; color:#132039;">
+                    Achtergrondkleur
+                    <input type="color" id="pg-bg" value="#ffffff" style="width:100%; height:34px; border:1px solid #dadee7; border-radius:6px; background:#fff; cursor:pointer;">
+                </label>
+                <label style="display:flex; flex-direction:column; gap:6px; font-size:13px; font-weight:600; color:#132039;">
+                    Achtergrond-opacity <span id="pg-op-val" style="font-weight:400; color:#7585a3;">0.90</span>
+                    <input type="range" id="pg-op" min="0" max="1" step="0.05" value="0.9" style="width:100%;">
+                </label>
+                <div style="border-top:1px solid #eef1f6; padding-top:14px; display:flex; flex-direction:column; gap:12px;">
+                    <span style="font-size:13px; font-weight:700; color:#132039;">Border van het blok</span>
+                    <label style="display:flex; flex-direction:column; gap:6px; font-size:13px; font-weight:600; color:#132039;">
+                        Breedte <span id="pg-bw-val" style="font-weight:400; color:#7585a3;">1px</span>
+                        <input type="range" id="pg-bw" min="0" max="8" step="1" value="1" style="width:100%;">
+                    </label>
+                    <label style="display:flex; flex-direction:column; gap:6px; font-size:13px; font-weight:600; color:#132039;">
+                        Kleur
+                        <input type="color" id="pg-bc" value="#16a34a" style="width:100%; height:34px; border:1px solid #dadee7; border-radius:6px; background:#fff; cursor:pointer;">
+                    </label>
+                    <label style="display:flex; flex-direction:column; gap:6px; font-size:13px; font-weight:600; color:#132039;">
+                        Stijl
+                        <select id="pg-bs" style="width:100%; height:34px; border:1px solid #dadee7; border-radius:6px; background:#fff; padding:0 8px;">
+                            <option value="solid" selected>solid</option>
+                            <option value="dashed">dashed</option>
+                            <option value="dotted">dotted</option>
+                            <option value="none">none</option>
+                        </select>
+                    </label>
+                </div>
+                <label style="display:flex; flex-direction:column; gap:6px; font-size:13px; font-weight:600; color:#132039; border-top:1px solid #eef1f6; padding-top:14px;">
+                    Afronding <span id="pg-r-val" style="font-weight:400; color:#7585a3;">18px</span>
+                    <input type="range" id="pg-r" min="0" max="40" step="1" value="18" style="width:100%;">
+                </label>
+            </div>
+
+            <!-- Live widget -->
+            <div class="widget-container" style="flex:1 1 360px; min-width:320px;">
+                <hz-embed id="playground-embed" data-mode="scan" data-color="#16a34a" data-button-radius="12px"
+                    data-title="Grip op jouw eigen energie" data-subtitle="Speel met de stijl via de controls"
+                    data-tile-display="large"
+                    data-tile-heatpump-title="Warmtepomp"
+                    data-tile-heatpump-url="https://homezero-accp.mendixcloud.com/link/start?id=wp-advies"
+                    data-tile-heatpump-cta1-text="Warmtepomp advies"
+                    data-tile-heatpump-cta2-url="https://homezero-accp.mendixcloud.com/link/start?id=wp-check"
+                    data-tile-heatpump-cta2-text="Warmtepomp check"
+                    data-tile-solarpanels-title="Zonnepanelen"
+                    data-tile-solarpanels-url="https://homezero-accp.mendixcloud.com/link/start?id=zon-advies"
+                    data-tile-solarpanels-cta1-text="Zonnepanelen advies"
+                    data-tile-solarpanels-cta2-url="https://homezero-accp.mendixcloud.com/link/start?id=zon-check"
+                    data-tile-solarpanels-cta2-text="Zonnepanelen check"
+                    data-tile-carcharger-title="Laadpaal"
+                    data-tile-carcharger-url="https://homezero-accp.mendixcloud.com/link/start?id=laadpaal-advies"
+                    data-cta1-combo-url="https://homezero-accp.mendixcloud.com/link/start?id=combi-advies"
+                    data-cta1-combo-text="Combinatie advies"
+                    data-cta2-combo-url="https://homezero-accp.mendixcloud.com/link/start?id=combi-berekening"
+                    data-cta2-combo-text="Combinatie berekening"
+                    data-cta1-text="Start advies" data-cta2-show="true" data-cta2-action="flow" data-cta2-text="Start berekening"
+                    data-tiles-default="heatpump"
+                    data-bg-color="#ffffff" data-bg-opacity="0.9" data-block-radius="18px"
+                    data-block-border="1px solid #16a34a" data-block-padding="24px"
+                    data-address-format="dutch" data-show-phone="false" data-show-email="true"></hz-embed>
+            </div>
+        </div>
+
+        <details class="code-block" open>
+            <summary>▶ Bijbehorende embed-attributen (live)</summary>
+            <pre id="playground-code">data-bg-color="#ffffff"</pre>
+        </details>
+    </div>
+
+    <hr class="divider">
+
     <!-- ── CUSTOM MODE ─────────────────────────────────────────────────── -->
     <div class="section">
         <div class="section-header">
@@ -219,6 +301,86 @@
   data-pico-env="production"
   data-show-phone="true"
   data-show-email="true"
+&gt;&lt;/hz-embed&gt;</pre>
+        </details>
+    </div>
+
+    <!-- Scan — per-maatregel CTA's + iconen + combi + blok-styling + checkbox-link + placeholders -->
+    <div class="section">
+        <div class="section-header">
+            <span class="mode-badge scan">Scan</span>
+            <h2>Scan — Per-maatregel CTA's, iconen, combi, blok-styling &amp; checkbox-link</h2>
+        </div>
+        <div class="widget-container">
+            <hz-embed data-mode="scan" data-color="#16a34a" data-button-radius="12px" data-open-new-tab="true"
+                data-title="Grip op jouw eigen energie" data-subtitle="Waar heb je interesse in? Meer opties mogelijk"
+                data-tile-display="large"
+
+                data-tile-heatpump-title="Warmtepomp"
+                data-tile-heatpump-url="https://homezero-accp.mendixcloud.com/link/start?id=warmtepomp-advies"
+                data-tile-heatpump-cta1-text="Warmtepomp advies"
+                data-tile-heatpump-cta2-url="https://homezero-accp.mendixcloud.com/link/start?id=warmtepomp-check"
+                data-tile-heatpump-cta2-text="Warmtepomp check"
+
+                data-tile-solarpanels-title="Zonnepanelen"
+                data-tile-solarpanels-url="https://homezero-accp.mendixcloud.com/link/start?id=zon-advies"
+                data-tile-solarpanels-cta1-text="Zonnepanelen advies"
+                data-tile-solarpanels-cta2-url="https://homezero-accp.mendixcloud.com/link/start?id=zon-check"
+                data-tile-solarpanels-cta2-text="Zonnepanelen check"
+
+                data-tile-carcharger-title="Laadpaal"
+                data-tile-carcharger-url="https://homezero-accp.mendixcloud.com/link/start?id=laadpaal-advies"
+
+                data-cta1-combo-url="https://homezero-accp.mendixcloud.com/link/start?id=combi-advies"
+                data-cta1-combo-text="Combinatie advies"
+                data-cta2-combo-url="https://homezero-accp.mendixcloud.com/link/start?id=combi-berekening"
+                data-cta2-combo-text="Combinatie berekening"
+
+                data-cta1-text="Start advies"
+                data-cta1-icon-svg="PHN2ZyB2aWV3Qm94PSIwIDAgMjQgMjQiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTkgNUg3YTIgMiAwIDAgMC0yIDJ2MTJhMiAyIDAgMCAwIDIgMmgxMGEyIDIgMCAwIDAgMi0yVjdhMiAyIDAgMCAwLTItMmgtMk05IDVhMiAyIDAgMCAwIDIgMmgyYTIgMiAwIDAgMCAyLTJNOSA1YTIgMiAwIDAgMSAyLTJoMmEyIDIgMCAwIDEgMiAyIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48L3N2Zz4="
+                data-cta2-show="true" data-cta2-action="flow" data-cta2-text="Start berekening"
+                data-cta2-icon-svg="PHN2ZyB2aWV3Qm94PSIwIDAgMjQgMjQiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3QgeD0iNSIgeT0iMyIgd2lkdGg9IjE0IiBoZWlnaHQ9IjE4IiByeD0iMiIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMiIvPjxsaW5lIHgxPSI5IiB5MT0iNyIgeDI9IjE1IiB5Mj0iNyIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PGxpbmUgeDE9IjkiIHkxPSIxMSIgeDI9IjkiIHkyPSIxMSIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PGxpbmUgeDE9IjEyIiB5MT0iMTEiIHgyPSIxMiIgeTI9IjExIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iMTUiIHkxPSIxMSIgeDI9IjE1IiB5Mj0iMTEiIHN0cm9rZT0iY3VycmVudENvbG9yIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxsaW5lIHgxPSI5IiB5MT0iMTUiIHgyPSI5IiB5Mj0iMTUiIHN0cm9rZT0iY3VycmVudENvbG9yIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxsaW5lIHgxPSIxMiIgeTE9IjE1IiB4Mj0iMTIiIHkyPSIxNSIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PC9zdmc+"
+
+                data-tiles-default="heatpump"
+                data-bg-color="#ffffff" data-bg-opacity="0.9" data-block-radius="18px" data-block-padding="24px"
+                data-checkbox-title="Ik ga akkoord met de [privacyverklaring](https://homezero.nl/privacy)"
+                data-checkbox-required="true"
+                data-postcode-placeholder="Bijv. 1011AB"
+                data-toevoeging-placeholder=""
+                data-address-format="dutch" data-show-phone="false" data-show-email="true"></hz-embed>
+        </div>
+        <details class="code-block">
+            <summary>▶ Bekijk embed code</summary>
+            <pre>&lt;!--
+  Per maatregel: eigen data-tile-&lt;key&gt;-cta1-text / -cta2-text (+ optioneel -cta1-icon-svg / -cta2-icon-svg).
+  Combinatie (meerdere tegels geselecteerd): data-cta1-combo-text / data-cta2-combo-text + -url's.
+  Generieke fallback-teksten: data-cta1-text / data-cta2-text. Iconen: globaal data-cta1-icon-svg / data-cta2-icon-svg.
+  Checkbox-link: inline markdown [tekst](url) in data-checkbox-title.
+  Blok-styling: data-bg-color + data-bg-opacity (0-1, alleen achtergrond) + data-block-radius + data-block-padding.
+  Placeholders: data-&lt;veld&gt;-placeholder; leeg attribuut = lege placeholder, weglaten = standaardwaarde.
+  Iconen zijn base64-encoded SVG (gebruik currentColor zodat ze de knopkleur volgen).
+--&gt;
+&lt;hz-embed
+  data-mode="scan"
+  data-tile-heatpump-title="Warmtepomp"
+  data-tile-heatpump-url="https://.../warmtepomp-advies"
+  data-tile-heatpump-cta1-text="Warmtepomp advies"
+  data-tile-heatpump-cta2-url="https://.../warmtepomp-check"
+  data-tile-heatpump-cta2-text="Warmtepomp check"
+  data-tile-solarpanels-title="Zonnepanelen"
+  data-tile-solarpanels-url="https://.../zon-advies"
+  data-tile-solarpanels-cta1-text="Zonnepanelen advies"
+  data-tile-solarpanels-cta2-url="https://.../zon-check"
+  data-tile-solarpanels-cta2-text="Zonnepanelen check"
+  data-cta1-combo-url="https://.../combi-advies"     data-cta1-combo-text="Combinatie advies"
+  data-cta2-combo-url="https://.../combi-berekening" data-cta2-combo-text="Combinatie berekening"
+  data-cta1-text="Start advies"  data-cta1-icon-svg="&lt;base64 svg&gt;"
+  data-cta2-show="true" data-cta2-action="flow" data-cta2-text="Start berekening" data-cta2-icon-svg="&lt;base64 svg&gt;"
+  data-bg-color="#ffffff" data-bg-opacity="0.9" data-block-radius="18px" data-block-padding="24px"
+  data-checkbox-title="Ik ga akkoord met de [privacyverklaring](https://homezero.nl/privacy)"
+  data-checkbox-required="true"
+  data-postcode-placeholder="Bijv. 1011AB"
+  data-toevoeging-placeholder=""
 &gt;&lt;/hz-embed&gt;</pre>
         </details>
     </div>
@@ -750,6 +912,61 @@
 
     <!-- Load local embed.js -->
     <script defer src="./embed.js"></script>
+
+    <!-- Live playground controls: directly restyle the rendered .embed-form block -->
+    <script>
+        (function () {
+            function $(id) { return document.getElementById(id); }
+            function start() {
+                var embed = $('playground-embed');
+                var form = embed && embed.querySelector('form.embed-form');
+                if (!form) { return setTimeout(start, 100); } // wait for async render
+
+                function apply() {
+                    var bg = $('pg-bg').value;
+                    var op = parseFloat($('pg-op').value);
+                    var bw = parseInt($('pg-bw').value, 10);
+                    var bc = $('pg-bc').value;
+                    var bs = $('pg-bs').value;
+                    var r = parseInt($('pg-r').value, 10);
+
+                    // Background: same color-mix approach as applyBlockStyles() in embed.js
+                    var bgVal = op < 1 ? 'color-mix(in srgb, ' + bg + ' ' + (op * 100) + '%, transparent)' : bg;
+                    form.style.setProperty('background', bgVal);
+                    form.style.setProperty('padding', '24px');
+                    form.style.setProperty('box-sizing', 'border-box');
+                    form.style.setProperty('border-radius', r + 'px');
+
+                    var noBorder = (bw === 0 || bs === 'none');
+                    var borderVal = noBorder ? 'none' : (bw + 'px ' + bs + ' ' + bc);
+                    form.style.setProperty('border', borderVal);
+
+                    $('pg-op-val').textContent = op.toFixed(2);
+                    $('pg-bw-val').textContent = bw + 'px';
+                    $('pg-r-val').textContent = r + 'px';
+
+                    $('playground-code').textContent = [
+                        'data-bg-color="' + bg + '"',
+                        'data-bg-opacity="' + op + '"',
+                        'data-block-radius="' + r + 'px"',
+                        'data-block-border="' + borderVal + '"',
+                        'data-block-padding="24px"'
+                    ].join('\n');
+                }
+
+                ['pg-bg', 'pg-op', 'pg-bw', 'pg-bc', 'pg-bs', 'pg-r'].forEach(function (id) {
+                    var el = $(id);
+                    if (!el) return;
+                    el.addEventListener('input', apply);
+                    el.addEventListener('change', apply);
+                });
+                apply();
+            }
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', start);
+            } else { start(); }
+        })();
+    </script>
 </body>
 
 </html>
