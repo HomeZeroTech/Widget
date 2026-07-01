@@ -343,6 +343,64 @@
         }
     }
 
+    // Escape a string for safe insertion into an HTML double-quoted attribute value.
+    function escapeAttr(s) {
+        return String(s == null ? '' : s)
+            .replace(/&/g, '&amp;')
+            .replace(/"/g, '&quot;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+    }
+
+    // Decode a base64-encoded SVG icon (operator-supplied config), returning the raw
+    // SVG markup only when it actually looks like an <svg>. Returns '' otherwise.
+    function decodeIconSvg(base64) {
+        if (!base64) return '';
+        try {
+            const decoded = atob(base64);
+            if (/^\s*<svg[\s>]/i.test(decoded)) return decoded;
+        } catch (e) { /* ignore */ }
+        return '';
+    }
+
+    // Validate a CSS color string; returns the color if the browser accepts it, else ''.
+    function validCssColor(color) {
+        if (!color) return '';
+        const s = new Option().style;
+        s.color = color;
+        return s.color !== '' ? color : '';
+    }
+
+    // Apply optional widget-block styling (background color + opacity, corner radius,
+    // padding) directly to the form root. Only the attributes that are set take effect.
+    // Opacity affects the background only (via color-mix), so text/buttons stay opaque.
+    function applyBlockStyles(element, form) {
+        const bgColor = validCssColor(element.getAttribute('data-bg-color') || '');
+        const radius = element.getAttribute('data-block-radius') || '';
+        const border = element.getAttribute('data-block-border') || '';
+        const paddingAttr = element.getAttribute('data-block-padding');
+        let opacity = parseFloat(element.getAttribute('data-bg-opacity'));
+        if (isNaN(opacity)) opacity = NaN; else opacity = Math.max(0, Math.min(1, opacity));
+
+        if (bgColor) {
+            if (!isNaN(opacity) && opacity < 1) {
+                form.style.setProperty('background', 'color-mix(in srgb, ' + bgColor + ' ' + (opacity * 100) + '%, transparent)');
+            } else {
+                form.style.setProperty('background', bgColor);
+            }
+            // Give content breathing room when the widget paints its own panel.
+            form.style.setProperty('padding', paddingAttr != null ? paddingAttr : '20px');
+            form.style.setProperty('box-sizing', 'border-box');
+        } else if (paddingAttr != null) {
+            form.style.setProperty('padding', paddingAttr);
+            form.style.setProperty('box-sizing', 'border-box');
+        }
+
+        if (radius) form.style.setProperty('border-radius', radius);
+        // Full CSS border shorthand, e.g. "1px solid #16a34a". Invalid values are ignored by setProperty.
+        if (border) form.style.setProperty('border', border);
+    }
+
     // Google Places API loading and management
     let googleApiPromise = null;
     const GOOGLE_API_KEY = "AIzaSyAGOPVG4UinlU37eP7p-Jim3eigcWwLwsA";
@@ -1509,12 +1567,8 @@
     }
 
     function decodeTileIcon(tile) {
-        if (tile.iconSvg) {
-            try {
-                const decoded = atob(tile.iconSvg);
-                if (/^\s*<svg[\s>]/i.test(decoded)) return decoded;
-            } catch (e) { /* ignore */ }
-        }
+        const decoded = decodeIconSvg(tile.iconSvg);
+        if (decoded) return decoded;
         return measurementIcons[tile.key] || measurementIcons.general || '';
     }
 
@@ -2031,61 +2085,89 @@
                     bookingUrl: element.getAttribute('data-tile-' + key + '-booking-url') || '',
                     cta2Url: element.getAttribute('data-tile-' + key + '-cta2-url') || '',
                     iconSvg: element.getAttribute('data-tile-' + key + '-icon-svg') || '',
+                    cta1Text: element.getAttribute('data-tile-' + key + '-cta1-text') || '',
+                    cta2Text: element.getAttribute('data-tile-' + key + '-cta2-text') || '',
+                    cta1IconSvg: element.getAttribute('data-tile-' + key + '-cta1-icon-svg') || '',
+                    cta2IconSvg: element.getAttribute('data-tile-' + key + '-cta2-icon-svg') || '',
                 };
             })
             .slice(0, 4);
     }
 
-    function buildAddressFieldsHtml(googleSearch, addressFormat, selectedLang, country) {
+    // Resolve input placeholders: an explicitly-set (even empty) data-attribute overrides
+    // the default; an absent attribute keeps the current default value.
+    function resolvePlaceholders(element, selectedLang) {
+        const r = function (attr, def) {
+            return element.hasAttribute(attr) ? element.getAttribute(attr) : def;
+        };
+        return {
+            address: r('data-address-placeholder', selectedLang.addressPlaceholder),
+            postcode: r('data-postcode-placeholder', '1234AB'),
+            huisnummer: r('data-huisnummer-placeholder', '1'),
+            toevoeging: r('data-toevoeging-placeholder', 'A'),
+            street: r('data-street-placeholder', selectedLang.streetPlaceholder),
+            housenumber: r('data-housenumber-placeholder', selectedLang.housenumberPlaceholder),
+            zipcode: r('data-zipcode-placeholder', selectedLang.zipcodePlaceholder),
+            city: r('data-city-placeholder', selectedLang.cityPlaceholder),
+            phone: r('data-phone-placeholder', '0612345678'),
+            email: r('data-email-placeholder', 'jandevries@gmail.com'),
+        };
+    }
+
+    function buildAddressFieldsHtml(googleSearch, addressFormat, selectedLang, country, placeholders) {
+        const ph = placeholders || {};
         if (googleSearch) {
             return '<div class="embed-row"><div class="embed-col"><div class="embed-form-container">' +
                 '<label for="google-address" class="embed-label-bold">' + selectedLang.addressLabel + '*</label>' +
-                '<input type="text" id="google-address" class="embed-input-field" aria-required="true" placeholder="' + selectedLang.addressPlaceholder + '" data-address-format="' + addressFormat + '" data-country="' + country + '">' +
+                '<input type="text" id="google-address" class="embed-input-field" aria-required="true" placeholder="' + escapeAttr(ph.address != null ? ph.address : selectedLang.addressPlaceholder) + '" data-address-format="' + addressFormat + '" data-country="' + country + '">' +
                 '</div></div></div>';
         } else if (addressFormat === 'dutch') {
             return '<div class="embed-row"><div class="embed-col"><div class="embed-address-container">' +
                 '<div class="embed-form-container"><label for="postcode" class="embed-label-bold">Postcode*</label>' +
-                '<input type="text" id="postcode" class="embed-input-field" aria-required="true" placeholder="1234AB" maxlength="7"></div>' +
+                '<input type="text" id="postcode" class="embed-input-field" aria-required="true" placeholder="' + escapeAttr(ph.postcode != null ? ph.postcode : '1234AB') + '" maxlength="7"></div>' +
                 '<div class="embed-form-container"><label for="huisnummer" class="embed-label-bold">Huisnummer*</label>' +
-                '<input type="text" inputmode="numeric" id="huisnummer" class="embed-input-field" aria-required="true" placeholder="1" maxlength="10"></div>' +
+                '<input type="text" inputmode="numeric" id="huisnummer" class="embed-input-field" aria-required="true" placeholder="' + escapeAttr(ph.huisnummer != null ? ph.huisnummer : '1') + '" maxlength="10"></div>' +
                 '<div class="embed-form-container"><label for="toevoeging" class="embed-label-bold">Toevoeging</label>' +
-                '<input type="text" id="toevoeging" class="embed-input-field" placeholder="A" maxlength="10"></div>' +
+                '<input type="text" id="toevoeging" class="embed-input-field" placeholder="' + escapeAttr(ph.toevoeging != null ? ph.toevoeging : 'A') + '" maxlength="10"></div>' +
                 '</div></div></div>';
         } else {
             return '<div class="embed-row"><div class="embed-col"><div class="embed-flex-container">' +
                 '<div class="embed-form-container embed-street"><label for="street" class="embed-label-bold">' + selectedLang.street + '*</label>' +
-                '<input type="text" id="street" class="embed-input-field" aria-required="true" placeholder="' + selectedLang.streetPlaceholder + '" maxlength="100"></div>' +
+                '<input type="text" id="street" class="embed-input-field" aria-required="true" placeholder="' + escapeAttr(ph.street != null ? ph.street : selectedLang.streetPlaceholder) + '" maxlength="100"></div>' +
                 '<div class="embed-form-container embed-housenumber"><label for="housenumber" class="embed-label-bold">' + selectedLang.housenumber + '*</label>' +
-                '<input type="text" id="housenumber" class="embed-input-field" aria-required="true" placeholder="' + selectedLang.housenumberPlaceholder + '" maxlength="20"></div>' +
+                '<input type="text" id="housenumber" class="embed-input-field" aria-required="true" placeholder="' + escapeAttr(ph.housenumber != null ? ph.housenumber : selectedLang.housenumberPlaceholder) + '" maxlength="20"></div>' +
                 '</div></div></div>' +
                 '<div class="embed-row"><div class="embed-col"><div class="embed-flex-container">' +
                 '<div class="embed-form-container embed-zipcode"><label for="zipcode" class="embed-label-bold">' + selectedLang.zipcode + '*</label>' +
-                '<input type="text" id="zipcode" class="embed-input-field" aria-required="true" placeholder="' + selectedLang.zipcodePlaceholder + '" maxlength="20"></div>' +
+                '<input type="text" id="zipcode" class="embed-input-field" aria-required="true" placeholder="' + escapeAttr(ph.zipcode != null ? ph.zipcode : selectedLang.zipcodePlaceholder) + '" maxlength="20"></div>' +
                 '<div class="embed-form-container embed-city"><label for="city" class="embed-label-bold">' + selectedLang.city + '*</label>' +
-                '<input type="text" id="city" class="embed-input-field" aria-required="true" placeholder="' + selectedLang.cityPlaceholder + '" maxlength="100"></div>' +
+                '<input type="text" id="city" class="embed-input-field" aria-required="true" placeholder="' + escapeAttr(ph.city != null ? ph.city : selectedLang.cityPlaceholder) + '" maxlength="100"></div>' +
                 '</div></div></div>';
         }
     }
 
-    function buildContactFieldsHtml(showPhone, showEmail, phoneRequired, emailRequired, selectedLang) {
+    function buildContactFieldsHtml(showPhone, showEmail, phoneRequired, emailRequired, selectedLang, placeholders) {
+        const ph = placeholders || {};
+        const phonePh = escapeAttr(ph.phone != null ? ph.phone : '0612345678');
+        const emailPh = escapeAttr(ph.email != null ? ph.email : 'jandevries@gmail.com');
         const optionalSuffix = ' <span class="embed-label-optional">' + (selectedLang.optional || '(Optioneel)') + '</span>';
         const phoneLabel = selectedLang.phoneLabel + (phoneRequired ? '<span>*</span>' : optionalSuffix);
         const emailLabel = selectedLang.emailLabel + (emailRequired ? '<span>*</span>' : optionalSuffix);
         if (showPhone && showEmail) {
             return '<div class="embed-row"><div class="embed-col"><div class="embed-flex-container">' +
                 '<div class="embed-form-container"><label for="telefoon" class="embed-label-bold">' + phoneLabel + '</label>' +
-                '<input type="tel" id="telefoon" class="embed-input-field"' + (phoneRequired ? ' aria-required="true"' : '') + ' placeholder="0612345678" maxlength="20"></div>' +
+                '<input type="tel" id="telefoon" class="embed-input-field"' + (phoneRequired ? ' aria-required="true"' : '') + ' placeholder="' + phonePh + '" maxlength="20"></div>' +
                 '<div class="embed-form-container"><label for="email" class="embed-label-bold">' + emailLabel + '</label>' +
-                '<input type="email" id="email" class="embed-input-field"' + (emailRequired ? ' aria-required="true"' : '') + ' placeholder="jandevries@gmail.com" maxlength="100"></div>' +
+                '<input type="email" id="email" class="embed-input-field"' + (emailRequired ? ' aria-required="true"' : '') + ' placeholder="' + emailPh + '" maxlength="100"></div>' +
                 '</div></div></div>';
         } else if (showPhone) {
             return '<div class="embed-row"><div class="embed-col"><div class="embed-form-container">' +
                 '<label for="telefoon" class="embed-label-bold">' + phoneLabel + '</label>' +
-                '<input type="tel" id="telefoon" class="embed-input-field"' + (phoneRequired ? ' aria-required="true"' : '') + ' placeholder="0612345678" maxlength="20"></div></div></div>';
+                '<input type="tel" id="telefoon" class="embed-input-field"' + (phoneRequired ? ' aria-required="true"' : '') + ' placeholder="' + phonePh + '" maxlength="20"></div></div></div>';
         } else if (showEmail) {
             return '<div class="embed-row"><div class="embed-col"><div class="embed-form-container">' +
                 '<label for="email" class="embed-label-bold">' + emailLabel + '</label>' +
-                '<input type="email" id="email" class="embed-input-field"' + (emailRequired ? ' aria-required="true"' : '') + ' placeholder="jandevries@gmail.com" maxlength="100"></div></div></div>';
+                '<input type="email" id="email" class="embed-input-field"' + (emailRequired ? ' aria-required="true"' : '') + ' placeholder="' + emailPh + '" maxlength="100"></div></div></div>';
         }
         return '';
     }
@@ -2101,10 +2183,45 @@
             '</div></div></div>';
     }
 
+    // Render checkbox label text, converting inline markdown links [label](url) into
+    // real <a> elements. Built entirely with text nodes / createElement (no innerHTML),
+    // so the operator-supplied title cannot inject markup. Links open in a new tab and
+    // stop propagation so clicking them doesn't toggle the surrounding checkbox label.
+    function appendCheckboxText(span, text) {
+        const re = /\[([^\]]+)\]\(([^)]+)\)/g;
+        let lastIndex = 0;
+        let match;
+        while ((match = re.exec(text)) !== null) {
+            if (match.index > lastIndex) {
+                span.appendChild(document.createTextNode(text.slice(lastIndex, match.index)));
+            }
+            const label = match[1];
+            const url = match[2];
+            if (isSafeUrl(url)) {
+                const a = document.createElement('a');
+                a.className = 'embed-checkbox-link';
+                a.href = url;
+                a.target = '_blank';
+                a.rel = 'noopener noreferrer';
+                a.textContent = label;
+                a.addEventListener('click', function (e) { e.stopPropagation(); });
+                span.appendChild(a);
+            } else {
+                // Unsafe/invalid URL → render the original markdown as plain text.
+                span.appendChild(document.createTextNode(match[0]));
+            }
+            lastIndex = re.lastIndex;
+        }
+        if (lastIndex < text.length) {
+            span.appendChild(document.createTextNode(text.slice(lastIndex)));
+        }
+    }
+
     function attachCheckboxText(form, checkboxTitle, checkboxRequired) {
         const textSpan = form.querySelector('.embed-checkbox-text');
         if (!textSpan) return;
-        textSpan.textContent = checkboxTitle;
+        textSpan.textContent = '';
+        appendCheckboxText(textSpan, checkboxTitle || '');
         if (checkboxRequired) {
             const asterisk = document.createElement('span');
             asterisk.className = 'embed-checkbox-required';
@@ -2216,8 +2333,8 @@
         form.appendChild(header);
     }
 
-    function showPicoError(form, err, primaryColor, ctaBtn, ctaOriginalText, addressFieldSelector, selectedLang) {
-        if (ctaBtn) { ctaBtn.disabled = false; ctaBtn.textContent = ctaOriginalText; }
+    function showPicoError(form, err, primaryColor, ctaBtn, ctaOriginalText, addressFieldSelector, selectedLang, ctaOriginalIcon) {
+        if (ctaBtn) { ctaBtn.disabled = false; setCtaButtonContent(ctaBtn, ctaOriginalIcon || '', ctaOriginalText); }
         const lang = selectedLang || translations.nl;
         const errMsg = (err && err.message) ? err.message.toLowerCase() : '';
         const addressErrors = ['building', 'address not found', 'could not find'];
@@ -2441,6 +2558,13 @@
                     form.style.setProperty('--contrast-color', getReadableTextColor(null, lum));
                 })();
 
+                // Optional widget-block styling (applied to the form root itself, so the
+                // widget is self-contained and doesn't rely on host-page card styling).
+                applyBlockStyles(element, form);
+
+                // Input placeholder overrides (empty attr = blank, absent = current default).
+                const placeholders = resolvePlaceholders(element, selectedLang);
+
                 // Mode routing — non-classic modes handled by dedicated functions
                 const widgetMode = element.getAttribute('data-mode') || 'classic';
                 if (widgetMode !== 'classic') {
@@ -2454,6 +2578,7 @@
                         checkboxTitle: checkboxTitle, checkboxShorttitle: checkboxShorttitle,
                         checkboxRequired: checkboxRequired,
                         gradientFrom: gradientFrom, gradientTo: gradientTo,
+                        placeholders: placeholders,
                     };
                     if (widgetMode === 'scan') initScanMode(element, form, modeConfig);
                     else if (widgetMode === 'booking') initBookingMode(element, form, modeConfig);
@@ -2893,7 +3018,7 @@
                             <div class="embed-col">
                                 <div class="embed-form-container">
                                     <label for="google-address" class="embed-label-bold">${selectedLang.addressLabel}*</label>
-                                    <input type="text" id="google-address" class="embed-input-field" placeholder="${selectedLang.addressPlaceholder}" data-address-format="${addressFormat}" data-country="${country}">
+                                    <input type="text" id="google-address" class="embed-input-field" placeholder="${escapeAttr(placeholders.address)}" data-address-format="${addressFormat}" data-country="${country}">
                                 </div>
                             </div>
                         </div>
@@ -2906,15 +3031,15 @@
                                 <div class="embed-address-container">
                                     <div class="embed-form-container">
                                         <label for="postcode" class="embed-label-bold">Postcode*</label>
-                                        <input type="text" id="postcode" class="embed-input-field" placeholder="1234AB" maxlength="7">
+                                        <input type="text" id="postcode" class="embed-input-field" placeholder="${escapeAttr(placeholders.postcode)}" maxlength="7">
                                     </div>
                                     <div class="embed-form-container">
                                         <label for="huisnummer" class="embed-label-bold">Huisnummer*</label>
-                                        <input type="text" inputmode="numeric" id="huisnummer" class="embed-input-field" placeholder="1" maxlength="10">
+                                        <input type="text" inputmode="numeric" id="huisnummer" class="embed-input-field" placeholder="${escapeAttr(placeholders.huisnummer)}" maxlength="10">
                                     </div>
                                     <div class="embed-form-container">
                                         <label for="toevoeging" class="embed-label-bold">Toevoeging</label>
-                                        <input type="text" id="toevoeging" class="embed-input-field" placeholder="A" maxlength="10">
+                                        <input type="text" id="toevoeging" class="embed-input-field" placeholder="${escapeAttr(placeholders.toevoeging)}" maxlength="10">
                                     </div>
                                 </div>
                             </div>
@@ -2928,11 +3053,11 @@
                                 <div class="embed-flex-container">
                                     <div class="embed-form-container embed-street">
                                         <label for="street" class="embed-label-bold">${selectedLang.street}*</label>
-                                        <input type="text" id="street" class="embed-input-field" placeholder="${selectedLang.streetPlaceholder}" maxlength="100">
+                                        <input type="text" id="street" class="embed-input-field" placeholder="${escapeAttr(placeholders.street)}" maxlength="100">
                                     </div>
                                     <div class="embed-form-container embed-housenumber">
                                         <label for="housenumber" class="embed-label-bold">${selectedLang.housenumber}*</label>
-                                        <input type="text" id="housenumber" class="embed-input-field" placeholder="${selectedLang.housenumberPlaceholder}" maxlength="20">
+                                        <input type="text" id="housenumber" class="embed-input-field" placeholder="${escapeAttr(placeholders.housenumber)}" maxlength="20">
                                     </div>
                                 </div>
                             </div>
@@ -2942,11 +3067,11 @@
                                 <div class="embed-flex-container">
                                     <div class="embed-form-container embed-zipcode">
                                         <label for="zipcode" class="embed-label-bold">${selectedLang.zipcode}*</label>
-                                        <input type="text" id="zipcode" class="embed-input-field" placeholder="${selectedLang.zipcodePlaceholder}" maxlength="20">
+                                        <input type="text" id="zipcode" class="embed-input-field" placeholder="${escapeAttr(placeholders.zipcode)}" maxlength="20">
                                     </div>
                                     <div class="embed-form-container embed-city">
                                         <label for="city" class="embed-label-bold">${selectedLang.city}*</label>
-                                        <input type="text" id="city" class="embed-input-field" placeholder="${selectedLang.cityPlaceholder}" maxlength="100">
+                                        <input type="text" id="city" class="embed-input-field" placeholder="${escapeAttr(placeholders.city)}" maxlength="100">
                                     </div>
                                 </div>
                             </div>
@@ -2970,7 +3095,7 @@
                                                 ? `<span>*</span>`
                                                 : ""
                                         }</label>
-                                        <input type="tel" id="telefoon" class="embed-input-field" placeholder="0612345678" maxlength="20">
+                                        <input type="tel" id="telefoon" class="embed-input-field" placeholder="${escapeAttr(placeholders.phone)}" maxlength="20">
                                     </div>
                                     <div class="embed-form-container">
                                         <label for="email" class="embed-label-bold">${
@@ -2980,7 +3105,7 @@
                                                 ? `<span>*</span>`
                                                 : ""
                                         }</label>
-                                        <input type="email" id="email" class="embed-input-field" placeholder="jandevries@gmail.com" maxlength="100">
+                                        <input type="email" id="email" class="embed-input-field" placeholder="${escapeAttr(placeholders.email)}" maxlength="100">
                                     </div>
                                 </div>
                             </div>
@@ -2996,7 +3121,7 @@
                                     }${
                                         phoneRequired ? `<span>*</span>` : ""
                                     }</label>
-                                    <input type="tel" id="telefoon" class="embed-input-field" placeholder="0612345678" maxlength="20">
+                                    <input type="tel" id="telefoon" class="embed-input-field" placeholder="${escapeAttr(placeholders.phone)}" maxlength="20">
                                 </div>
                             </div>
                         </div>
@@ -3011,7 +3136,7 @@
                                     }${
                                         emailRequired ? `<span>*</span>` : ""
                                     }</label>
-                                    <input type="email" id="email" class="embed-input-field" placeholder="jandevries@gmail.com" maxlength="100">
+                                    <input type="email" id="email" class="embed-input-field" placeholder="${escapeAttr(placeholders.email)}" maxlength="100">
                                 </div>
                             </div>
                         </div>
@@ -3380,6 +3505,17 @@
         const cta1ComboUrl = element.getAttribute('data-cta1-combo-url') || '';
         const cta2ComboUrl = element.getAttribute('data-cta2-combo-url') || '';
 
+        // Combination CTA texts/icons (used when more than one tile is selected)
+        const cta1ComboText = element.getAttribute('data-cta1-combo-text') || '';
+        const cta2ComboText = element.getAttribute('data-cta2-combo-text') || '';
+        const cta1ComboIcon = element.getAttribute('data-cta1-combo-icon-svg') || '';
+        const cta2ComboIcon = element.getAttribute('data-cta2-combo-icon-svg') || '';
+
+        // Optional global CTA icons (base64 SVG). No default — only shown when configured.
+        // Resolved per selection with the same precedence as the CTA texts.
+        const cta1IconGlobal = element.getAttribute('data-cta1-icon-svg') || '';
+        const cta2IconGlobal = element.getAttribute('data-cta2-icon-svg') || '';
+
         // AI-chat text link (decoupled from the CTA2 slot, default off)
         let aiChatShow = element.getAttribute('data-ai-chat-show') === 'true';
         let aiChatText = element.getAttribute('data-ai-chat-text') || 'Of chat met onze AI adviseur';
@@ -3422,6 +3558,11 @@
         const ctaCfg = {
             cta2Action: cta2Action, cta2UrlGlobal: cta2UrlGlobal,
             cta1ComboUrl: cta1ComboUrl, cta2ComboUrl: cta2ComboUrl,
+            // Per-CTA text/icon, with combination + global fallbacks.
+            cta1Text: cta1Text, cta1TextBooking: cta1TextBooking, cta2Text: cta2Text,
+            cta1ComboText: cta1ComboText, cta2ComboText: cta2ComboText,
+            cta1IconGlobal: cta1IconGlobal, cta2IconGlobal: cta2IconGlobal,
+            cta1ComboIcon: cta1ComboIcon, cta2ComboIcon: cta2ComboIcon,
         };
 
         validateScanConfig(tiles, {
@@ -3433,15 +3574,17 @@
         function getPrimaryTile() { const s = getSelectedTiles(); return s.length ? s[0] : null; }
         function isBookingTileSelected() { const p = getPrimaryTile(); return !!(p && p.bookingUrl); }
 
-        // Keep CTA1 text in sync and toggle CTA2 visibility per current selection
+        // Keep CTA text + icon in sync and toggle CTA2 visibility per current selection
         function updateCtas() {
+            const sel = getSelectedTiles();
             const c1 = form.querySelector('.embed-cta-primary');
-            if (c1) c1.textContent = isBookingTileSelected() ? cta1TextBooking : cta1Text;
+            if (c1) setCtaButtonContent(c1, resolveCtaIcon(1, sel, ctaCfg), resolveCtaText(1, sel, ctaCfg));
             const c2 = form.querySelector('.embed-cta-secondary');
             if (c2 && (cta2Action === 'flow' || cta2Action === 'booking')) {
-                const t2 = resolveCtaTarget(2, getSelectedTiles(), ctaCfg);
+                const t2 = resolveCtaTarget(2, sel, ctaCfg);
                 c2.style.display = (t2 && t2.url) ? '' : 'none';
             }
+            if (c2) setCtaButtonContent(c2, resolveCtaIcon(2, sel, ctaCfg), resolveCtaText(2, sel, ctaCfg));
         }
         const updateCta1Text = updateCtas;
 
@@ -3449,8 +3592,8 @@
 
         // All innerHTML-based additions must happen BEFORE appendChild(grid)
         // to avoid innerHTML += destroying DOM nodes with event listeners.
-        form.innerHTML += buildAddressFieldsHtml(config.googleSearch, config.addressFormat, selectedLang, config.country);
-        form.innerHTML += buildContactFieldsHtml(config.showPhone, config.showEmail, config.phoneRequired, config.emailRequired, selectedLang);
+        form.innerHTML += buildAddressFieldsHtml(config.googleSearch, config.addressFormat, selectedLang, config.country, config.placeholders);
+        form.innerHTML += buildContactFieldsHtml(config.showPhone, config.showEmail, config.phoneRequired, config.emailRequired, selectedLang, config.placeholders);
 
         if (config.checkboxTitle) {
             form.innerHTML += buildCheckboxHtml();
@@ -3518,7 +3661,7 @@
         cta1Btn.className = 'embed-submit-button embed-cta-primary';
         cta1Btn.style.backgroundColor = config.primaryColor;
         cta1Btn.style.setProperty('border-radius', config.buttonRadius, 'important');
-        cta1Btn.textContent = isBookingTileSelected() ? cta1TextBooking : cta1Text;
+        setCtaButtonContent(cta1Btn, resolveCtaIcon(1, getSelectedTiles(), ctaCfg), resolveCtaText(1, getSelectedTiles(), ctaCfg));
         ctaWrapper.appendChild(cta1Btn);
 
         if (showCta2) {
@@ -3526,12 +3669,12 @@
             cta2Btn.type = 'button';
             cta2Btn.className = 'embed-cta-secondary';
             cta2Btn.style.setProperty('border-radius', config.buttonRadius, 'important');
-            cta2Btn.textContent = cta2Text;
+            setCtaButtonContent(cta2Btn, resolveCtaIcon(2, getSelectedTiles(), ctaCfg), resolveCtaText(2, getSelectedTiles(), ctaCfg));
             ctaWrapper.appendChild(cta2Btn);
 
             cta2Btn.addEventListener('click', function () {
                 if (cta2Action === 'pico') {
-                    handleScanCta2(form, tiles, selectedTilesSet, picoKey, picoEnv, picoFlowIdOverride, contactSkipAddress, config, selectedLang, dutchVal, cta2Btn, cta2Text);
+                    handleScanCta2(form, tiles, selectedTilesSet, picoKey, picoEnv, picoFlowIdOverride, contactSkipAddress, config, selectedLang, dutchVal, cta2Btn, cta2Text, cta2IconGlobal);
                 } else {
                     handleScanCtaClick(2);
                 }
@@ -3603,6 +3746,61 @@
             ? (ctaCfg.cta2ComboUrl || ctaCfg.cta2UrlGlobal)
             : (selectedTiles[0].cta2Url || ctaCfg.cta2UrlGlobal);
         return u ? { url: u, action: ctaCfg.cta2Action } : null;
+    }
+
+    // Resolve the CTA button label for the current selection. Mirrors resolveCtaTarget's
+    // precedence — CTA1: combo (multi) > tile > global (booking-aware); CTA2: combo (multi) >
+    // tile > global. Falls back to the global text when nothing is selected.
+    function resolveCtaText(ctaIndex, selectedTiles, ctaCfg) {
+        const n = selectedTiles.length;
+        if (ctaIndex === 1) {
+            if (n > 1) return ctaCfg.cta1ComboText || ctaCfg.cta1Text;
+            if (n === 1) {
+                const t = selectedTiles[0];
+                if (t.cta1Text) return t.cta1Text;
+                return t.bookingUrl ? ctaCfg.cta1TextBooking : ctaCfg.cta1Text;
+            }
+            return ctaCfg.cta1Text;
+        }
+        if (n > 1) return ctaCfg.cta2ComboText || ctaCfg.cta2Text;
+        if (n === 1) return selectedTiles[0].cta2Text || ctaCfg.cta2Text;
+        return ctaCfg.cta2Text;
+    }
+
+    // Resolve the optional base64 CTA icon for the current selection, same precedence as
+    // the text. Returns '' (no icon) when nothing is configured for that CTA/selection.
+    function resolveCtaIcon(ctaIndex, selectedTiles, ctaCfg) {
+        const n = selectedTiles.length;
+        if (ctaIndex === 1) {
+            if (n > 1) return ctaCfg.cta1ComboIcon || ctaCfg.cta1IconGlobal;
+            if (n === 1) return selectedTiles[0].cta1IconSvg || ctaCfg.cta1IconGlobal;
+            return ctaCfg.cta1IconGlobal;
+        }
+        if (n > 1) return ctaCfg.cta2ComboIcon || ctaCfg.cta2IconGlobal;
+        if (n === 1) return selectedTiles[0].cta2IconSvg || ctaCfg.cta2IconGlobal;
+        return ctaCfg.cta2IconGlobal;
+    }
+
+    // Render a CTA button as an optional leading icon + a text label. The label is set via
+    // textContent (XSS-safe); the icon SVG is decoded from base64 (operator config) and
+    // injected the same trusted way tiles render their icons. No icon span when none set.
+    // Layout/sizing lives in embed-styles.css (.embed-cta-primary/.embed-cta-icon); the
+    // width/height attributes are stripped so the stylesheet controls the icon size.
+    function setCtaButtonContent(btn, iconBase64, text) {
+        btn.textContent = '';
+        const iconRaw = decodeIconSvg(iconBase64);
+        if (iconRaw) {
+            const iconSpan = document.createElement('span');
+            iconSpan.className = 'embed-cta-icon';
+            iconSpan.innerHTML = iconRaw.replace('<svg', '<svg aria-hidden="true"');
+            const svg = iconSpan.querySelector('svg');
+            if (svg) { svg.removeAttribute('width'); svg.removeAttribute('height'); }
+            btn.appendChild(iconSpan);
+        }
+        const labelSpan = document.createElement('span');
+        labelSpan.className = 'embed-cta-label';
+        labelSpan.textContent = text || '';
+        btn.appendChild(labelSpan);
     }
 
     // Build the HomeZero leadflow URL with referral, address, contact, tiles, checkbox, context and query params.
@@ -3735,7 +3933,7 @@
         return link;
     }
 
-    function handleScanCta2(form, tiles, selectedTilesSet, picoKey, picoEnv, picoFlowIdOverride, contactSkipAddress, config, selectedLang, dutchVal, cta2Btn, cta2OrigText) {
+    function handleScanCta2(form, tiles, selectedTilesSet, picoKey, picoEnv, picoFlowIdOverride, contactSkipAddress, config, selectedLang, dutchVal, cta2Btn, cta2OrigText, cta2OrigIcon) {
         form.querySelectorAll('.embed-validation-message').forEach(function (m) { m.remove(); });
         const prevErr = form.querySelector('.embed-inline-error');
         if (prevErr) prevErr.remove();
@@ -3793,7 +3991,7 @@
             })
             .catch(function (err) {
                 const addrSelector = config.addressFormat === 'dutch' ? '#postcode' : '#city';
-                showPicoError(form, err, config.primaryColor, cta2Btn, cta2OrigText, addrSelector, selectedLang);
+                showPicoError(form, err, config.primaryColor, cta2Btn, cta2OrigText, addrSelector, selectedLang, cta2OrigIcon);
             });
     }
 
@@ -3814,7 +4012,7 @@
         addTitleSubtitle(form, config.title, config.subtitle);
 
         // All innerHTML-based additions must happen BEFORE appendChild(grid)
-        form.innerHTML += buildContactFieldsHtml(config.showPhone, config.showEmail, config.phoneRequired, config.emailRequired, selectedLang);
+        form.innerHTML += buildContactFieldsHtml(config.showPhone, config.showEmail, config.phoneRequired, config.emailRequired, selectedLang, config.placeholders);
 
         if (config.checkboxTitle) {
             form.innerHTML += buildCheckboxHtml();
@@ -3948,15 +4146,15 @@
 
         form.innerHTML += '<div class="embed-row"><div class="embed-col"><div class="embed-form-container">' +
             '<label for="email" class="embed-label-bold">' + selectedLang.emailLabel + '<span>*</span></label>' +
-            '<input type="email" id="email" class="embed-input-field" placeholder="jandevries@gmail.com" maxlength="100"></div></div></div>';
+            '<input type="email" id="email" class="embed-input-field" placeholder="' + escapeAttr(config.placeholders && config.placeholders.email != null ? config.placeholders.email : 'jandevries@gmail.com') + '" maxlength="100"></div></div></div>';
 
         if (showPhone) {
             form.innerHTML += '<div class="embed-row"><div class="embed-col"><div class="embed-form-container">' +
                 '<label for="telefoon" class="embed-label-bold">' + selectedLang.phoneLabel + '</label>' +
-                '<input type="tel" id="telefoon" class="embed-input-field" placeholder="0612345678" maxlength="20"></div></div></div>';
+                '<input type="tel" id="telefoon" class="embed-input-field" placeholder="' + escapeAttr(config.placeholders && config.placeholders.phone != null ? config.placeholders.phone : '0612345678') + '" maxlength="20"></div></div></div>';
         }
 
-        if (showAddress) form.innerHTML += buildAddressFieldsHtml(googleSearch, addressFormat, selectedLang, country);
+        if (showAddress) form.innerHTML += buildAddressFieldsHtml(googleSearch, addressFormat, selectedLang, country, config.placeholders);
 
         if (config.checkboxTitle) {
             form.innerHTML += buildCheckboxHtml();
