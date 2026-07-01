@@ -448,7 +448,9 @@ hz-embed {
 }
 
 .embed-checkbox-input:checked + .embed-checkbox-custom:hover,
-.embed-checkbox-label:hover .embed-checkbox-input:checked ~ .embed-checkbox-custom {
+.embed-checkbox-label:hover
+    .embed-checkbox-input:checked
+    ~ .embed-checkbox-custom {
     background-color: color-mix(in srgb, var(--primary-color) 85%, black);
     border-color: color-mix(in srgb, var(--primary-color) 85%, black);
 }
@@ -467,6 +469,15 @@ hz-embed {
 .embed-checkbox-required {
     color: #132039;
     margin-left: 2px;
+}
+
+.embed-checkbox-link {
+    color: var(--primary-color);
+    text-decoration: underline;
+}
+
+.embed-checkbox-link:hover {
+    opacity: 0.85;
 }
 
 .embed-checkbox-container .embed-validation-message {
@@ -492,7 +503,10 @@ hz-embed {
     border: 1.5px solid #dadee7;
     border-radius: 10px;
     cursor: pointer;
-    transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+    transition:
+        background 0.18s ease,
+        border-color 0.18s ease,
+        color 0.18s ease;
     background: #fff;
     position: relative;
     gap: 6px;
@@ -590,6 +604,30 @@ hz-embed {
     opacity: 0.8 !important;
 }
 
+/* CTA buttons with an optional leading icon: center icon + label as a flex row. */
+.embed-cta-primary,
+.embed-cta-secondary {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+}
+
+.embed-cta-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+}
+
+.embed-cta-icon svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
 .embed-label-optional {
     font-weight: 400;
     color: #7585a3;
@@ -605,7 +643,7 @@ hz-embed {
     font-weight: 500;
     text-decoration: underline;
     cursor: pointer;
-    color: var(--primary-color, #2A6DF4);
+    color: var(--primary-color, #2a6df4);
     background: none;
     border: none;
 }

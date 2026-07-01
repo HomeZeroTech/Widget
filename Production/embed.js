@@ -101,15 +101,19 @@
             tagsPlaceholder: "Select products...",
             removeChip: "Remove",
             tileRequired: "Please select at least one product.",
-            phoneOrEmailRequired: "Please enter a phone number or email address.",
+            phoneOrEmailRequired:
+                "Please enter a phone number or email address.",
             errorOutsideArea: "This address is outside the service area.",
-            errorAddressNotFound: "Address not found. Please check your postcode and house number.",
+            errorAddressNotFound:
+                "Address not found. Please check your postcode and house number.",
             errorGeneric: "Something went wrong. Please try again.",
             confirmTitle: "Thank you!",
             confirmContactMessage: "We will contact you as soon as possible.",
-            confirmBookingMessage: "You will be redirected to the appointment scheduler.",
+            confirmBookingMessage:
+                "You will be redirected to the appointment scheduler.",
             confirmAppointmentTitle: "Appointment scheduled!",
-            confirmAppointmentMessage: "You will receive a confirmation at the provided address.",
+            confirmAppointmentMessage:
+                "You will receive a confirmation at the provided address.",
             confirmBrochureTitle: "Sent!",
             firstnameLabel: "First name",
             firstnamePlaceholder: "John",
@@ -151,13 +155,17 @@
             tileRequired: "Selecteer minimaal één product.",
             phoneOrEmailRequired: "Vul een telefoonnummer of e-mailadres in.",
             errorOutsideArea: "Dit adres valt buiten het werkgebied.",
-            errorAddressNotFound: "Adres niet gevonden. Controleer postcode en huisnummer.",
+            errorAddressNotFound:
+                "Adres niet gevonden. Controleer postcode en huisnummer.",
             errorGeneric: "Er is iets misgegaan. Probeer het opnieuw.",
             confirmTitle: "Bedankt!",
-            confirmContactMessage: "We nemen zo snel mogelijk contact met je op.",
-            confirmBookingMessage: "Je wordt doorgestuurd naar de afspraakplanner.",
+            confirmContactMessage:
+                "We nemen zo snel mogelijk contact met je op.",
+            confirmBookingMessage:
+                "Je wordt doorgestuurd naar de afspraakplanner.",
             confirmAppointmentTitle: "Afspraak gepland!",
-            confirmAppointmentMessage: "Je ontvangt een bevestiging op het opgegeven adres.",
+            confirmAppointmentMessage:
+                "Je ontvangt een bevestiging op het opgegeven adres.",
             confirmBrochureTitle: "Verstuurd!",
             firstnameLabel: "Voornaam",
             firstnamePlaceholder: "Jan",
@@ -197,15 +205,22 @@
             tagsPlaceholder: "Produkte auswählen...",
             removeChip: "Entfernen",
             tileRequired: "Bitte wählen Sie mindestens ein Produkt aus.",
-            phoneOrEmailRequired: "Bitte geben Sie eine Telefonnummer oder E-Mail-Adresse ein.",
-            errorOutsideArea: "Diese Adresse liegt außerhalb des Servicegebiets.",
-            errorAddressNotFound: "Adresse nicht gefunden. Bitte überprüfen Sie PLZ und Hausnummer.",
-            errorGeneric: "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.",
+            phoneOrEmailRequired:
+                "Bitte geben Sie eine Telefonnummer oder E-Mail-Adresse ein.",
+            errorOutsideArea:
+                "Diese Adresse liegt außerhalb des Servicegebiets.",
+            errorAddressNotFound:
+                "Adresse nicht gefunden. Bitte überprüfen Sie PLZ und Hausnummer.",
+            errorGeneric:
+                "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.",
             confirmTitle: "Danke!",
-            confirmContactMessage: "Wir melden uns so schnell wie möglich bei Ihnen.",
-            confirmBookingMessage: "Sie werden zum Terminplaner weitergeleitet.",
+            confirmContactMessage:
+                "Wir melden uns so schnell wie möglich bei Ihnen.",
+            confirmBookingMessage:
+                "Sie werden zum Terminplaner weitergeleitet.",
             confirmAppointmentTitle: "Termin vereinbart!",
-            confirmAppointmentMessage: "Sie erhalten eine Bestätigung an die angegebene Adresse.",
+            confirmAppointmentMessage:
+                "Sie erhalten eine Bestätigung an die angegebene Adresse.",
             confirmBrochureTitle: "Gesendet!",
             firstnameLabel: "Vorname",
             firstnamePlaceholder: "Max",
@@ -310,9 +325,13 @@
         const channels = [0, 2, 4].map(function (i) {
             let c = parseInt(hex.substr(i, 2), 16) / 255;
             if (isNaN(c)) c = 0;
-            return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+            return c <= 0.03928
+                ? c / 12.92
+                : Math.pow((c + 0.055) / 1.055, 2.4);
         });
-        return 0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2];
+        return (
+            0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2]
+        );
     }
 
     // WCAG contrast ratio between two relative luminance values.
@@ -328,7 +347,10 @@
     function getReadableTextColor(bgColor, bgLuminance) {
         const DARK = "#132039";
         const LIGHT = "#ffffff";
-        const lum = typeof bgLuminance === "number" ? bgLuminance : relativeLuminance(bgColor);
+        const lum =
+            typeof bgLuminance === "number"
+                ? bgLuminance
+                : relativeLuminance(bgColor);
         const darkRatio = contrastRatio(lum, relativeLuminance(DARK));
         const lightRatio = contrastRatio(lum, relativeLuminance(LIGHT));
         return darkRatio >= lightRatio ? DARK : LIGHT;
@@ -341,6 +363,79 @@
         } catch {
             return false;
         }
+    }
+
+    // Escape a string for safe insertion into an HTML double-quoted attribute value.
+    function escapeAttr(s) {
+        return String(s == null ? "" : s)
+            .replace(/&/g, "&amp;")
+            .replace(/"/g, "&quot;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;");
+    }
+
+    // Decode a base64-encoded SVG icon (operator-supplied config), returning the raw
+    // SVG markup only when it actually looks like an <svg>. Returns '' otherwise.
+    function decodeIconSvg(base64) {
+        if (!base64) return "";
+        try {
+            const decoded = atob(base64);
+            if (/^\s*<svg[\s>]/i.test(decoded)) return decoded;
+        } catch (e) {
+            /* ignore */
+        }
+        return "";
+    }
+
+    // Validate a CSS color string; returns the color if the browser accepts it, else ''.
+    function validCssColor(color) {
+        if (!color) return "";
+        const s = new Option().style;
+        s.color = color;
+        return s.color !== "" ? color : "";
+    }
+
+    // Apply optional widget-block styling (background color + opacity, corner radius,
+    // padding) directly to the form root. Only the attributes that are set take effect.
+    // Opacity affects the background only (via color-mix), so text/buttons stay opaque.
+    function applyBlockStyles(element, form) {
+        const bgColor = validCssColor(
+            element.getAttribute("data-bg-color") || "",
+        );
+        const radius = element.getAttribute("data-block-radius") || "";
+        const border = element.getAttribute("data-block-border") || "";
+        const paddingAttr = element.getAttribute("data-block-padding");
+        let opacity = parseFloat(element.getAttribute("data-bg-opacity"));
+        if (isNaN(opacity)) opacity = NaN;
+        else opacity = Math.max(0, Math.min(1, opacity));
+
+        if (bgColor) {
+            if (!isNaN(opacity) && opacity < 1) {
+                form.style.setProperty(
+                    "background",
+                    "color-mix(in srgb, " +
+                        bgColor +
+                        " " +
+                        opacity * 100 +
+                        "%, transparent)",
+                );
+            } else {
+                form.style.setProperty("background", bgColor);
+            }
+            // Give content breathing room when the widget paints its own panel.
+            form.style.setProperty(
+                "padding",
+                paddingAttr != null ? paddingAttr : "20px",
+            );
+            form.style.setProperty("box-sizing", "border-box");
+        } else if (paddingAttr != null) {
+            form.style.setProperty("padding", paddingAttr);
+            form.style.setProperty("box-sizing", "border-box");
+        }
+
+        if (radius) form.style.setProperty("border-radius", radius);
+        // Full CSS border shorthand, e.g. "1px solid #16a34a". Invalid values are ignored by setProperty.
+        if (border) form.style.setProperty("border", border);
     }
 
     // Google Places API loading and management
@@ -631,7 +726,8 @@
                 const inputWrapper = document.createElement("div");
                 inputWrapper.className = "address-input-wrapper";
 
-                const _addrDropdownId = 'hz-addr-dd-' + Math.random().toString(36).slice(2, 8);
+                const _addrDropdownId =
+                    "hz-addr-dd-" + Math.random().toString(36).slice(2, 8);
 
                 // Update the input styling
                 input.className =
@@ -651,7 +747,7 @@
                 const dropdown = document.createElement("div");
                 dropdown.className = "dropdown-options address-dropdown";
                 dropdown.id = _addrDropdownId;
-                dropdown.setAttribute('role', 'listbox');
+                dropdown.setAttribute("role", "listbox");
 
                 // First remove the input from its current parent
                 originalParent.removeChild(input);
@@ -764,8 +860,8 @@
                         const placePrediction = suggestion.placePrediction;
                         const option = document.createElement("div");
                         option.className = "dropdown-option address-option";
-                        option.setAttribute('role', 'option');
-                        option.setAttribute('aria-selected', 'false');
+                        option.setAttribute("role", "option");
+                        option.setAttribute("aria-selected", "false");
 
                         const svgWrapper = document.createElement("span");
                         svgWrapper.innerHTML = `<svg class="location-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="currentColor"/></svg>`;
@@ -1398,40 +1494,53 @@
 
     function extractFlowIdFromUrl(url) {
         try {
-            return new URL(url).searchParams.get('id') || null;
+            return new URL(url).searchParams.get("id") || null;
         } catch (_) {
             return null;
         }
     }
 
     function getPicoBaseUrl(env) {
-        return env === 'acceptance'
-            ? 'https://pico-accp.homezero.nl/rest/pico/v1/assignments/create'
-            : 'https://pico.homezero.nl/rest/pico/v1/assignments/create';
+        return env === "acceptance"
+            ? "https://pico-accp.homezero.nl/rest/pico/v1/assignments/create"
+            : "https://pico.homezero.nl/rest/pico/v1/assignments/create";
     }
 
     function submitPicoApi(picoKey, picoEnv, payload) {
         const url = getPicoBaseUrl(picoEnv);
         return fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'X-API-Key': picoKey },
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-API-Key": picoKey,
+            },
             body: JSON.stringify(payload),
         }).then(function (response) {
             if (!response.ok) {
-                return response.json().then(function (data) {
-                    throw Object.assign(new Error(data.error || 'API error'), { responseData: data });
-                }).catch(function (e) {
-                    if (e.responseData) throw e;
-                    throw new Error('API error: ' + response.status);
-                });
+                return response
+                    .json()
+                    .then(function (data) {
+                        throw Object.assign(
+                            new Error(data.error || "API error"),
+                            { responseData: data },
+                        );
+                    })
+                    .catch(function (e) {
+                        if (e.responseData) throw e;
+                        throw new Error("API error: " + response.status);
+                    });
             }
-            return response.json().catch(function () { return {}; });
+            return response.json().catch(function () {
+                return {};
+            });
         });
     }
 
     function buildPicoPayload(opts) {
         const params = new URLSearchParams(window.location.search);
-        const getParam = function (key) { return params.get(key) || undefined; };
+        const getParam = function (key) {
+            return params.get(key) || undefined;
+        };
 
         const payload = { ReferralURL: window.location.href };
         if (opts.flowId) payload.FlowID = opts.flowId;
@@ -1439,24 +1548,34 @@
         if (opts.phone) payload.Phonenumber = opts.phone;
         if (opts.firstname) payload.Firstname = opts.firstname;
         if (opts.lastname) payload.Lastname = opts.lastname;
-        if (opts.flowsInterestedIn && opts.flowsInterestedIn.length) payload.FlowsInterestedIn = opts.flowsInterestedIn;
+        if (opts.flowsInterestedIn && opts.flowsInterestedIn.length)
+            payload.FlowsInterestedIn = opts.flowsInterestedIn;
 
         if (opts.zipcode && opts.housenumber) {
             payload.HouseDetails = {
                 Zipcode: opts.zipcode,
                 Housenumber: opts.housenumber,
-                HouseNumberAddition: opts.addition || '',
-                Street: opts.street || '',
-                City: opts.city || '',
-                Country: opts.country ? opts.country.toUpperCase() : 'NL',
+                HouseNumberAddition: opts.addition || "",
+                Street: opts.street || "",
+                City: opts.city || "",
+                Country: opts.country ? opts.country.toUpperCase() : "NL",
             };
         }
 
         const utmMap = {
-            utm_source: 'UtmSource', utm_medium: 'UtmMedium', utm_campaign: 'UtmCampaign',
-            utm_content: 'UtmContent', utm_term: 'UtmTerm', gclid: 'GCLID', gbraid: 'GBRAID',
-            wbraid: 'WBRAID', dclid: 'DCLID', ttclid: 'TTCLID', fbclid: 'FBCLID',
-            li_fat_id: 'LI_FAT_ID', ad_id: 'AD_ID',
+            utm_source: "UtmSource",
+            utm_medium: "UtmMedium",
+            utm_campaign: "UtmCampaign",
+            utm_content: "UtmContent",
+            utm_term: "UtmTerm",
+            gclid: "GCLID",
+            gbraid: "GBRAID",
+            wbraid: "WBRAID",
+            dclid: "DCLID",
+            ttclid: "TTCLID",
+            fbclid: "FBCLID",
+            li_fat_id: "LI_FAT_ID",
+            ad_id: "AD_ID",
         };
         Object.keys(utmMap).forEach(function (k) {
             const v = getParam(k);
@@ -1467,107 +1586,146 @@
     }
 
     function renderConfirmScreen(form, title, message, primaryColor) {
-        form.innerHTML = '';
-        const confirm = document.createElement('div');
-        confirm.className = 'embed-confirm';
+        form.innerHTML = "";
+        const confirm = document.createElement("div");
+        confirm.className = "embed-confirm";
         confirm.innerHTML =
-            '<div class="embed-confirm-icon" style="background:' + primaryColor + '" aria-hidden="true">&#10003;</div>' +
-            '<h3 class="embed-confirm-title" tabindex="-1">' + title + '</h3>' +
-            '<p class="embed-confirm-message">' + message + '</p>';
+            '<div class="embed-confirm-icon" style="background:' +
+            primaryColor +
+            '" aria-hidden="true">&#10003;</div>' +
+            '<h3 class="embed-confirm-title" tabindex="-1">' +
+            title +
+            "</h3>" +
+            '<p class="embed-confirm-message">' +
+            message +
+            "</p>";
         form.appendChild(confirm);
-        const heading = confirm.querySelector('h3');
+        const heading = confirm.querySelector("h3");
         if (heading) heading.focus();
     }
 
     function ensureTileStyles() {
-        if (document.getElementById('hz-tile-styles')) return;
-        const s = document.createElement('style');
-        s.id = 'hz-tile-styles';
-        s.textContent = '.embed-tile-grid{display:grid!important;grid-template-columns:repeat(auto-fill,minmax(84px,1fr))!important;gap:16px!important;margin-bottom:16px!important;width:100%!important;box-sizing:border-box!important}.embed-tile-grid-large{grid-template-columns:repeat(4,1fr)!important}@container (max-width:379px){.embed-tile-grid-large{grid-template-columns:repeat(2,1fr)!important}}.embed-tile{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;padding:12px 8px 10px!important;border-radius:10px!important;border-width:1.5px!important;border-style:solid!important;border-color:#dadee7!important;cursor:pointer!important;background:#fff!important;position:relative!important;gap:6px!important;text-align:center!important;user-select:none!important;min-height:74px!important;color:#132039!important;box-sizing:border-box!important;transition:background 0.18s ease,border-color 0.18s ease,color 0.18s ease!important}.embed-tile:hover{border-color:var(--primary-color)!important;background:color-mix(in srgb,var(--primary-color) 7%,#fff)!important}.embed-tile-icon{width:28px!important;height:28px!important;min-width:28px!important;min-height:28px!important;max-width:28px!important;max-height:28px!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-shrink:0!important;overflow:hidden!important}.embed-tile-icon svg{width:28px!important;height:28px!important;min-width:28px!important;min-height:28px!important;display:block!important;flex-shrink:0!important}.embed-tile-label{font-size:11px!important;font-weight:600!important;line-height:1.25!important;color:inherit!important}.embed-tile-checkmark{position:absolute!important;top:5px!important;right:5px!important;width:16px!important;height:16px!important;background:rgba(255,255,255,0.28)!important;border-radius:50%!important;display:none!important;align-items:center!important;justify-content:center!important}.embed-tile-large{padding:16px 10px 14px!important;border-radius:14px!important;min-height:100px!important;gap:8px!important}.embed-tile-large:hover{border-color:var(--primary-color)!important}.embed-tile-large .embed-tile-icon{width:36px!important;height:36px!important;min-width:36px!important;min-height:36px!important;max-width:36px!important;max-height:36px!important}.embed-tile-large .embed-tile-icon svg{width:36px!important;height:36px!important;min-width:36px!important;min-height:36px!important}.embed-tile-large .embed-tile-label{font-size:12px!important;font-weight:700!important}.embed-tile-radio{position:absolute!important;top:8px!important;right:8px!important;width:20px!important;height:20px!important;border-width:2px!important;border-style:solid!important;border-color:#dadee7!important;border-radius:50%!important;background:#fff!important;display:flex!important;align-items:center!important;justify-content:center!important;transition:all 0.18s ease!important;flex-shrink:0!important;box-sizing:border-box!important}.embed-cta-secondary:hover{opacity:.8!important}.embed-tags-field:hover{border-color:var(--primary-color)!important}';
+        if (document.getElementById("hz-tile-styles")) return;
+        const s = document.createElement("style");
+        s.id = "hz-tile-styles";
+        s.textContent =
+            ".embed-tile-grid{display:grid!important;grid-template-columns:repeat(auto-fill,minmax(84px,1fr))!important;gap:16px!important;margin-bottom:16px!important;width:100%!important;box-sizing:border-box!important}.embed-tile-grid-large{grid-template-columns:repeat(4,1fr)!important}@container (max-width:379px){.embed-tile-grid-large{grid-template-columns:repeat(2,1fr)!important}}.embed-tile{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;padding:12px 8px 10px!important;border-radius:10px!important;border-width:1.5px!important;border-style:solid!important;border-color:#dadee7!important;cursor:pointer!important;background:#fff!important;position:relative!important;gap:6px!important;text-align:center!important;user-select:none!important;min-height:74px!important;color:#132039!important;box-sizing:border-box!important;transition:background 0.18s ease,border-color 0.18s ease,color 0.18s ease!important}.embed-tile:hover{border-color:var(--primary-color)!important;background:color-mix(in srgb,var(--primary-color) 7%,#fff)!important}.embed-tile-icon{width:28px!important;height:28px!important;min-width:28px!important;min-height:28px!important;max-width:28px!important;max-height:28px!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-shrink:0!important;overflow:hidden!important}.embed-tile-icon svg{width:28px!important;height:28px!important;min-width:28px!important;min-height:28px!important;display:block!important;flex-shrink:0!important}.embed-tile-label{font-size:11px!important;font-weight:600!important;line-height:1.25!important;color:inherit!important}.embed-tile-checkmark{position:absolute!important;top:5px!important;right:5px!important;width:16px!important;height:16px!important;background:rgba(255,255,255,0.28)!important;border-radius:50%!important;display:none!important;align-items:center!important;justify-content:center!important}.embed-tile-large{padding:16px 10px 14px!important;border-radius:14px!important;min-height:100px!important;gap:8px!important}.embed-tile-large:hover{border-color:var(--primary-color)!important}.embed-tile-large .embed-tile-icon{width:36px!important;height:36px!important;min-width:36px!important;min-height:36px!important;max-width:36px!important;max-height:36px!important}.embed-tile-large .embed-tile-icon svg{width:36px!important;height:36px!important;min-width:36px!important;min-height:36px!important}.embed-tile-large .embed-tile-label{font-size:12px!important;font-weight:700!important}.embed-tile-radio{position:absolute!important;top:8px!important;right:8px!important;width:20px!important;height:20px!important;border-width:2px!important;border-style:solid!important;border-color:#dadee7!important;border-radius:50%!important;background:#fff!important;display:flex!important;align-items:center!important;justify-content:center!important;transition:all 0.18s ease!important;flex-shrink:0!important;box-sizing:border-box!important}.embed-cta-secondary:hover{opacity:.8!important}.embed-tags-field:hover{border-color:var(--primary-color)!important}";
         document.head.appendChild(s);
     }
 
-    function applyTileSelectedStyle(tileEl, primaryColor, gradientFrom, gradientTo) {
-        var bg = (gradientFrom && gradientTo)
-            ? 'linear-gradient(135deg, ' + gradientFrom + ' 0%, ' + gradientTo + ' 100%)'
-            : primaryColor;
-        tileEl.style.setProperty('background', bg, 'important');
-        tileEl.style.setProperty('border-color', 'transparent', 'important');
-        tileEl.style.setProperty('color', 'var(--contrast-color, #fff)', 'important');
-        tileEl.setAttribute('aria-checked', 'true');
-        const ck = tileEl.querySelector('.embed-tile-checkmark');
-        if (ck) ck.style.setProperty('display', 'flex', 'important');
+    function applyTileSelectedStyle(
+        tileEl,
+        primaryColor,
+        gradientFrom,
+        gradientTo,
+    ) {
+        var bg =
+            gradientFrom && gradientTo
+                ? "linear-gradient(135deg, " +
+                  gradientFrom +
+                  " 0%, " +
+                  gradientTo +
+                  " 100%)"
+                : primaryColor;
+        tileEl.style.setProperty("background", bg, "important");
+        tileEl.style.setProperty("border-color", "transparent", "important");
+        tileEl.style.setProperty(
+            "color",
+            "var(--contrast-color, #fff)",
+            "important",
+        );
+        tileEl.setAttribute("aria-checked", "true");
+        const ck = tileEl.querySelector(".embed-tile-checkmark");
+        if (ck) ck.style.setProperty("display", "flex", "important");
     }
 
     function clearTileSelectedStyle(tileEl) {
-        tileEl.style.removeProperty('background');
-        tileEl.style.removeProperty('border-color');
-        tileEl.style.removeProperty('color');
-        tileEl.setAttribute('aria-checked', 'false');
-        const ck = tileEl.querySelector('.embed-tile-checkmark');
-        if (ck) ck.style.removeProperty('display');
+        tileEl.style.removeProperty("background");
+        tileEl.style.removeProperty("border-color");
+        tileEl.style.removeProperty("color");
+        tileEl.setAttribute("aria-checked", "false");
+        const ck = tileEl.querySelector(".embed-tile-checkmark");
+        if (ck) ck.style.removeProperty("display");
     }
 
     function decodeTileIcon(tile) {
-        if (tile.iconSvg) {
-            try {
-                const decoded = atob(tile.iconSvg);
-                if (/^\s*<svg[\s>]/i.test(decoded)) return decoded;
-            } catch (e) { /* ignore */ }
-        }
-        return measurementIcons[tile.key] || measurementIcons.general || '';
+        const decoded = decodeIconSvg(tile.iconSvg);
+        if (decoded) return decoded;
+        return measurementIcons[tile.key] || measurementIcons.general || "";
     }
 
-    function renderTileGrid(tiles, selectedTilesSet, primaryColor, gradientFrom, gradientTo, onSelect) {
+    function renderTileGrid(
+        tiles,
+        selectedTilesSet,
+        primaryColor,
+        gradientFrom,
+        gradientTo,
+        onSelect,
+    ) {
         ensureTileStyles();
 
-        const grid = document.createElement('div');
-        grid.className = 'embed-tile-grid';
-        grid.setAttribute('role', 'group');
+        const grid = document.createElement("div");
+        grid.className = "embed-tile-grid";
+        grid.setAttribute("role", "group");
 
         tiles.forEach(function (tile) {
             const isSelected = selectedTilesSet.has(tile.key);
-            const tileEl = document.createElement('div');
-            tileEl.className = 'embed-tile' + (isSelected ? ' selected' : '');
-            tileEl.setAttribute('data-tile-key', tile.key);
-            tileEl.setAttribute('role', 'checkbox');
-            tileEl.setAttribute('aria-checked', isSelected ? 'true' : 'false');
-            tileEl.setAttribute('aria-label', tile.title);
+            const tileEl = document.createElement("div");
+            tileEl.className = "embed-tile" + (isSelected ? " selected" : "");
+            tileEl.setAttribute("data-tile-key", tile.key);
+            tileEl.setAttribute("role", "checkbox");
+            tileEl.setAttribute("aria-checked", isSelected ? "true" : "false");
+            tileEl.setAttribute("aria-label", tile.title);
             tileEl.tabIndex = 0;
 
             // Icon wrapper — fixed 28×28, overflow hidden so SVG cannot escape
-            const iconWrap = document.createElement('div');
-            iconWrap.className = 'embed-tile-icon';
+            const iconWrap = document.createElement("div");
+            iconWrap.className = "embed-tile-icon";
 
             const iconRaw = decodeTileIcon(tile);
             if (iconRaw) {
-                iconWrap.innerHTML = iconRaw.replace('<svg', '<svg aria-hidden="true"');
-                const svg = iconWrap.querySelector('svg');
+                iconWrap.innerHTML = iconRaw.replace(
+                    "<svg",
+                    '<svg aria-hidden="true"',
+                );
+                const svg = iconWrap.querySelector("svg");
                 if (svg) {
-                    svg.removeAttribute('width');
-                    svg.removeAttribute('height');
+                    svg.removeAttribute("width");
+                    svg.removeAttribute("height");
                 }
             }
 
             // Label
-            const label = document.createElement('span');
-            label.className = 'embed-tile-label';
+            const label = document.createElement("span");
+            label.className = "embed-tile-label";
             label.textContent = tile.title;
 
             // Checkmark badge
-            const ck = document.createElement('span');
-            ck.className = 'embed-tile-checkmark';
-            ck.innerHTML = '<svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1 5L4 8L9 2" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+            const ck = document.createElement("span");
+            ck.className = "embed-tile-checkmark";
+            ck.innerHTML =
+                '<svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1 5L4 8L9 2" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
             tileEl.appendChild(iconWrap);
             tileEl.appendChild(label);
             tileEl.appendChild(ck);
 
-            if (isSelected) applyTileSelectedStyle(tileEl, primaryColor, gradientFrom, gradientTo);
+            if (isSelected)
+                applyTileSelectedStyle(
+                    tileEl,
+                    primaryColor,
+                    gradientFrom,
+                    gradientTo,
+                );
 
-            tileEl.addEventListener('click', function () { onSelect(tile.key, tileEl); });
-            tileEl.addEventListener('keydown', function (e) {
-                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); tileEl.click(); }
+            tileEl.addEventListener("click", function () {
+                onSelect(tile.key, tileEl);
+            });
+            tileEl.addEventListener("keydown", function (e) {
+                if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    tileEl.click();
+                }
             });
             grid.appendChild(tileEl);
         });
@@ -1576,73 +1734,92 @@
     }
 
     function applyTileLargeSelectedStyle(tileEl, primaryColor) {
-        tileEl.style.setProperty('border-color', primaryColor, 'important');
-        tileEl.style.setProperty('border-width', '2px', 'important');
-        tileEl.style.setProperty('background', 'color-mix(in srgb, ' + primaryColor + ' 8%, #fff)', 'important');
-        tileEl.style.setProperty('color', primaryColor, 'important');
-        tileEl.setAttribute('aria-checked', 'true');
-        const circle = tileEl.querySelector('.embed-tile-radio');
+        tileEl.style.setProperty("border-color", primaryColor, "important");
+        tileEl.style.setProperty("border-width", "2px", "important");
+        tileEl.style.setProperty(
+            "background",
+            "color-mix(in srgb, " + primaryColor + " 8%, #fff)",
+            "important",
+        );
+        tileEl.style.setProperty("color", primaryColor, "important");
+        tileEl.setAttribute("aria-checked", "true");
+        const circle = tileEl.querySelector(".embed-tile-radio");
         if (circle) {
-            circle.style.setProperty('border-color', primaryColor, 'important');
-            circle.style.setProperty('background-color', primaryColor, 'important');
-            const ck = circle.querySelector('svg');
-            if (ck) ck.style.opacity = '1';
+            circle.style.setProperty("border-color", primaryColor, "important");
+            circle.style.setProperty(
+                "background-color",
+                primaryColor,
+                "important",
+            );
+            const ck = circle.querySelector("svg");
+            if (ck) ck.style.opacity = "1";
         }
     }
 
     function clearTileLargeSelectedStyle(tileEl) {
-        tileEl.style.removeProperty('border-color');
-        tileEl.style.removeProperty('border-width');
-        tileEl.style.removeProperty('background');
-        tileEl.style.removeProperty('color');
-        tileEl.setAttribute('aria-checked', 'false');
-        const circle = tileEl.querySelector('.embed-tile-radio');
+        tileEl.style.removeProperty("border-color");
+        tileEl.style.removeProperty("border-width");
+        tileEl.style.removeProperty("background");
+        tileEl.style.removeProperty("color");
+        tileEl.setAttribute("aria-checked", "false");
+        const circle = tileEl.querySelector(".embed-tile-radio");
         if (circle) {
-            circle.style.removeProperty('border-color');
-            circle.style.removeProperty('background-color');
-            const ck = circle.querySelector('svg');
-            if (ck) ck.style.opacity = '0';
+            circle.style.removeProperty("border-color");
+            circle.style.removeProperty("background-color");
+            const ck = circle.querySelector("svg");
+            if (ck) ck.style.opacity = "0";
         }
     }
 
-    function renderTileLargeGrid(tiles, selectedTilesSet, primaryColor, onSelect) {
+    function renderTileLargeGrid(
+        tiles,
+        selectedTilesSet,
+        primaryColor,
+        onSelect,
+    ) {
         ensureTileStyles();
         const visibleTiles = tiles.slice(0, 4);
 
-        const grid = document.createElement('div');
-        grid.className = 'embed-tile-grid embed-tile-grid-large';
-        grid.setAttribute('role', 'radiogroup');
+        const grid = document.createElement("div");
+        grid.className = "embed-tile-grid embed-tile-grid-large";
+        grid.setAttribute("role", "radiogroup");
 
         visibleTiles.forEach(function (tile) {
             const isSelected = selectedTilesSet.has(tile.key);
-            const tileEl = document.createElement('div');
-            tileEl.className = 'embed-tile embed-tile-large' + (isSelected ? ' selected' : '');
-            tileEl.setAttribute('data-tile-key', tile.key);
-            tileEl.setAttribute('role', 'radio');
-            tileEl.setAttribute('aria-checked', isSelected ? 'true' : 'false');
-            tileEl.setAttribute('aria-label', tile.title);
+            const tileEl = document.createElement("div");
+            tileEl.className =
+                "embed-tile embed-tile-large" + (isSelected ? " selected" : "");
+            tileEl.setAttribute("data-tile-key", tile.key);
+            tileEl.setAttribute("role", "radio");
+            tileEl.setAttribute("aria-checked", isSelected ? "true" : "false");
+            tileEl.setAttribute("aria-label", tile.title);
             tileEl.tabIndex = 0;
 
-            const iconWrap = document.createElement('div');
-            iconWrap.className = 'embed-tile-icon';
+            const iconWrap = document.createElement("div");
+            iconWrap.className = "embed-tile-icon";
 
             const iconRaw = decodeTileIcon(tile);
             if (iconRaw) {
-                iconWrap.innerHTML = iconRaw.replace('<svg', '<svg aria-hidden="true"');
-                const svg = iconWrap.querySelector('svg');
+                iconWrap.innerHTML = iconRaw.replace(
+                    "<svg",
+                    '<svg aria-hidden="true"',
+                );
+                const svg = iconWrap.querySelector("svg");
                 if (svg) {
-                    svg.removeAttribute('width'); svg.removeAttribute('height');
+                    svg.removeAttribute("width");
+                    svg.removeAttribute("height");
                 }
             }
 
-            const label = document.createElement('span');
-            label.className = 'embed-tile-label';
+            const label = document.createElement("span");
+            label.className = "embed-tile-label";
             label.textContent = tile.title;
 
             // Radio circle top-right
-            const circle = document.createElement('span');
-            circle.className = 'embed-tile-radio';
-            circle.innerHTML = '<svg width="10" height="10" viewBox="0 0 10 10" fill="none" style="opacity:0;transition:opacity 0.18s ease;" aria-hidden="true"><path d="M1.5 5L3.5 7.5L8.5 2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+            const circle = document.createElement("span");
+            circle.className = "embed-tile-radio";
+            circle.innerHTML =
+                '<svg width="10" height="10" viewBox="0 0 10 10" fill="none" style="opacity:0;transition:opacity 0.18s ease;" aria-hidden="true"><path d="M1.5 5L3.5 7.5L8.5 2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
             tileEl.appendChild(iconWrap);
             tileEl.appendChild(label);
@@ -1650,15 +1827,26 @@
 
             if (isSelected) applyTileLargeSelectedStyle(tileEl, primaryColor);
 
-            tileEl.addEventListener('mouseenter', function () {
-                if (!selectedTilesSet.has(tile.key)) tileEl.style.setProperty('border-color', primaryColor, 'important');
+            tileEl.addEventListener("mouseenter", function () {
+                if (!selectedTilesSet.has(tile.key))
+                    tileEl.style.setProperty(
+                        "border-color",
+                        primaryColor,
+                        "important",
+                    );
             });
-            tileEl.addEventListener('mouseleave', function () {
-                if (!selectedTilesSet.has(tile.key)) tileEl.style.removeProperty('border-color');
+            tileEl.addEventListener("mouseleave", function () {
+                if (!selectedTilesSet.has(tile.key))
+                    tileEl.style.removeProperty("border-color");
             });
-            tileEl.addEventListener('click', function () { onSelect(tile.key, tileEl); });
-            tileEl.addEventListener('keydown', function (e) {
-                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); tileEl.click(); }
+            tileEl.addEventListener("click", function () {
+                onSelect(tile.key, tileEl);
+            });
+            tileEl.addEventListener("keydown", function (e) {
+                if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    tileEl.click();
+                }
             });
             grid.appendChild(tileEl);
         });
@@ -1666,126 +1854,180 @@
         return grid;
     }
 
-    function renderTileDropdown(tiles, selectedTilesSet, primaryColor, maxSelect, label, onChange, selectedLang) {
+    function renderTileDropdown(
+        tiles,
+        selectedTilesSet,
+        primaryColor,
+        maxSelect,
+        label,
+        onChange,
+        selectedLang,
+    ) {
         const contrast = getReadableTextColor(primaryColor);
 
-        const CHEVRON = '<svg class="chevron-icon" viewBox="5 7 14 10" width="14px" height="14px" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 16l-6-6 1.41-1.41L12 13.17l4.59-4.58L18 10l-6 6z"></path></svg>';
+        const CHEVRON =
+            '<svg class="chevron-icon" viewBox="5 7 14 10" width="14px" height="14px" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 16l-6-6 1.41-1.41L12 13.17l4.59-4.58L18 10l-6 6z"></path></svg>';
 
-        const wrap = document.createElement('div');
-        wrap.className = 'embed-form-container';
-        wrap.setAttribute('data-tile-selector', 'true');
+        const wrap = document.createElement("div");
+        wrap.className = "embed-form-container";
+        wrap.setAttribute("data-tile-selector", "true");
 
         if (label) {
-            const lbl = document.createElement('label');
-            lbl.className = 'embed-label-bold';
+            const lbl = document.createElement("label");
+            lbl.className = "embed-label-bold";
             lbl.textContent = label;
             wrap.appendChild(lbl);
         }
 
-        const dropdown = document.createElement('div');
-        dropdown.className = 'custom-dropdown';
-        dropdown.style.position = 'relative';
+        const dropdown = document.createElement("div");
+        dropdown.className = "custom-dropdown";
+        dropdown.style.position = "relative";
 
-        const trigger = document.createElement('div');
-        trigger.className = 'dropdown-selected';
+        const trigger = document.createElement("div");
+        trigger.className = "dropdown-selected";
         trigger.tabIndex = 0;
-        trigger.setAttribute('role', 'combobox');
-        trigger.setAttribute('aria-haspopup', 'listbox');
-        trigger.setAttribute('aria-expanded', 'false');
-        const _ddPanelId = 'hz-dd-panel-' + Math.random().toString(36).slice(2, 8);
-        trigger.setAttribute('aria-controls', _ddPanelId);
-        trigger.style.cssText = 'padding:12px;border:1px solid #dadee7;border-radius:8px;background:#fff;display:flex;align-items:center;justify-content:space-between;color:#132039;font-size:14px;font-weight:500;cursor:pointer;transition:border-color 0.2s;';
+        trigger.setAttribute("role", "combobox");
+        trigger.setAttribute("aria-haspopup", "listbox");
+        trigger.setAttribute("aria-expanded", "false");
+        const _ddPanelId =
+            "hz-dd-panel-" + Math.random().toString(36).slice(2, 8);
+        trigger.setAttribute("aria-controls", _ddPanelId);
+        trigger.style.cssText =
+            "padding:12px;border:1px solid #dadee7;border-radius:8px;background:#fff;display:flex;align-items:center;justify-content:space-between;color:#132039;font-size:14px;font-weight:500;cursor:pointer;transition:border-color 0.2s;";
 
-        const optionsPanel = document.createElement('div');
-        optionsPanel.className = 'dropdown-options';
+        const optionsPanel = document.createElement("div");
+        optionsPanel.className = "dropdown-options";
         optionsPanel.id = _ddPanelId;
-        optionsPanel.setAttribute('role', 'listbox');
-        if (maxSelect !== 1) optionsPanel.setAttribute('aria-multiselectable', 'true');
-        optionsPanel.style.cssText = 'position:absolute;top:100%;left:0;width:100%;background:#fff;border-radius:8px;box-shadow:0 0 20px rgba(5,35,76,0.14);max-height:220px;overflow-y:auto;display:none;z-index:1000;padding:6px;box-sizing:border-box;';
+        optionsPanel.setAttribute("role", "listbox");
+        if (maxSelect !== 1)
+            optionsPanel.setAttribute("aria-multiselectable", "true");
+        optionsPanel.style.cssText =
+            "position:absolute;top:100%;left:0;width:100%;background:#fff;border-radius:8px;box-shadow:0 0 20px rgba(5,35,76,0.14);max-height:220px;overflow-y:auto;display:none;z-index:1000;padding:6px;box-sizing:border-box;";
 
         // Only show icons when every tile has one; otherwise hide all
-        const allHaveIcons = tiles.length > 0 && tiles.every(function (t) { return !!decodeTileIcon(t); });
+        const allHaveIcons =
+            tiles.length > 0 &&
+            tiles.every(function (t) {
+                return !!decodeTileIcon(t);
+            });
 
         function iconBadge(tile) {
-            if (!allHaveIcons) return '';
+            if (!allHaveIcons) return "";
             const raw = decodeTileIcon(tile);
-            if (!raw) return '';
-            const svg = raw.replace('<svg', '<svg aria-hidden="true" style="width:18px;height:18px;"');
-            return '<span class="hz-dd-icon-badge">' + svg + '</span>';
+            if (!raw) return "";
+            const svg = raw.replace(
+                "<svg",
+                '<svg aria-hidden="true" style="width:18px;height:18px;"',
+            );
+            return '<span class="hz-dd-icon-badge">' + svg + "</span>";
         }
 
         function updateTrigger() {
-            const sel = tiles.filter(function (t) { return selectedTilesSet.has(t.key); });
+            const sel = tiles.filter(function (t) {
+                return selectedTilesSet.has(t.key);
+            });
             if (sel.length === 0) {
-                const placeholder = (selectedLang && selectedLang.tileDropdownPlaceholder) ? selectedLang.tileDropdownPlaceholder : 'Selecteer een product...';
-                trigger.innerHTML = '<div class="selected-content"><span style="color:#767c8a;font-weight:500;">' + placeholder + '</span></div>' + CHEVRON;
+                const placeholder =
+                    selectedLang && selectedLang.tileDropdownPlaceholder
+                        ? selectedLang.tileDropdownPlaceholder
+                        : "Selecteer een product...";
+                trigger.innerHTML =
+                    '<div class="selected-content"><span style="color:#767c8a;font-weight:500;">' +
+                    placeholder +
+                    "</span></div>" +
+                    CHEVRON;
             } else if (sel.length === 1) {
-                trigger.innerHTML = '<div class="selected-content" style="display:flex;align-items:center;gap:10px;overflow:hidden;max-width:calc(100% - 24px);">' + iconBadge(sel[0]) + '<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + sel[0].title + '</span></div>' + CHEVRON;
+                trigger.innerHTML =
+                    '<div class="selected-content" style="display:flex;align-items:center;gap:10px;overflow:hidden;max-width:calc(100% - 24px);">' +
+                    iconBadge(sel[0]) +
+                    '<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' +
+                    sel[0].title +
+                    "</span></div>" +
+                    CHEVRON;
             } else {
-                const names = sel.map(function (t) { return t.title; }).join(', ');
-                trigger.innerHTML = '<div class="selected-content" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:calc(100% - 24px);"><span>' + names + '</span></div>' + CHEVRON;
+                const names = sel
+                    .map(function (t) {
+                        return t.title;
+                    })
+                    .join(", ");
+                trigger.innerHTML =
+                    '<div class="selected-content" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:calc(100% - 24px);"><span>' +
+                    names +
+                    "</span></div>" +
+                    CHEVRON;
             }
         }
 
         tiles.forEach(function (tile) {
             const isSelected = selectedTilesSet.has(tile.key);
-            const optEl = document.createElement('div');
-            optEl.className = 'dropdown-option' + (isSelected ? ' selected' : '');
-            optEl.setAttribute('data-tile-key', tile.key);
-            optEl.setAttribute('role', 'option');
-            optEl.setAttribute('aria-selected', isSelected ? 'true' : 'false');
-            optEl.style.cssText = 'padding:10px 12px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;font-size:14px;color:#7585a3;font-weight:500;border-radius:8px;transition:background-color 0.15s;';
-            if (isSelected) { optEl.style.backgroundColor = primaryColor; optEl.style.color = contrast; }
+            const optEl = document.createElement("div");
+            optEl.className =
+                "dropdown-option" + (isSelected ? " selected" : "");
+            optEl.setAttribute("data-tile-key", tile.key);
+            optEl.setAttribute("role", "option");
+            optEl.setAttribute("aria-selected", isSelected ? "true" : "false");
+            optEl.style.cssText =
+                "padding:10px 12px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;font-size:14px;color:#7585a3;font-weight:500;border-radius:8px;transition:background-color 0.15s;";
+            if (isSelected) {
+                optEl.style.backgroundColor = primaryColor;
+                optEl.style.color = contrast;
+            }
 
             const icon = iconBadge(tile);
 
-            const content = document.createElement('div');
-            content.className = 'option-content';
-            content.style.cssText = 'display:flex;align-items:center;gap:10px;';
-            content.innerHTML = icon + '<span>' + tile.title + '</span>';
+            const content = document.createElement("div");
+            content.className = "option-content";
+            content.style.cssText = "display:flex;align-items:center;gap:10px;";
+            content.innerHTML = icon + "<span>" + tile.title + "</span>";
 
-            const ck = document.createElement('svg');
-            ck.setAttribute('class', 'dd-check');
-            ck.setAttribute('viewBox', '0 0 24 24');
-            ck.setAttribute('width', '18');
-            ck.setAttribute('height', '18');
-            ck.setAttribute('fill', 'none');
-            ck.setAttribute('aria-hidden', 'true');
-            ck.style.cssText = 'flex-shrink:0;display:' + (isSelected ? 'block' : 'none') + ';';
-            ck.innerHTML = '<path d="M4 12l6 6L20 6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>';
+            const ck = document.createElement("svg");
+            ck.setAttribute("class", "dd-check");
+            ck.setAttribute("viewBox", "0 0 24 24");
+            ck.setAttribute("width", "18");
+            ck.setAttribute("height", "18");
+            ck.setAttribute("fill", "none");
+            ck.setAttribute("aria-hidden", "true");
+            ck.style.cssText =
+                "flex-shrink:0;display:" +
+                (isSelected ? "block" : "none") +
+                ";";
+            ck.innerHTML =
+                '<path d="M4 12l6 6L20 6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>';
 
             optEl.appendChild(content);
             optEl.appendChild(ck);
 
-            optEl.addEventListener('click', function (e) {
+            optEl.addEventListener("click", function (e) {
                 e.stopPropagation();
                 if (selectedTilesSet.has(tile.key)) {
                     selectedTilesSet.delete(tile.key);
-                    optEl.classList.remove('selected');
-                    optEl.setAttribute('aria-selected', 'false');
-                    optEl.style.backgroundColor = '';
-                    optEl.style.color = '#7585a3';
-                    ck.style.display = 'none';
+                    optEl.classList.remove("selected");
+                    optEl.setAttribute("aria-selected", "false");
+                    optEl.style.backgroundColor = "";
+                    optEl.style.color = "#7585a3";
+                    ck.style.display = "none";
                 } else {
                     if (maxSelect > 0 && selectedTilesSet.size >= maxSelect) {
                         const firstKey = selectedTilesSet.values().next().value;
                         selectedTilesSet.delete(firstKey);
-                        const firstEl = optionsPanel.querySelector('[data-tile-key="' + firstKey + '"]');
+                        const firstEl = optionsPanel.querySelector(
+                            '[data-tile-key="' + firstKey + '"]',
+                        );
                         if (firstEl) {
-                            firstEl.classList.remove('selected');
-                            firstEl.setAttribute('aria-selected', 'false');
-                            firstEl.style.backgroundColor = '';
-                            firstEl.style.color = '#7585a3';
-                            const firstCk = firstEl.querySelector('.dd-check');
-                            if (firstCk) firstCk.style.display = 'none';
+                            firstEl.classList.remove("selected");
+                            firstEl.setAttribute("aria-selected", "false");
+                            firstEl.style.backgroundColor = "";
+                            firstEl.style.color = "#7585a3";
+                            const firstCk = firstEl.querySelector(".dd-check");
+                            if (firstCk) firstCk.style.display = "none";
                         }
                     }
                     selectedTilesSet.add(tile.key);
-                    optEl.classList.add('selected');
-                    optEl.setAttribute('aria-selected', 'true');
+                    optEl.classList.add("selected");
+                    optEl.setAttribute("aria-selected", "true");
                     optEl.style.backgroundColor = primaryColor;
                     optEl.style.color = contrast;
-                    ck.style.display = 'block';
+                    ck.style.display = "block";
                 }
                 updateTrigger();
                 if (onChange) onChange();
@@ -1796,53 +2038,58 @@
         });
 
         function optionEl_hoverSetup(optEl, primaryColor, contrast) {
-            optEl.addEventListener('mouseenter', function () {
-                if (!optEl.classList.contains('selected')) {
-                    optEl.style.backgroundColor = '#f0f4fa';
-                    optEl.style.color = '#132039';
+            optEl.addEventListener("mouseenter", function () {
+                if (!optEl.classList.contains("selected")) {
+                    optEl.style.backgroundColor = "#f0f4fa";
+                    optEl.style.color = "#132039";
                 }
             });
-            optEl.addEventListener('mouseleave', function () {
-                if (!optEl.classList.contains('selected')) {
-                    optEl.style.backgroundColor = '';
-                    optEl.style.color = '#7585a3';
+            optEl.addEventListener("mouseleave", function () {
+                if (!optEl.classList.contains("selected")) {
+                    optEl.style.backgroundColor = "";
+                    optEl.style.color = "#7585a3";
                 }
             });
         }
 
-        trigger.addEventListener('click', function (e) {
+        trigger.addEventListener("click", function (e) {
             e.stopPropagation();
-            const isOpen = optionsPanel.style.display === 'block';
-            optionsPanel.style.display = isOpen ? 'none' : 'block';
-            trigger.classList.toggle('open', !isOpen);
-            trigger.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
-            trigger.style.borderColor = isOpen ? '#dadee7' : primaryColor;
+            const isOpen = optionsPanel.style.display === "block";
+            optionsPanel.style.display = isOpen ? "none" : "block";
+            trigger.classList.toggle("open", !isOpen);
+            trigger.setAttribute("aria-expanded", isOpen ? "false" : "true");
+            trigger.style.borderColor = isOpen ? "#dadee7" : primaryColor;
         });
 
-        trigger.addEventListener('keydown', function (e) {
-            if (e.key === 'Enter' || e.key === ' ') {
+        trigger.addEventListener("keydown", function (e) {
+            if (e.key === "Enter" || e.key === " ") {
                 e.preventDefault();
                 trigger.click();
-            } else if (e.key === 'Escape') {
-                optionsPanel.style.display = 'none';
-                trigger.classList.remove('open');
-                trigger.setAttribute('aria-expanded', 'false');
-                trigger.style.borderColor = '#dadee7';
+            } else if (e.key === "Escape") {
+                optionsPanel.style.display = "none";
+                trigger.classList.remove("open");
+                trigger.setAttribute("aria-expanded", "false");
+                trigger.style.borderColor = "#dadee7";
             }
         });
 
         var _ddClickHandler = function (e) {
-            if (!wrap.isConnected) { document.removeEventListener('click', _ddClickHandler); return; }
+            if (!wrap.isConnected) {
+                document.removeEventListener("click", _ddClickHandler);
+                return;
+            }
             if (!dropdown.contains(e.target)) {
-                optionsPanel.style.display = 'none';
-                trigger.classList.remove('open');
-                trigger.setAttribute('aria-expanded', 'false');
-                trigger.style.borderColor = '#dadee7';
+                optionsPanel.style.display = "none";
+                trigger.classList.remove("open");
+                trigger.setAttribute("aria-expanded", "false");
+                trigger.style.borderColor = "#dadee7";
             }
         };
-        document.addEventListener('click', _ddClickHandler);
+        document.addEventListener("click", _ddClickHandler);
 
-        optionsPanel.addEventListener('click', function (e) { e.stopPropagation(); });
+        optionsPanel.addEventListener("click", function (e) {
+            e.stopPropagation();
+        });
 
         updateTrigger();
         dropdown.appendChild(trigger);
@@ -1851,73 +2098,112 @@
         return wrap;
     }
 
-    function renderTileTagsSelect(tiles, selectedTilesSet, primaryColor, maxSelect, label, onChange, selectedLang) {
-        const wrap = document.createElement('div');
-        wrap.className = 'embed-form-container';
-        wrap.setAttribute('data-tile-selector', 'true');
-        wrap.style.marginBottom = '16px';
+    function renderTileTagsSelect(
+        tiles,
+        selectedTilesSet,
+        primaryColor,
+        maxSelect,
+        label,
+        onChange,
+        selectedLang,
+    ) {
+        const wrap = document.createElement("div");
+        wrap.className = "embed-form-container";
+        wrap.setAttribute("data-tile-selector", "true");
+        wrap.style.marginBottom = "16px";
 
         if (label) {
-            const lbl = document.createElement('label');
-            lbl.className = 'embed-label-bold';
+            const lbl = document.createElement("label");
+            lbl.className = "embed-label-bold";
             lbl.textContent = label;
             wrap.appendChild(lbl);
         }
 
-        const fieldBox = document.createElement('div');
-        fieldBox.className = 'embed-tags-field';
+        const fieldBox = document.createElement("div");
+        fieldBox.className = "embed-tags-field";
         fieldBox.tabIndex = 0;
-        fieldBox.setAttribute('role', 'group');
-        fieldBox.style.cssText = 'min-height:46px;border:1px solid #dadee7;border-radius:8px;background:#fff;display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:8px 12px;cursor:default;transition:border-color 0.2s;box-sizing:border-box;position:relative;';
+        fieldBox.setAttribute("role", "group");
+        fieldBox.style.cssText =
+            "min-height:46px;border:1px solid #dadee7;border-radius:8px;background:#fff;display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:8px 12px;cursor:default;transition:border-color 0.2s;box-sizing:border-box;position:relative;";
 
-        const chipsArea = document.createElement('div');
-        chipsArea.style.cssText = 'display:flex;flex-wrap:wrap;gap:6px;align-items:center;flex:1;min-width:0;';
+        const chipsArea = document.createElement("div");
+        chipsArea.style.cssText =
+            "display:flex;flex-wrap:wrap;gap:6px;align-items:center;flex:1;min-width:0;";
 
-        const placeholder = document.createElement('span');
-        placeholder.textContent = (selectedLang && selectedLang.tagsPlaceholder) ? selectedLang.tagsPlaceholder : 'Selecteer producten...';
-        placeholder.style.cssText = 'color:#767c8a;font-size:14px;font-weight:500;line-height:1;pointer-events:none;';
+        const placeholder = document.createElement("span");
+        placeholder.textContent =
+            selectedLang && selectedLang.tagsPlaceholder
+                ? selectedLang.tagsPlaceholder
+                : "Selecteer producten...";
+        placeholder.style.cssText =
+            "color:#767c8a;font-size:14px;font-weight:500;line-height:1;pointer-events:none;";
 
-        const optionsPanel = document.createElement('div');
-        optionsPanel.setAttribute('role', 'listbox');
-        optionsPanel.setAttribute('aria-multiselectable', 'true');
-        optionsPanel.style.cssText = 'position:absolute;top:calc(100% + 2px);left:0;width:100%;background:#fff;border-radius:8px;box-shadow:0 0 20px rgba(5,35,76,0.14);max-height:220px;overflow-y:auto;display:none;z-index:1000;padding:6px;box-sizing:border-box;';
+        const optionsPanel = document.createElement("div");
+        optionsPanel.setAttribute("role", "listbox");
+        optionsPanel.setAttribute("aria-multiselectable", "true");
+        optionsPanel.style.cssText =
+            "position:absolute;top:calc(100% + 2px);left:0;width:100%;background:#fff;border-radius:8px;box-shadow:0 0 20px rgba(5,35,76,0.14);max-height:220px;overflow-y:auto;display:none;z-index:1000;padding:6px;box-sizing:border-box;";
 
         function renderChip(tile) {
             const iconRaw = decodeTileIcon(tile);
-            const chip = document.createElement('div');
-            chip.className = 'embed-tag-chip';
-            chip.setAttribute('data-chip-key', tile.key);
-            chip.style.cssText = 'display:inline-flex;align-items:center;gap:5px;padding:4px 8px 4px 4px;border-radius:20px;background:' + primaryColor + ';color:var(--contrast-color, #fff);font-size:13px;font-weight:500;cursor:default;flex-shrink:0;max-width:180px;';
+            const chip = document.createElement("div");
+            chip.className = "embed-tag-chip";
+            chip.setAttribute("data-chip-key", tile.key);
+            chip.style.cssText =
+                "display:inline-flex;align-items:center;gap:5px;padding:4px 8px 4px 4px;border-radius:20px;background:" +
+                primaryColor +
+                ";color:var(--contrast-color, #fff);font-size:13px;font-weight:500;cursor:default;flex-shrink:0;max-width:180px;";
 
-            const iconCircle = document.createElement('span');
-            iconCircle.style.cssText = 'width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,0.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;';
+            const iconCircle = document.createElement("span");
+            iconCircle.style.cssText =
+                "width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,0.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;";
             if (iconRaw) {
-                iconCircle.innerHTML = iconRaw.replace('<svg', '<svg aria-hidden="true"');
-                const svg = iconCircle.querySelector('svg');
+                iconCircle.innerHTML = iconRaw.replace(
+                    "<svg",
+                    '<svg aria-hidden="true"',
+                );
+                const svg = iconCircle.querySelector("svg");
                 if (svg) {
-                    svg.removeAttribute('width'); svg.removeAttribute('height');
-                    svg.style.cssText = 'width:14px;height:14px;min-width:14px;display:block;color:var(--contrast-color, #fff);';
+                    svg.removeAttribute("width");
+                    svg.removeAttribute("height");
+                    svg.style.cssText =
+                        "width:14px;height:14px;min-width:14px;display:block;color:var(--contrast-color, #fff);";
                 }
             }
 
-            const nameSpan = document.createElement('span');
+            const nameSpan = document.createElement("span");
             nameSpan.textContent = tile.title;
-            nameSpan.style.cssText = 'white-space:nowrap;overflow:hidden;text-overflow:ellipsis;';
+            nameSpan.style.cssText =
+                "white-space:nowrap;overflow:hidden;text-overflow:ellipsis;";
 
-            const removeBtn = document.createElement('button');
-            removeBtn.type = 'button';
-            removeBtn.setAttribute('aria-label', ((selectedLang && selectedLang.removeChip) ? selectedLang.removeChip : 'Verwijder') + ' ' + tile.title);
-            removeBtn.innerHTML = '<svg viewBox="0 0 10 10" width="11" height="11" fill="none" aria-hidden="true"><path d="M1.5 1.5L8.5 8.5M8.5 1.5L1.5 8.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
-            removeBtn.style.cssText = 'background:none;border:none;padding:0;cursor:pointer;display:flex;align-items:center;color:var(--contrast-color, #fff);opacity:0.8;flex-shrink:0;margin-left:1px;';
-            removeBtn.addEventListener('mouseenter', function () { removeBtn.style.opacity = '1'; });
-            removeBtn.addEventListener('mouseleave', function () { removeBtn.style.opacity = '0.8'; });
-            removeBtn.addEventListener('click', function (e) {
+            const removeBtn = document.createElement("button");
+            removeBtn.type = "button";
+            removeBtn.setAttribute(
+                "aria-label",
+                (selectedLang && selectedLang.removeChip
+                    ? selectedLang.removeChip
+                    : "Verwijder") +
+                    " " +
+                    tile.title,
+            );
+            removeBtn.innerHTML =
+                '<svg viewBox="0 0 10 10" width="11" height="11" fill="none" aria-hidden="true"><path d="M1.5 1.5L8.5 8.5M8.5 1.5L1.5 8.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
+            removeBtn.style.cssText =
+                "background:none;border:none;padding:0;cursor:pointer;display:flex;align-items:center;color:var(--contrast-color, #fff);opacity:0.8;flex-shrink:0;margin-left:1px;";
+            removeBtn.addEventListener("mouseenter", function () {
+                removeBtn.style.opacity = "1";
+            });
+            removeBtn.addEventListener("mouseleave", function () {
+                removeBtn.style.opacity = "0.8";
+            });
+            removeBtn.addEventListener("click", function (e) {
                 e.stopPropagation();
                 selectedTilesSet.delete(tile.key);
                 chip.remove();
                 updatePlaceholder();
-                if (optionsPanel.style.display === 'block') renderOptions();
-                fieldBox.style.borderColor = selectedTilesSet.size > 0 ? primaryColor : '#dadee7';
+                if (optionsPanel.style.display === "block") renderOptions();
+                fieldBox.style.borderColor =
+                    selectedTilesSet.size > 0 ? primaryColor : "#dadee7";
                 if (onChange) onChange();
             });
 
@@ -1929,48 +2215,78 @@
 
         function updatePlaceholder() {
             if (selectedTilesSet.size === 0) {
-                if (!chipsArea.contains(placeholder)) chipsArea.appendChild(placeholder);
+                if (!chipsArea.contains(placeholder))
+                    chipsArea.appendChild(placeholder);
             } else {
-                if (chipsArea.contains(placeholder)) chipsArea.removeChild(placeholder);
+                if (chipsArea.contains(placeholder))
+                    chipsArea.removeChild(placeholder);
             }
         }
 
         function renderChips() {
-            Array.from(chipsArea.querySelectorAll('[data-chip-key]')).forEach(function (el) { el.remove(); });
-            if (chipsArea.contains(placeholder)) chipsArea.removeChild(placeholder);
-            tiles.filter(function (t) { return selectedTilesSet.has(t.key); }).forEach(function (tile) {
-                chipsArea.appendChild(renderChip(tile));
-            });
+            Array.from(chipsArea.querySelectorAll("[data-chip-key]")).forEach(
+                function (el) {
+                    el.remove();
+                },
+            );
+            if (chipsArea.contains(placeholder))
+                chipsArea.removeChild(placeholder);
+            tiles
+                .filter(function (t) {
+                    return selectedTilesSet.has(t.key);
+                })
+                .forEach(function (tile) {
+                    chipsArea.appendChild(renderChip(tile));
+                });
             updatePlaceholder();
         }
 
         function renderOptions() {
-            optionsPanel.innerHTML = '';
-            const available = tiles.filter(function (t) { return !selectedTilesSet.has(t.key); });
-            if (available.length === 0) { optionsPanel.style.display = 'none'; return; }
+            optionsPanel.innerHTML = "";
+            const available = tiles.filter(function (t) {
+                return !selectedTilesSet.has(t.key);
+            });
+            if (available.length === 0) {
+                optionsPanel.style.display = "none";
+                return;
+            }
             available.forEach(function (tile) {
                 const iconRaw = decodeTileIcon(tile);
-                const optEl = document.createElement('div');
-                optEl.setAttribute('role', 'option');
-                optEl.setAttribute('aria-selected', 'false');
-                optEl.style.cssText = 'padding:8px 12px;display:flex;align-items:center;gap:10px;cursor:pointer;font-size:14px;color:#132039;font-weight:500;border-radius:8px;transition:background-color 0.15s;';
+                const optEl = document.createElement("div");
+                optEl.setAttribute("role", "option");
+                optEl.setAttribute("aria-selected", "false");
+                optEl.style.cssText =
+                    "padding:8px 12px;display:flex;align-items:center;gap:10px;cursor:pointer;font-size:14px;color:#132039;font-weight:500;border-radius:8px;transition:background-color 0.15s;";
 
                 if (iconRaw) {
-                    const iconWrap = document.createElement('span');
-                    iconWrap.style.cssText = 'width:20px;height:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0;';
-                    iconWrap.innerHTML = iconRaw.replace('<svg', '<svg aria-hidden="true"');
-                    const svg = iconWrap.querySelector('svg');
-                    if (svg) { svg.removeAttribute('width'); svg.removeAttribute('height'); svg.style.cssText = 'width:20px;height:20px;display:block;color:#7585a3;'; }
+                    const iconWrap = document.createElement("span");
+                    iconWrap.style.cssText =
+                        "width:20px;height:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0;";
+                    iconWrap.innerHTML = iconRaw.replace(
+                        "<svg",
+                        '<svg aria-hidden="true"',
+                    );
+                    const svg = iconWrap.querySelector("svg");
+                    if (svg) {
+                        svg.removeAttribute("width");
+                        svg.removeAttribute("height");
+                        svg.style.cssText =
+                            "width:20px;height:20px;display:block;color:#7585a3;";
+                    }
                     optEl.appendChild(iconWrap);
                 }
 
-                const nameSpan = document.createElement('span');
+                const nameSpan = document.createElement("span");
                 nameSpan.textContent = tile.title;
                 optEl.appendChild(nameSpan);
 
-                optEl.addEventListener('mouseenter', function () { optEl.style.backgroundColor = '#f0f4fa'; });
-                optEl.addEventListener('mouseleave', function () { optEl.style.backgroundColor = ''; });
-                optEl.addEventListener('click', function (e) {
+                optEl.addEventListener("mouseenter", function () {
+                    optEl.style.backgroundColor = "#f0f4fa";
+                });
+                optEl.addEventListener("mouseleave", function () {
+                    optEl.style.backgroundColor = "";
+                });
+                optEl.addEventListener("click", function (e) {
                     e.stopPropagation();
                     if (maxSelect > 0 && selectedTilesSet.size >= maxSelect) {
                         const firstKey = selectedTilesSet.values().next().value;
@@ -1981,261 +2297,659 @@
                     renderOptions();
                     fieldBox.style.borderColor = primaryColor;
                     if (onChange) onChange();
-                    const panelShouldClose = available.length === 1 || (maxSelect === 1) || (maxSelect > 0 && selectedTilesSet.size >= maxSelect);
-                    if (panelShouldClose) { optionsPanel.style.display = 'none'; }
+                    const panelShouldClose =
+                        available.length === 1 ||
+                        maxSelect === 1 ||
+                        (maxSelect > 0 && selectedTilesSet.size >= maxSelect);
+                    if (panelShouldClose) {
+                        optionsPanel.style.display = "none";
+                    }
                 });
                 optionsPanel.appendChild(optEl);
             });
         }
 
-        fieldBox.addEventListener('click', function (e) {
+        fieldBox.addEventListener("click", function (e) {
             e.stopPropagation();
-            if (optionsPanel.style.display === 'block') {
-                optionsPanel.style.display = 'none';
+            if (optionsPanel.style.display === "block") {
+                optionsPanel.style.display = "none";
             } else {
                 renderOptions();
                 if (optionsPanel.children.length > 0) {
-                    optionsPanel.style.display = 'block';
+                    optionsPanel.style.display = "block";
                     fieldBox.style.borderColor = primaryColor;
                 }
             }
         });
 
         var _tagsClickHandler = function (e) {
-            if (!wrap.isConnected) { document.removeEventListener('click', _tagsClickHandler); return; }
+            if (!wrap.isConnected) {
+                document.removeEventListener("click", _tagsClickHandler);
+                return;
+            }
             if (!wrap.contains(e.target)) {
-                optionsPanel.style.display = 'none';
-                fieldBox.style.borderColor = selectedTilesSet.size > 0 ? primaryColor : '#dadee7';
+                optionsPanel.style.display = "none";
+                fieldBox.style.borderColor =
+                    selectedTilesSet.size > 0 ? primaryColor : "#dadee7";
             }
         };
-        document.addEventListener('click', _tagsClickHandler);
+        document.addEventListener("click", _tagsClickHandler);
 
         chipsArea.appendChild(placeholder);
         fieldBox.appendChild(chipsArea);
         fieldBox.appendChild(optionsPanel);
         wrap.appendChild(fieldBox);
         renderChips();
-        if (selectedTilesSet.size > 0) fieldBox.style.borderColor = primaryColor;
+        if (selectedTilesSet.size > 0)
+            fieldBox.style.borderColor = primaryColor;
         return wrap;
     }
 
     function parseTilesFromElement(element) {
         return Array.from(element.attributes)
-            .filter(function (attr) { return /^data-tile-[a-z0-9]+-url$/.test(attr.name); })
+            .filter(function (attr) {
+                return /^data-tile-[a-z0-9]+-url$/.test(attr.name);
+            })
             .map(function (attr) {
-                const key = attr.name.replace('data-tile-', '').replace('-url', '');
+                const key = attr.name
+                    .replace("data-tile-", "")
+                    .replace("-url", "");
                 return {
                     key: key,
-                    title: element.getAttribute('data-tile-' + key + '-title') || key,
+                    title:
+                        element.getAttribute("data-tile-" + key + "-title") ||
+                        key,
                     url: attr.value,
-                    bookingUrl: element.getAttribute('data-tile-' + key + '-booking-url') || '',
-                    cta2Url: element.getAttribute('data-tile-' + key + '-cta2-url') || '',
-                    iconSvg: element.getAttribute('data-tile-' + key + '-icon-svg') || '',
+                    bookingUrl:
+                        element.getAttribute(
+                            "data-tile-" + key + "-booking-url",
+                        ) || "",
+                    cta2Url:
+                        element.getAttribute(
+                            "data-tile-" + key + "-cta2-url",
+                        ) || "",
+                    iconSvg:
+                        element.getAttribute(
+                            "data-tile-" + key + "-icon-svg",
+                        ) || "",
+                    cta1Text:
+                        element.getAttribute(
+                            "data-tile-" + key + "-cta1-text",
+                        ) || "",
+                    cta2Text:
+                        element.getAttribute(
+                            "data-tile-" + key + "-cta2-text",
+                        ) || "",
+                    cta1IconSvg:
+                        element.getAttribute(
+                            "data-tile-" + key + "-cta1-icon-svg",
+                        ) || "",
+                    cta2IconSvg:
+                        element.getAttribute(
+                            "data-tile-" + key + "-cta2-icon-svg",
+                        ) || "",
                 };
             })
             .slice(0, 4);
     }
 
-    function buildAddressFieldsHtml(googleSearch, addressFormat, selectedLang, country) {
+    // Resolve input placeholders: an explicitly-set (even empty) data-attribute overrides
+    // the default; an absent attribute keeps the current default value.
+    function resolvePlaceholders(element, selectedLang) {
+        const r = function (attr, def) {
+            return element.hasAttribute(attr)
+                ? element.getAttribute(attr)
+                : def;
+        };
+        return {
+            address: r(
+                "data-address-placeholder",
+                selectedLang.addressPlaceholder,
+            ),
+            postcode: r("data-postcode-placeholder", "1234AB"),
+            huisnummer: r("data-huisnummer-placeholder", "1"),
+            toevoeging: r("data-toevoeging-placeholder", "A"),
+            street: r(
+                "data-street-placeholder",
+                selectedLang.streetPlaceholder,
+            ),
+            housenumber: r(
+                "data-housenumber-placeholder",
+                selectedLang.housenumberPlaceholder,
+            ),
+            zipcode: r(
+                "data-zipcode-placeholder",
+                selectedLang.zipcodePlaceholder,
+            ),
+            city: r("data-city-placeholder", selectedLang.cityPlaceholder),
+            phone: r("data-phone-placeholder", "0612345678"),
+            email: r("data-email-placeholder", "jandevries@gmail.com"),
+        };
+    }
+
+    function buildAddressFieldsHtml(
+        googleSearch,
+        addressFormat,
+        selectedLang,
+        country,
+        placeholders,
+    ) {
+        const ph = placeholders || {};
         if (googleSearch) {
-            return '<div class="embed-row"><div class="embed-col"><div class="embed-form-container">' +
-                '<label for="google-address" class="embed-label-bold">' + selectedLang.addressLabel + '*</label>' +
-                '<input type="text" id="google-address" class="embed-input-field" aria-required="true" placeholder="' + selectedLang.addressPlaceholder + '" data-address-format="' + addressFormat + '" data-country="' + country + '">' +
-                '</div></div></div>';
-        } else if (addressFormat === 'dutch') {
-            return '<div class="embed-row"><div class="embed-col"><div class="embed-address-container">' +
+            return (
+                '<div class="embed-row"><div class="embed-col"><div class="embed-form-container">' +
+                '<label for="google-address" class="embed-label-bold">' +
+                selectedLang.addressLabel +
+                "*</label>" +
+                '<input type="text" id="google-address" class="embed-input-field" aria-required="true" placeholder="' +
+                escapeAttr(
+                    ph.address != null
+                        ? ph.address
+                        : selectedLang.addressPlaceholder,
+                ) +
+                '" data-address-format="' +
+                addressFormat +
+                '" data-country="' +
+                country +
+                '">' +
+                "</div></div></div>"
+            );
+        } else if (addressFormat === "dutch") {
+            return (
+                '<div class="embed-row"><div class="embed-col"><div class="embed-address-container">' +
                 '<div class="embed-form-container"><label for="postcode" class="embed-label-bold">Postcode*</label>' +
-                '<input type="text" id="postcode" class="embed-input-field" aria-required="true" placeholder="1234AB" maxlength="7"></div>' +
+                '<input type="text" id="postcode" class="embed-input-field" aria-required="true" placeholder="' +
+                escapeAttr(ph.postcode != null ? ph.postcode : "1234AB") +
+                '" maxlength="7"></div>' +
                 '<div class="embed-form-container"><label for="huisnummer" class="embed-label-bold">Huisnummer*</label>' +
-                '<input type="text" inputmode="numeric" id="huisnummer" class="embed-input-field" aria-required="true" placeholder="1" maxlength="10"></div>' +
+                '<input type="text" inputmode="numeric" id="huisnummer" class="embed-input-field" aria-required="true" placeholder="' +
+                escapeAttr(ph.huisnummer != null ? ph.huisnummer : "1") +
+                '" maxlength="10"></div>' +
                 '<div class="embed-form-container"><label for="toevoeging" class="embed-label-bold">Toevoeging</label>' +
-                '<input type="text" id="toevoeging" class="embed-input-field" placeholder="A" maxlength="10"></div>' +
-                '</div></div></div>';
+                '<input type="text" id="toevoeging" class="embed-input-field" placeholder="' +
+                escapeAttr(ph.toevoeging != null ? ph.toevoeging : "A") +
+                '" maxlength="10"></div>' +
+                "</div></div></div>"
+            );
         } else {
-            return '<div class="embed-row"><div class="embed-col"><div class="embed-flex-container">' +
-                '<div class="embed-form-container embed-street"><label for="street" class="embed-label-bold">' + selectedLang.street + '*</label>' +
-                '<input type="text" id="street" class="embed-input-field" aria-required="true" placeholder="' + selectedLang.streetPlaceholder + '" maxlength="100"></div>' +
-                '<div class="embed-form-container embed-housenumber"><label for="housenumber" class="embed-label-bold">' + selectedLang.housenumber + '*</label>' +
-                '<input type="text" id="housenumber" class="embed-input-field" aria-required="true" placeholder="' + selectedLang.housenumberPlaceholder + '" maxlength="20"></div>' +
-                '</div></div></div>' +
+            return (
                 '<div class="embed-row"><div class="embed-col"><div class="embed-flex-container">' +
-                '<div class="embed-form-container embed-zipcode"><label for="zipcode" class="embed-label-bold">' + selectedLang.zipcode + '*</label>' +
-                '<input type="text" id="zipcode" class="embed-input-field" aria-required="true" placeholder="' + selectedLang.zipcodePlaceholder + '" maxlength="20"></div>' +
-                '<div class="embed-form-container embed-city"><label for="city" class="embed-label-bold">' + selectedLang.city + '*</label>' +
-                '<input type="text" id="city" class="embed-input-field" aria-required="true" placeholder="' + selectedLang.cityPlaceholder + '" maxlength="100"></div>' +
-                '</div></div></div>';
+                '<div class="embed-form-container embed-street"><label for="street" class="embed-label-bold">' +
+                selectedLang.street +
+                "*</label>" +
+                '<input type="text" id="street" class="embed-input-field" aria-required="true" placeholder="' +
+                escapeAttr(
+                    ph.street != null
+                        ? ph.street
+                        : selectedLang.streetPlaceholder,
+                ) +
+                '" maxlength="100"></div>' +
+                '<div class="embed-form-container embed-housenumber"><label for="housenumber" class="embed-label-bold">' +
+                selectedLang.housenumber +
+                "*</label>" +
+                '<input type="text" id="housenumber" class="embed-input-field" aria-required="true" placeholder="' +
+                escapeAttr(
+                    ph.housenumber != null
+                        ? ph.housenumber
+                        : selectedLang.housenumberPlaceholder,
+                ) +
+                '" maxlength="20"></div>' +
+                "</div></div></div>" +
+                '<div class="embed-row"><div class="embed-col"><div class="embed-flex-container">' +
+                '<div class="embed-form-container embed-zipcode"><label for="zipcode" class="embed-label-bold">' +
+                selectedLang.zipcode +
+                "*</label>" +
+                '<input type="text" id="zipcode" class="embed-input-field" aria-required="true" placeholder="' +
+                escapeAttr(
+                    ph.zipcode != null
+                        ? ph.zipcode
+                        : selectedLang.zipcodePlaceholder,
+                ) +
+                '" maxlength="20"></div>' +
+                '<div class="embed-form-container embed-city"><label for="city" class="embed-label-bold">' +
+                selectedLang.city +
+                "*</label>" +
+                '<input type="text" id="city" class="embed-input-field" aria-required="true" placeholder="' +
+                escapeAttr(
+                    ph.city != null ? ph.city : selectedLang.cityPlaceholder,
+                ) +
+                '" maxlength="100"></div>' +
+                "</div></div></div>"
+            );
         }
     }
 
-    function buildContactFieldsHtml(showPhone, showEmail, phoneRequired, emailRequired, selectedLang) {
-        const optionalSuffix = ' <span class="embed-label-optional">' + (selectedLang.optional || '(Optioneel)') + '</span>';
-        const phoneLabel = selectedLang.phoneLabel + (phoneRequired ? '<span>*</span>' : optionalSuffix);
-        const emailLabel = selectedLang.emailLabel + (emailRequired ? '<span>*</span>' : optionalSuffix);
+    function buildContactFieldsHtml(
+        showPhone,
+        showEmail,
+        phoneRequired,
+        emailRequired,
+        selectedLang,
+        placeholders,
+    ) {
+        const ph = placeholders || {};
+        const phonePh = escapeAttr(ph.phone != null ? ph.phone : "0612345678");
+        const emailPh = escapeAttr(
+            ph.email != null ? ph.email : "jandevries@gmail.com",
+        );
+        const optionalSuffix =
+            ' <span class="embed-label-optional">' +
+            (selectedLang.optional || "(Optioneel)") +
+            "</span>";
+        const phoneLabel =
+            selectedLang.phoneLabel +
+            (phoneRequired ? "<span>*</span>" : optionalSuffix);
+        const emailLabel =
+            selectedLang.emailLabel +
+            (emailRequired ? "<span>*</span>" : optionalSuffix);
         if (showPhone && showEmail) {
-            return '<div class="embed-row"><div class="embed-col"><div class="embed-flex-container">' +
-                '<div class="embed-form-container"><label for="telefoon" class="embed-label-bold">' + phoneLabel + '</label>' +
-                '<input type="tel" id="telefoon" class="embed-input-field"' + (phoneRequired ? ' aria-required="true"' : '') + ' placeholder="0612345678" maxlength="20"></div>' +
-                '<div class="embed-form-container"><label for="email" class="embed-label-bold">' + emailLabel + '</label>' +
-                '<input type="email" id="email" class="embed-input-field"' + (emailRequired ? ' aria-required="true"' : '') + ' placeholder="jandevries@gmail.com" maxlength="100"></div>' +
-                '</div></div></div>';
+            return (
+                '<div class="embed-row"><div class="embed-col"><div class="embed-flex-container">' +
+                '<div class="embed-form-container"><label for="telefoon" class="embed-label-bold">' +
+                phoneLabel +
+                "</label>" +
+                '<input type="tel" id="telefoon" class="embed-input-field"' +
+                (phoneRequired ? ' aria-required="true"' : "") +
+                ' placeholder="' +
+                phonePh +
+                '" maxlength="20"></div>' +
+                '<div class="embed-form-container"><label for="email" class="embed-label-bold">' +
+                emailLabel +
+                "</label>" +
+                '<input type="email" id="email" class="embed-input-field"' +
+                (emailRequired ? ' aria-required="true"' : "") +
+                ' placeholder="' +
+                emailPh +
+                '" maxlength="100"></div>' +
+                "</div></div></div>"
+            );
         } else if (showPhone) {
-            return '<div class="embed-row"><div class="embed-col"><div class="embed-form-container">' +
-                '<label for="telefoon" class="embed-label-bold">' + phoneLabel + '</label>' +
-                '<input type="tel" id="telefoon" class="embed-input-field"' + (phoneRequired ? ' aria-required="true"' : '') + ' placeholder="0612345678" maxlength="20"></div></div></div>';
+            return (
+                '<div class="embed-row"><div class="embed-col"><div class="embed-form-container">' +
+                '<label for="telefoon" class="embed-label-bold">' +
+                phoneLabel +
+                "</label>" +
+                '<input type="tel" id="telefoon" class="embed-input-field"' +
+                (phoneRequired ? ' aria-required="true"' : "") +
+                ' placeholder="' +
+                phonePh +
+                '" maxlength="20"></div></div></div>'
+            );
         } else if (showEmail) {
-            return '<div class="embed-row"><div class="embed-col"><div class="embed-form-container">' +
-                '<label for="email" class="embed-label-bold">' + emailLabel + '</label>' +
-                '<input type="email" id="email" class="embed-input-field"' + (emailRequired ? ' aria-required="true"' : '') + ' placeholder="jandevries@gmail.com" maxlength="100"></div></div></div>';
+            return (
+                '<div class="embed-row"><div class="embed-col"><div class="embed-form-container">' +
+                '<label for="email" class="embed-label-bold">' +
+                emailLabel +
+                "</label>" +
+                '<input type="email" id="email" class="embed-input-field"' +
+                (emailRequired ? ' aria-required="true"' : "") +
+                ' placeholder="' +
+                emailPh +
+                '" maxlength="100"></div></div></div>'
+            );
         }
-        return '';
+        return "";
     }
 
     function buildCheckboxHtml() {
-        return '<div class="embed-row"><div class="embed-col"><div class="embed-form-container embed-checkbox-container">' +
+        return (
+            '<div class="embed-row"><div class="embed-col"><div class="embed-form-container embed-checkbox-container">' +
             '<label class="embed-checkbox-label">' +
             '<input type="checkbox" id="embed-checkbox" class="embed-checkbox-input">' +
             '<span class="embed-checkbox-custom">' +
             '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
             '<polyline points="20 6 9 17 4 12"></polyline></svg></span>' +
             '<span class="embed-checkbox-text"></span></label>' +
-            '</div></div></div>';
+            "</div></div></div>"
+        );
+    }
+
+    // Render checkbox label text, converting inline markdown links [label](url) into
+    // real <a> elements. Built entirely with text nodes / createElement (no innerHTML),
+    // so the operator-supplied title cannot inject markup. Links open in a new tab and
+    // stop propagation so clicking them doesn't toggle the surrounding checkbox label.
+    function appendCheckboxText(span, text) {
+        const re = /\[([^\]]+)\]\(([^)]+)\)/g;
+        let lastIndex = 0;
+        let match;
+        while ((match = re.exec(text)) !== null) {
+            if (match.index > lastIndex) {
+                span.appendChild(
+                    document.createTextNode(text.slice(lastIndex, match.index)),
+                );
+            }
+            const label = match[1];
+            const url = match[2];
+            if (isSafeUrl(url)) {
+                const a = document.createElement("a");
+                a.className = "embed-checkbox-link";
+                a.href = url;
+                a.target = "_blank";
+                a.rel = "noopener noreferrer";
+                a.textContent = label;
+                a.addEventListener("click", function (e) {
+                    e.stopPropagation();
+                });
+                span.appendChild(a);
+            } else {
+                // Unsafe/invalid URL → render the original markdown as plain text.
+                span.appendChild(document.createTextNode(match[0]));
+            }
+            lastIndex = re.lastIndex;
+        }
+        if (lastIndex < text.length) {
+            span.appendChild(document.createTextNode(text.slice(lastIndex)));
+        }
     }
 
     function attachCheckboxText(form, checkboxTitle, checkboxRequired) {
-        const textSpan = form.querySelector('.embed-checkbox-text');
+        const textSpan = form.querySelector(".embed-checkbox-text");
         if (!textSpan) return;
-        textSpan.textContent = checkboxTitle;
+        textSpan.textContent = "";
+        appendCheckboxText(textSpan, checkboxTitle || "");
         if (checkboxRequired) {
-            const asterisk = document.createElement('span');
-            asterisk.className = 'embed-checkbox-required';
-            asterisk.textContent = '*';
+            const asterisk = document.createElement("span");
+            asterisk.className = "embed-checkbox-required";
+            asterisk.textContent = "*";
             textSpan.appendChild(asterisk);
         }
     }
 
-    function validateAndGetAddressParams(form, googleSearch, addressFormat, country, selectedLang, dutchValidationMessages) {
+    function validateAndGetAddressParams(
+        form,
+        googleSearch,
+        addressFormat,
+        country,
+        selectedLang,
+        dutchValidationMessages,
+    ) {
         if (googleSearch) {
-            const googleInput = form.querySelector('#google-address');
+            const googleInput = form.querySelector("#google-address");
             if (!googleInput) return { valid: true, params: {} };
-            const addressText = googleInput.value ? googleInput.value.trim() : '';
-            const container = googleInput.closest('.address-autocomplete') || googleInput;
-            const selectedPlace = container.getAttribute ? container.getAttribute('data-selected-place') === 'true' : false;
-            let addressData = (selectedPlace && container._addressData) ? container._addressData : null;
+            const addressText = googleInput.value
+                ? googleInput.value.trim()
+                : "";
+            const container =
+                googleInput.closest(".address-autocomplete") || googleInput;
+            const selectedPlace = container.getAttribute
+                ? container.getAttribute("data-selected-place") === "true"
+                : false;
+            let addressData =
+                selectedPlace && container._addressData
+                    ? container._addressData
+                    : null;
             if ((!addressData || !addressData.valid) && addressText) {
-                addressData = parseAddressManually(addressText, addressFormat, country);
+                addressData = parseAddressManually(
+                    addressText,
+                    addressFormat,
+                    country,
+                );
             }
             if (!addressData || !addressData.valid) {
-                displayValidationMessage(googleInput, selectedLang.validation.address);
+                displayValidationMessage(
+                    googleInput,
+                    selectedLang.validation.address,
+                );
                 return { valid: false, params: {} };
             }
-            const params = addressFormat === 'dutch'
-                ? { Zipcode: addressData.postcode, Housenumber: addressData.huisnummer, Addition: addressData.toevoeging || '' }
-                : { City: addressData.city, Zipcode: addressData.zipcode, Street: addressData.street, Housenumber: addressData.housenumber };
+            const params =
+                addressFormat === "dutch"
+                    ? {
+                          Zipcode: addressData.postcode,
+                          Housenumber: addressData.huisnummer,
+                          Addition: addressData.toevoeging || "",
+                      }
+                    : {
+                          City: addressData.city,
+                          Zipcode: addressData.zipcode,
+                          Street: addressData.street,
+                          Housenumber: addressData.housenumber,
+                      };
             return { valid: true, params: params };
-        } else if (addressFormat === 'dutch') {
-            const postcode = form.querySelector('#postcode');
-            const huisnummer = form.querySelector('#huisnummer');
-            const toevoegingEl = form.querySelector('#toevoeging');
+        } else if (addressFormat === "dutch") {
+            const postcode = form.querySelector("#postcode");
+            const huisnummer = form.querySelector("#huisnummer");
+            const toevoegingEl = form.querySelector("#toevoeging");
             let isValid = true;
-            if (!postcode || !postcode.value) { if (postcode) displayValidationMessage(postcode, dutchValidationMessages.postcode); isValid = false; }
-            else if (!postcode.value.match(/^[1-9][0-9]{3}\s?[A-Za-z]{2}$/)) { displayValidationMessage(postcode, dutchValidationMessages.postcodeFormat); isValid = false; }
-            if (!huisnummer || !huisnummer.value || !/[a-zA-Z0-9]/.test(huisnummer.value)) { if (huisnummer) displayValidationMessage(huisnummer, dutchValidationMessages.huisnummer); isValid = false; }
+            if (!postcode || !postcode.value) {
+                if (postcode)
+                    displayValidationMessage(
+                        postcode,
+                        dutchValidationMessages.postcode,
+                    );
+                isValid = false;
+            } else if (!postcode.value.match(/^[1-9][0-9]{3}\s?[A-Za-z]{2}$/)) {
+                displayValidationMessage(
+                    postcode,
+                    dutchValidationMessages.postcodeFormat,
+                );
+                isValid = false;
+            }
+            if (
+                !huisnummer ||
+                !huisnummer.value ||
+                !/[a-zA-Z0-9]/.test(huisnummer.value)
+            ) {
+                if (huisnummer)
+                    displayValidationMessage(
+                        huisnummer,
+                        dutchValidationMessages.huisnummer,
+                    );
+                isValid = false;
+            }
             if (!isValid) return { valid: false, params: {} };
-            return { valid: true, params: { Zipcode: postcode.value.replace(/\s/g, ''), Housenumber: huisnummer.value, Addition: toevoegingEl ? toevoegingEl.value : '' } };
+            return {
+                valid: true,
+                params: {
+                    Zipcode: postcode.value.replace(/\s/g, ""),
+                    Housenumber: huisnummer.value,
+                    Addition: toevoegingEl ? toevoegingEl.value : "",
+                },
+            };
         } else {
-            const city = form.querySelector('#city');
-            const zipcode = form.querySelector('#zipcode');
-            const street = form.querySelector('#street');
-            const housenumber = form.querySelector('#housenumber');
+            const city = form.querySelector("#city");
+            const zipcode = form.querySelector("#zipcode");
+            const street = form.querySelector("#street");
+            const housenumber = form.querySelector("#housenumber");
             let isValid = true;
-            if (!city || !city.value) { if (city) displayValidationMessage(city, selectedLang.validation.city); isValid = false; }
-            if (!zipcode || !zipcode.value) { if (zipcode) displayValidationMessage(zipcode, selectedLang.validation.zipcode); isValid = false; }
-            if (!street || !street.value) { if (street) displayValidationMessage(street, selectedLang.validation.street); isValid = false; }
-            if (!housenumber || !housenumber.value || !/[a-zA-Z0-9]/.test(housenumber.value)) { if (housenumber) displayValidationMessage(housenumber, selectedLang.validation.housenumber); isValid = false; }
+            if (!city || !city.value) {
+                if (city)
+                    displayValidationMessage(
+                        city,
+                        selectedLang.validation.city,
+                    );
+                isValid = false;
+            }
+            if (!zipcode || !zipcode.value) {
+                if (zipcode)
+                    displayValidationMessage(
+                        zipcode,
+                        selectedLang.validation.zipcode,
+                    );
+                isValid = false;
+            }
+            if (!street || !street.value) {
+                if (street)
+                    displayValidationMessage(
+                        street,
+                        selectedLang.validation.street,
+                    );
+                isValid = false;
+            }
+            if (
+                !housenumber ||
+                !housenumber.value ||
+                !/[a-zA-Z0-9]/.test(housenumber.value)
+            ) {
+                if (housenumber)
+                    displayValidationMessage(
+                        housenumber,
+                        selectedLang.validation.housenumber,
+                    );
+                isValid = false;
+            }
             if (!isValid) return { valid: false, params: {} };
-            return { valid: true, params: { City: city.value, Zipcode: zipcode.value, Street: street.value, Housenumber: housenumber.value } };
+            return {
+                valid: true,
+                params: {
+                    City: city.value,
+                    Zipcode: zipcode.value,
+                    Street: street.value,
+                    Housenumber: housenumber.value,
+                },
+            };
         }
     }
 
     function tryGetAddressParams(form, googleSearch, addressFormat, country) {
         if (googleSearch) {
-            const googleInput = form.querySelector('#google-address');
+            const googleInput = form.querySelector("#google-address");
             if (!googleInput || !googleInput.value.trim()) return null;
-            const container = googleInput.closest('.address-autocomplete') || googleInput;
-            const selectedPlace = container.getAttribute ? container.getAttribute('data-selected-place') === 'true' : false;
-            let addressData = (selectedPlace && container._addressData) ? container._addressData : null;
-            if ((!addressData || !addressData.valid) && googleInput.value.trim()) {
-                addressData = parseAddressManually(googleInput.value.trim(), addressFormat, country);
+            const container =
+                googleInput.closest(".address-autocomplete") || googleInput;
+            const selectedPlace = container.getAttribute
+                ? container.getAttribute("data-selected-place") === "true"
+                : false;
+            let addressData =
+                selectedPlace && container._addressData
+                    ? container._addressData
+                    : null;
+            if (
+                (!addressData || !addressData.valid) &&
+                googleInput.value.trim()
+            ) {
+                addressData = parseAddressManually(
+                    googleInput.value.trim(),
+                    addressFormat,
+                    country,
+                );
             }
             if (!addressData || !addressData.valid) return null;
-            return addressFormat === 'dutch'
-                ? { Zipcode: addressData.postcode, Housenumber: addressData.huisnummer, Addition: addressData.toevoeging || '' }
-                : { City: addressData.city, Zipcode: addressData.zipcode, Street: addressData.street, Housenumber: addressData.housenumber };
-        } else if (addressFormat === 'dutch') {
-            const postcode = form.querySelector('#postcode');
-            const huisnummer = form.querySelector('#huisnummer');
-            if (!postcode || !postcode.value || !huisnummer || !huisnummer.value) return null;
-            const toevoegingEl = form.querySelector('#toevoeging');
-            return { Zipcode: postcode.value.replace(/\s/g, ''), Housenumber: huisnummer.value, Addition: toevoegingEl ? toevoegingEl.value : '' };
+            return addressFormat === "dutch"
+                ? {
+                      Zipcode: addressData.postcode,
+                      Housenumber: addressData.huisnummer,
+                      Addition: addressData.toevoeging || "",
+                  }
+                : {
+                      City: addressData.city,
+                      Zipcode: addressData.zipcode,
+                      Street: addressData.street,
+                      Housenumber: addressData.housenumber,
+                  };
+        } else if (addressFormat === "dutch") {
+            const postcode = form.querySelector("#postcode");
+            const huisnummer = form.querySelector("#huisnummer");
+            if (
+                !postcode ||
+                !postcode.value ||
+                !huisnummer ||
+                !huisnummer.value
+            )
+                return null;
+            const toevoegingEl = form.querySelector("#toevoeging");
+            return {
+                Zipcode: postcode.value.replace(/\s/g, ""),
+                Housenumber: huisnummer.value,
+                Addition: toevoegingEl ? toevoegingEl.value : "",
+            };
         } else {
-            const city = form.querySelector('#city');
-            const zipcode = form.querySelector('#zipcode');
-            const street = form.querySelector('#street');
-            const housenumber = form.querySelector('#housenumber');
-            if (!city || !city.value || !zipcode || !zipcode.value || !street || !street.value || !housenumber || !housenumber.value) return null;
-            return { City: city.value, Zipcode: zipcode.value, Street: street.value, Housenumber: housenumber.value };
+            const city = form.querySelector("#city");
+            const zipcode = form.querySelector("#zipcode");
+            const street = form.querySelector("#street");
+            const housenumber = form.querySelector("#housenumber");
+            if (
+                !city ||
+                !city.value ||
+                !zipcode ||
+                !zipcode.value ||
+                !street ||
+                !street.value ||
+                !housenumber ||
+                !housenumber.value
+            )
+                return null;
+            return {
+                City: city.value,
+                Zipcode: zipcode.value,
+                Street: street.value,
+                Housenumber: housenumber.value,
+            };
         }
     }
 
     function setupFocusHandlers(form, primaryColor) {
-        form.querySelectorAll('.embed-input-field').forEach(function (input) {
-            input.addEventListener('focus', function () {
+        form.querySelectorAll(".embed-input-field").forEach(function (input) {
+            input.addEventListener("focus", function () {
                 this.style.borderColor = primaryColor;
                 const next = this.nextElementSibling;
-                if (next && next.classList.contains('embed-validation-message')) next.remove();
+                if (next && next.classList.contains("embed-validation-message"))
+                    next.remove();
             });
         });
     }
 
     function addTitleSubtitle(form, title, subtitle) {
         if (!title && !subtitle) return;
-        const header = document.createElement('div');
-        header.className = 'embed-header';
+        const header = document.createElement("div");
+        header.className = "embed-header";
         if (title) {
-            const h2 = document.createElement('h2');
-            h2.className = 'embed-title';
+            const h2 = document.createElement("h2");
+            h2.className = "embed-title";
             h2.textContent = title;
             header.appendChild(h2);
         }
         if (subtitle) {
-            const p = document.createElement('p');
-            p.className = 'embed-subtitle';
+            const p = document.createElement("p");
+            p.className = "embed-subtitle";
             p.textContent = subtitle;
             header.appendChild(p);
         }
         form.appendChild(header);
     }
 
-    function showPicoError(form, err, primaryColor, ctaBtn, ctaOriginalText, addressFieldSelector, selectedLang) {
-        if (ctaBtn) { ctaBtn.disabled = false; ctaBtn.textContent = ctaOriginalText; }
+    function showPicoError(
+        form,
+        err,
+        primaryColor,
+        ctaBtn,
+        ctaOriginalText,
+        addressFieldSelector,
+        selectedLang,
+        ctaOriginalIcon,
+    ) {
+        if (ctaBtn) {
+            ctaBtn.disabled = false;
+            setCtaButtonContent(ctaBtn, ctaOriginalIcon || "", ctaOriginalText);
+        }
         const lang = selectedLang || translations.nl;
-        const errMsg = (err && err.message) ? err.message.toLowerCase() : '';
-        const addressErrors = ['building', 'address not found', 'could not find'];
-        const areaErrors = ['operating area'];
-        const isAddressErr = addressErrors.some(function (s) { return errMsg.includes(s); });
-        const isAreaErr = areaErrors.some(function (s) { return errMsg.includes(s); });
+        const errMsg = err && err.message ? err.message.toLowerCase() : "";
+        const addressErrors = [
+            "building",
+            "address not found",
+            "could not find",
+        ];
+        const areaErrors = ["operating area"];
+        const isAddressErr = addressErrors.some(function (s) {
+            return errMsg.includes(s);
+        });
+        const isAreaErr = areaErrors.some(function (s) {
+            return errMsg.includes(s);
+        });
         if ((isAddressErr || isAreaErr) && addressFieldSelector) {
             const field = form.querySelector(addressFieldSelector);
             if (field) {
-                const msg = isAreaErr ? lang.errorOutsideArea : lang.errorAddressNotFound;
+                const msg = isAreaErr
+                    ? lang.errorOutsideArea
+                    : lang.errorAddressNotFound;
                 displayValidationMessage(field, msg);
                 return;
             }
         }
-        const prevErr = form.querySelector('.embed-inline-error');
+        const prevErr = form.querySelector(".embed-inline-error");
         if (prevErr) prevErr.remove();
-        const errEl = document.createElement('div');
-        errEl.className = 'embed-inline-error';
+        const errEl = document.createElement("div");
+        errEl.className = "embed-inline-error";
         errEl.textContent = lang.errorGeneric;
         form.appendChild(errEl);
     }
@@ -2243,22 +2957,33 @@
     function validatePhone(phone, phoneRequired, selectedLang) {
         if (!phone) return true;
         if (phone.value && !phone.value.match(/^\+?[0-9\s-]{7,20}$/)) {
-            displayValidationMessage(phone, selectedLang.validation.phone); return false;
+            displayValidationMessage(phone, selectedLang.validation.phone);
+            return false;
         }
         if (phoneRequired && !phone.value) {
-            displayValidationMessage(phone, selectedLang.validation.phoneRequired); return false;
+            displayValidationMessage(
+                phone,
+                selectedLang.validation.phoneRequired,
+            );
+            return false;
         }
         return true;
     }
 
     function validateEmail(email, emailRequired, selectedLang) {
         if (!email) return true;
-        const emailRegex = /^[A-Za-z0-9!#$%&'*+\=?^_`{|}~-]+(?:\.[A-Za-z0-9!#$%&'*+\=?^_`{|}~-]+)*@(?:[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?\.)+[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?$/;
+        const emailRegex =
+            /^[A-Za-z0-9!#$%&'*+\=?^_`{|}~-]+(?:\.[A-Za-z0-9!#$%&'*+\=?^_`{|}~-]+)*@(?:[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?\.)+[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?$/;
         if (email.value && !email.value.match(emailRegex)) {
-            displayValidationMessage(email, selectedLang.validation.email); return false;
+            displayValidationMessage(email, selectedLang.validation.email);
+            return false;
         }
         if (emailRequired && !email.value) {
-            displayValidationMessage(email, selectedLang.validation.emailRequired); return false;
+            displayValidationMessage(
+                email,
+                selectedLang.validation.emailRequired,
+            );
+            return false;
         }
         return true;
     }
@@ -2423,12 +3148,21 @@
                 form.setAttribute("data-address-format", addressFormat); // Store format for submit handler
 
                 // Gradient CSS variables
-                const gradientFrom = element.getAttribute('data-gradient-from') || '';
-                const gradientTo = element.getAttribute('data-gradient-to') || '';
+                const gradientFrom =
+                    element.getAttribute("data-gradient-from") || "";
+                const gradientTo =
+                    element.getAttribute("data-gradient-to") || "";
                 if (gradientFrom && gradientTo) {
-                    form.style.setProperty('--primary-gradient', 'linear-gradient(135deg, ' + sanitizeColor(gradientFrom) + ' 0%, ' + sanitizeColor(gradientTo) + ' 100%)');
+                    form.style.setProperty(
+                        "--primary-gradient",
+                        "linear-gradient(135deg, " +
+                            sanitizeColor(gradientFrom) +
+                            " 0%, " +
+                            sanitizeColor(gradientTo) +
+                            " 100%)",
+                    );
                 } else {
-                    form.style.setProperty('--primary-gradient', primaryColor);
+                    form.style.setProperty("--primary-gradient", primaryColor);
                 }
 
                 // Set --contrast-color for text on primary/gradient backgrounds.
@@ -2436,28 +3170,57 @@
                 (function () {
                     var lum = relativeLuminance(primaryColor);
                     if (gradientFrom && gradientTo) {
-                        lum = (relativeLuminance(sanitizeColor(gradientFrom)) + relativeLuminance(sanitizeColor(gradientTo))) / 2;
+                        lum =
+                            (relativeLuminance(sanitizeColor(gradientFrom)) +
+                                relativeLuminance(sanitizeColor(gradientTo))) /
+                            2;
                     }
-                    form.style.setProperty('--contrast-color', getReadableTextColor(null, lum));
+                    form.style.setProperty(
+                        "--contrast-color",
+                        getReadableTextColor(null, lum),
+                    );
                 })();
 
+                // Optional widget-block styling (applied to the form root itself, so the
+                // widget is self-contained and doesn't rely on host-page card styling).
+                applyBlockStyles(element, form);
+
+                // Input placeholder overrides (empty attr = blank, absent = current default).
+                const placeholders = resolvePlaceholders(element, selectedLang);
+
                 // Mode routing — non-classic modes handled by dedicated functions
-                const widgetMode = element.getAttribute('data-mode') || 'classic';
-                if (widgetMode !== 'classic') {
+                const widgetMode =
+                    element.getAttribute("data-mode") || "classic";
+                if (widgetMode !== "classic") {
                     const modeConfig = {
-                        primaryColor: primaryColor, buttonRadius: buttonRadius,
-                        installer: installer, customContext: customContext, openNewTab: openNewTab,
-                        showPhone: showPhone, showEmail: showEmail,
-                        phoneRequired: phoneRequired, emailRequired: emailRequired,
-                        googleSearch: googleSearch, country: country, addressFormat: addressFormat,
-                        language: language, title: title, subtitle: subtitle,
-                        checkboxTitle: checkboxTitle, checkboxShorttitle: checkboxShorttitle,
+                        primaryColor: primaryColor,
+                        buttonRadius: buttonRadius,
+                        installer: installer,
+                        customContext: customContext,
+                        openNewTab: openNewTab,
+                        showPhone: showPhone,
+                        showEmail: showEmail,
+                        phoneRequired: phoneRequired,
+                        emailRequired: emailRequired,
+                        googleSearch: googleSearch,
+                        country: country,
+                        addressFormat: addressFormat,
+                        language: language,
+                        title: title,
+                        subtitle: subtitle,
+                        checkboxTitle: checkboxTitle,
+                        checkboxShorttitle: checkboxShorttitle,
                         checkboxRequired: checkboxRequired,
-                        gradientFrom: gradientFrom, gradientTo: gradientTo,
+                        gradientFrom: gradientFrom,
+                        gradientTo: gradientTo,
+                        placeholders: placeholders,
                     };
-                    if (widgetMode === 'scan') initScanMode(element, form, modeConfig);
-                    else if (widgetMode === 'booking') initBookingMode(element, form, modeConfig);
-                    else if (widgetMode === 'brochure') initBrochureMode(element, form, modeConfig);
+                    if (widgetMode === "scan")
+                        initScanMode(element, form, modeConfig);
+                    else if (widgetMode === "booking")
+                        initBookingMode(element, form, modeConfig);
+                    else if (widgetMode === "brochure")
+                        initBrochureMode(element, form, modeConfig);
                     element.appendChild(form);
                     return;
                 }
@@ -2893,7 +3656,7 @@
                             <div class="embed-col">
                                 <div class="embed-form-container">
                                     <label for="google-address" class="embed-label-bold">${selectedLang.addressLabel}*</label>
-                                    <input type="text" id="google-address" class="embed-input-field" placeholder="${selectedLang.addressPlaceholder}" data-address-format="${addressFormat}" data-country="${country}">
+                                    <input type="text" id="google-address" class="embed-input-field" placeholder="${escapeAttr(placeholders.address)}" data-address-format="${addressFormat}" data-country="${country}">
                                 </div>
                             </div>
                         </div>
@@ -2906,15 +3669,15 @@
                                 <div class="embed-address-container">
                                     <div class="embed-form-container">
                                         <label for="postcode" class="embed-label-bold">Postcode*</label>
-                                        <input type="text" id="postcode" class="embed-input-field" placeholder="1234AB" maxlength="7">
+                                        <input type="text" id="postcode" class="embed-input-field" placeholder="${escapeAttr(placeholders.postcode)}" maxlength="7">
                                     </div>
                                     <div class="embed-form-container">
                                         <label for="huisnummer" class="embed-label-bold">Huisnummer*</label>
-                                        <input type="text" inputmode="numeric" id="huisnummer" class="embed-input-field" placeholder="1" maxlength="10">
+                                        <input type="text" inputmode="numeric" id="huisnummer" class="embed-input-field" placeholder="${escapeAttr(placeholders.huisnummer)}" maxlength="10">
                                     </div>
                                     <div class="embed-form-container">
                                         <label for="toevoeging" class="embed-label-bold">Toevoeging</label>
-                                        <input type="text" id="toevoeging" class="embed-input-field" placeholder="A" maxlength="10">
+                                        <input type="text" id="toevoeging" class="embed-input-field" placeholder="${escapeAttr(placeholders.toevoeging)}" maxlength="10">
                                     </div>
                                 </div>
                             </div>
@@ -2928,11 +3691,11 @@
                                 <div class="embed-flex-container">
                                     <div class="embed-form-container embed-street">
                                         <label for="street" class="embed-label-bold">${selectedLang.street}*</label>
-                                        <input type="text" id="street" class="embed-input-field" placeholder="${selectedLang.streetPlaceholder}" maxlength="100">
+                                        <input type="text" id="street" class="embed-input-field" placeholder="${escapeAttr(placeholders.street)}" maxlength="100">
                                     </div>
                                     <div class="embed-form-container embed-housenumber">
                                         <label for="housenumber" class="embed-label-bold">${selectedLang.housenumber}*</label>
-                                        <input type="text" id="housenumber" class="embed-input-field" placeholder="${selectedLang.housenumberPlaceholder}" maxlength="20">
+                                        <input type="text" id="housenumber" class="embed-input-field" placeholder="${escapeAttr(placeholders.housenumber)}" maxlength="20">
                                     </div>
                                 </div>
                             </div>
@@ -2942,11 +3705,11 @@
                                 <div class="embed-flex-container">
                                     <div class="embed-form-container embed-zipcode">
                                         <label for="zipcode" class="embed-label-bold">${selectedLang.zipcode}*</label>
-                                        <input type="text" id="zipcode" class="embed-input-field" placeholder="${selectedLang.zipcodePlaceholder}" maxlength="20">
+                                        <input type="text" id="zipcode" class="embed-input-field" placeholder="${escapeAttr(placeholders.zipcode)}" maxlength="20">
                                     </div>
                                     <div class="embed-form-container embed-city">
                                         <label for="city" class="embed-label-bold">${selectedLang.city}*</label>
-                                        <input type="text" id="city" class="embed-input-field" placeholder="${selectedLang.cityPlaceholder}" maxlength="100">
+                                        <input type="text" id="city" class="embed-input-field" placeholder="${escapeAttr(placeholders.city)}" maxlength="100">
                                     </div>
                                 </div>
                             </div>
@@ -2970,7 +3733,7 @@
                                                 ? `<span>*</span>`
                                                 : ""
                                         }</label>
-                                        <input type="tel" id="telefoon" class="embed-input-field" placeholder="0612345678" maxlength="20">
+                                        <input type="tel" id="telefoon" class="embed-input-field" placeholder="${escapeAttr(placeholders.phone)}" maxlength="20">
                                     </div>
                                     <div class="embed-form-container">
                                         <label for="email" class="embed-label-bold">${
@@ -2980,7 +3743,7 @@
                                                 ? `<span>*</span>`
                                                 : ""
                                         }</label>
-                                        <input type="email" id="email" class="embed-input-field" placeholder="jandevries@gmail.com" maxlength="100">
+                                        <input type="email" id="email" class="embed-input-field" placeholder="${escapeAttr(placeholders.email)}" maxlength="100">
                                     </div>
                                 </div>
                             </div>
@@ -2996,7 +3759,7 @@
                                     }${
                                         phoneRequired ? `<span>*</span>` : ""
                                     }</label>
-                                    <input type="tel" id="telefoon" class="embed-input-field" placeholder="0612345678" maxlength="20">
+                                    <input type="tel" id="telefoon" class="embed-input-field" placeholder="${escapeAttr(placeholders.phone)}" maxlength="20">
                                 </div>
                             </div>
                         </div>
@@ -3011,7 +3774,7 @@
                                     }${
                                         emailRequired ? `<span>*</span>` : ""
                                     }</label>
-                                    <input type="email" id="email" class="embed-input-field" placeholder="jandevries@gmail.com" maxlength="100">
+                                    <input type="email" id="email" class="embed-input-field" placeholder="${escapeAttr(placeholders.email)}" maxlength="100">
                                 </div>
                             </div>
                         </div>
@@ -3112,7 +3875,11 @@
 
     function getCookieValue(name) {
         const match = document.cookie.match(
-            new RegExp("(?:^|;\\s*)" + name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "=([^;]*)"),
+            new RegExp(
+                "(?:^|;\\s*)" +
+                    name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") +
+                    "=([^;]*)",
+            ),
         );
         return match ? decodeURIComponent(match[1]) : null;
     }
@@ -3235,7 +4002,10 @@
         options.setAttribute("role", "listbox");
         optionItems.forEach((opt) => {
             opt.setAttribute("role", "option");
-            opt.setAttribute("aria-selected", opt.classList.contains("selected") ? "true" : "false");
+            opt.setAttribute(
+                "aria-selected",
+                opt.classList.contains("selected") ? "true" : "false",
+            );
         });
 
         // Toggle dropdown on click
@@ -3243,7 +4013,10 @@
             e.stopPropagation(); // Prevent the click from bubbling up
             const isNowOpen = options.classList.toggle("show");
             selected.classList.toggle("open");
-            selected.setAttribute("aria-expanded", isNowOpen ? "true" : "false");
+            selected.setAttribute(
+                "aria-expanded",
+                isNowOpen ? "true" : "false",
+            );
             selected.style.borderColor = ""; // Clear red border on interaction
             const validationMessage = selected.parentElement.nextElementSibling;
             if (
@@ -3276,7 +4049,10 @@
                 const value = option.getAttribute("data-value");
 
                 // Remove selected class from all options
-                optionItems.forEach((opt) => { opt.classList.remove("selected"); opt.setAttribute("aria-selected", "false"); });
+                optionItems.forEach((opt) => {
+                    opt.classList.remove("selected");
+                    opt.setAttribute("aria-selected", "false");
+                });
                 option.classList.add("selected");
                 option.setAttribute("aria-selected", "true");
 
@@ -3368,45 +4144,83 @@
         const dutchVal = translations.dutchValidation;
 
         // CTA texts (data-cta1-text is the new unified name; -scan kept for backward-compat)
-        const cta1Text = element.getAttribute('data-cta1-text')
-            || element.getAttribute('data-cta1-text-scan') || 'Bereken wat je bespaart';
-        const cta1TextBooking = element.getAttribute('data-cta1-text-booking') || 'Plan een gratis adviesgesprek';
-        let showCta2 = element.getAttribute('data-cta2-show') === 'true';
-        const cta2Text = element.getAttribute('data-cta2-text') || 'Direct contact (30 sec)';
-        let cta2Action = element.getAttribute('data-cta2-action') || 'pico';
+        const cta1Text =
+            element.getAttribute("data-cta1-text") ||
+            element.getAttribute("data-cta1-text-scan") ||
+            "Bereken wat je bespaart";
+        const cta1TextBooking =
+            element.getAttribute("data-cta1-text-booking") ||
+            "Plan een gratis adviesgesprek";
+        let showCta2 = element.getAttribute("data-cta2-show") === "true";
+        const cta2Text =
+            element.getAttribute("data-cta2-text") || "Direct contact (30 sec)";
+        let cta2Action = element.getAttribute("data-cta2-action") || "pico";
 
         // Unified secondary / combination flow URLs
-        const cta2UrlGlobal = element.getAttribute('data-cta2-url') || '';
-        const cta1ComboUrl = element.getAttribute('data-cta1-combo-url') || '';
-        const cta2ComboUrl = element.getAttribute('data-cta2-combo-url') || '';
+        const cta2UrlGlobal = element.getAttribute("data-cta2-url") || "";
+        const cta1ComboUrl = element.getAttribute("data-cta1-combo-url") || "";
+        const cta2ComboUrl = element.getAttribute("data-cta2-combo-url") || "";
+
+        // Combination CTA texts/icons (used when more than one tile is selected)
+        const cta1ComboText =
+            element.getAttribute("data-cta1-combo-text") || "";
+        const cta2ComboText =
+            element.getAttribute("data-cta2-combo-text") || "";
+        const cta1ComboIcon =
+            element.getAttribute("data-cta1-combo-icon-svg") || "";
+        const cta2ComboIcon =
+            element.getAttribute("data-cta2-combo-icon-svg") || "";
+
+        // Optional global CTA icons (base64 SVG). No default — only shown when configured.
+        // Resolved per selection with the same precedence as the CTA texts.
+        const cta1IconGlobal = element.getAttribute("data-cta1-icon-svg") || "";
+        const cta2IconGlobal = element.getAttribute("data-cta2-icon-svg") || "";
 
         // AI-chat text link (decoupled from the CTA2 slot, default off)
-        let aiChatShow = element.getAttribute('data-ai-chat-show') === 'true';
-        let aiChatText = element.getAttribute('data-ai-chat-text') || 'Of chat met onze AI adviseur';
+        let aiChatShow = element.getAttribute("data-ai-chat-show") === "true";
+        let aiChatText =
+            element.getAttribute("data-ai-chat-text") ||
+            "Of chat met onze AI adviseur";
 
         // Backward-compat: cta2-action="ai-chat" now maps to the dedicated AI-chat link
-        if (cta2Action === 'ai-chat') {
-            console.warn('[HomeZero embed] data-cta2-action="ai-chat" is verouderd; gebruik data-ai-chat-show="true" + data-ai-chat-text.');
+        if (cta2Action === "ai-chat") {
+            console.warn(
+                '[HomeZero embed] data-cta2-action="ai-chat" is verouderd; gebruik data-ai-chat-show="true" + data-ai-chat-text.',
+            );
             aiChatShow = true;
-            if (element.getAttribute('data-cta2-text')) aiChatText = cta2Text;
+            if (element.getAttribute("data-cta2-text")) aiChatText = cta2Text;
             showCta2 = false;
         }
 
-        const contactSkipAddress = element.getAttribute('data-contact-skip-address') === 'true';
-        const picoKey = element.getAttribute('data-pico-key') || '';
-        const picoEnv = element.getAttribute('data-pico-env') || 'production';
-        const picoFlowIdOverride = element.getAttribute('data-pico-flow-id') || '';
-        const tilesDefault = (element.getAttribute('data-tiles-default') || '').split(',').map(function (k) { return k.trim(); }).filter(Boolean);
-        let tilesMaxSelect = parseInt(element.getAttribute('data-tiles-max-select') || '0', 10);
+        const contactSkipAddress =
+            element.getAttribute("data-contact-skip-address") === "true";
+        const picoKey = element.getAttribute("data-pico-key") || "";
+        const picoEnv = element.getAttribute("data-pico-env") || "production";
+        const picoFlowIdOverride =
+            element.getAttribute("data-pico-flow-id") || "";
+        const tilesDefault = (element.getAttribute("data-tiles-default") || "")
+            .split(",")
+            .map(function (k) {
+                return k.trim();
+            })
+            .filter(Boolean);
+        let tilesMaxSelect = parseInt(
+            element.getAttribute("data-tiles-max-select") || "0",
+            10,
+        );
         if (isNaN(tilesMaxSelect) || tilesMaxSelect < 0) tilesMaxSelect = 0;
-        const tileDisplay = element.getAttribute('data-tile-display') || 'large';
-        const tilesLabel = element.hasAttribute('data-tiles-label')
-            ? element.getAttribute('data-tiles-label') : 'Producten';
+        const tileDisplay =
+            element.getAttribute("data-tile-display") || "large";
+        const tilesLabel = element.hasAttribute("data-tiles-label")
+            ? element.getAttribute("data-tiles-label")
+            : "Producten";
 
         // Dropdown is single-select only
-        if (tileDisplay === 'dropdown' && tilesMaxSelect !== 1) {
+        if (tileDisplay === "dropdown" && tilesMaxSelect !== 1) {
             if (tilesMaxSelect > 1) {
-                console.warn('[HomeZero embed] dropdown is single-select; data-tiles-max-select wordt geforceerd naar 1.');
+                console.warn(
+                    "[HomeZero embed] dropdown is single-select; data-tiles-max-select wordt geforceerd naar 1.",
+                );
             }
             tilesMaxSelect = 1;
         }
@@ -3415,33 +4229,76 @@
         // Optional preselection via data-tiles-default (comma-separated keys). Not required:
         // omit it for an empty dropdown/placeholder. Capped to the selection limit so a
         // single-select dropdown preselects at most one item.
-        let _preselected = tilesDefault.filter(function (k) { return tiles.some(function (t) { return t.key === k; }); });
-        if (tilesMaxSelect > 0) _preselected = _preselected.slice(0, tilesMaxSelect);
+        let _preselected = tilesDefault.filter(function (k) {
+            return tiles.some(function (t) {
+                return t.key === k;
+            });
+        });
+        if (tilesMaxSelect > 0)
+            _preselected = _preselected.slice(0, tilesMaxSelect);
         const selectedTilesSet = new Set(_preselected);
 
         const ctaCfg = {
-            cta2Action: cta2Action, cta2UrlGlobal: cta2UrlGlobal,
-            cta1ComboUrl: cta1ComboUrl, cta2ComboUrl: cta2ComboUrl,
+            cta2Action: cta2Action,
+            cta2UrlGlobal: cta2UrlGlobal,
+            cta1ComboUrl: cta1ComboUrl,
+            cta2ComboUrl: cta2ComboUrl,
+            // Per-CTA text/icon, with combination + global fallbacks.
+            cta1Text: cta1Text,
+            cta1TextBooking: cta1TextBooking,
+            cta2Text: cta2Text,
+            cta1ComboText: cta1ComboText,
+            cta2ComboText: cta2ComboText,
+            cta1IconGlobal: cta1IconGlobal,
+            cta2IconGlobal: cta2IconGlobal,
+            cta1ComboIcon: cta1ComboIcon,
+            cta2ComboIcon: cta2ComboIcon,
         };
 
         validateScanConfig(tiles, {
-            showCta2: showCta2, cta2Action: cta2Action, tilesMaxSelect: tilesMaxSelect,
-            cta1ComboUrl: cta1ComboUrl, cta2ComboUrl: cta2ComboUrl, cta2UrlGlobal: cta2UrlGlobal,
+            showCta2: showCta2,
+            cta2Action: cta2Action,
+            tilesMaxSelect: tilesMaxSelect,
+            cta1ComboUrl: cta1ComboUrl,
+            cta2ComboUrl: cta2ComboUrl,
+            cta2UrlGlobal: cta2UrlGlobal,
         });
 
-        function getSelectedTiles() { return tiles.filter(function (t) { return selectedTilesSet.has(t.key); }); }
-        function getPrimaryTile() { const s = getSelectedTiles(); return s.length ? s[0] : null; }
-        function isBookingTileSelected() { const p = getPrimaryTile(); return !!(p && p.bookingUrl); }
+        function getSelectedTiles() {
+            return tiles.filter(function (t) {
+                return selectedTilesSet.has(t.key);
+            });
+        }
+        function getPrimaryTile() {
+            const s = getSelectedTiles();
+            return s.length ? s[0] : null;
+        }
+        function isBookingTileSelected() {
+            const p = getPrimaryTile();
+            return !!(p && p.bookingUrl);
+        }
 
-        // Keep CTA1 text in sync and toggle CTA2 visibility per current selection
+        // Keep CTA text + icon in sync and toggle CTA2 visibility per current selection
         function updateCtas() {
-            const c1 = form.querySelector('.embed-cta-primary');
-            if (c1) c1.textContent = isBookingTileSelected() ? cta1TextBooking : cta1Text;
-            const c2 = form.querySelector('.embed-cta-secondary');
-            if (c2 && (cta2Action === 'flow' || cta2Action === 'booking')) {
-                const t2 = resolveCtaTarget(2, getSelectedTiles(), ctaCfg);
-                c2.style.display = (t2 && t2.url) ? '' : 'none';
+            const sel = getSelectedTiles();
+            const c1 = form.querySelector(".embed-cta-primary");
+            if (c1)
+                setCtaButtonContent(
+                    c1,
+                    resolveCtaIcon(1, sel, ctaCfg),
+                    resolveCtaText(1, sel, ctaCfg),
+                );
+            const c2 = form.querySelector(".embed-cta-secondary");
+            if (c2 && (cta2Action === "flow" || cta2Action === "booking")) {
+                const t2 = resolveCtaTarget(2, sel, ctaCfg);
+                c2.style.display = t2 && t2.url ? "" : "none";
             }
+            if (c2)
+                setCtaButtonContent(
+                    c2,
+                    resolveCtaIcon(2, sel, ctaCfg),
+                    resolveCtaText(2, sel, ctaCfg),
+                );
         }
         const updateCta1Text = updateCtas;
 
@@ -3449,89 +4306,188 @@
 
         // All innerHTML-based additions must happen BEFORE appendChild(grid)
         // to avoid innerHTML += destroying DOM nodes with event listeners.
-        form.innerHTML += buildAddressFieldsHtml(config.googleSearch, config.addressFormat, selectedLang, config.country);
-        form.innerHTML += buildContactFieldsHtml(config.showPhone, config.showEmail, config.phoneRequired, config.emailRequired, selectedLang);
+        form.innerHTML += buildAddressFieldsHtml(
+            config.googleSearch,
+            config.addressFormat,
+            selectedLang,
+            config.country,
+            config.placeholders,
+        );
+        form.innerHTML += buildContactFieldsHtml(
+            config.showPhone,
+            config.showEmail,
+            config.phoneRequired,
+            config.emailRequired,
+            selectedLang,
+            config.placeholders,
+        );
 
         if (config.checkboxTitle) {
             form.innerHTML += buildCheckboxHtml();
-            attachCheckboxText(form, config.checkboxTitle, config.checkboxRequired);
+            attachCheckboxText(
+                form,
+                config.checkboxTitle,
+                config.checkboxRequired,
+            );
         }
 
         if (tiles.length > 0) {
-            const header = form.querySelector('.embed-header');
+            const header = form.querySelector(".embed-header");
             const refNode = header ? header.nextSibling : form.firstChild;
-            if (tileDisplay === 'dropdown') {
-                const ddWrap = renderTileDropdown(tiles, selectedTilesSet, config.primaryColor, tilesMaxSelect, tilesLabel, updateCta1Text, selectedLang);
+            if (tileDisplay === "dropdown") {
+                const ddWrap = renderTileDropdown(
+                    tiles,
+                    selectedTilesSet,
+                    config.primaryColor,
+                    tilesMaxSelect,
+                    tilesLabel,
+                    updateCta1Text,
+                    selectedLang,
+                );
                 form.insertBefore(ddWrap, refNode);
-            } else if (tileDisplay === 'tags') {
-                const tagsWrap = renderTileTagsSelect(tiles, selectedTilesSet, config.primaryColor, tilesMaxSelect, tilesLabel, updateCta1Text, selectedLang);
+            } else if (tileDisplay === "tags") {
+                const tagsWrap = renderTileTagsSelect(
+                    tiles,
+                    selectedTilesSet,
+                    config.primaryColor,
+                    tilesMaxSelect,
+                    tilesLabel,
+                    updateCta1Text,
+                    selectedLang,
+                );
                 form.insertBefore(tagsWrap, refNode);
-            } else if (tileDisplay === 'large') {
-                const grid = renderTileLargeGrid(tiles, selectedTilesSet, config.primaryColor, function (key, tileEl) {
-                    if (selectedTilesSet.has(key)) {
-                        selectedTilesSet.delete(key);
-                        tileEl.classList.remove('selected');
-                        clearTileLargeSelectedStyle(tileEl);
-                    } else {
-                        if (tilesMaxSelect > 0 && selectedTilesSet.size >= tilesMaxSelect) {
-                            const firstKey = selectedTilesSet.values().next().value;
-                            selectedTilesSet.delete(firstKey);
-                            const firstEl = form.querySelector('[data-tile-key="' + firstKey + '"]');
-                            if (firstEl) { firstEl.classList.remove('selected'); clearTileLargeSelectedStyle(firstEl); }
+            } else if (tileDisplay === "large") {
+                const grid = renderTileLargeGrid(
+                    tiles,
+                    selectedTilesSet,
+                    config.primaryColor,
+                    function (key, tileEl) {
+                        if (selectedTilesSet.has(key)) {
+                            selectedTilesSet.delete(key);
+                            tileEl.classList.remove("selected");
+                            clearTileLargeSelectedStyle(tileEl);
+                        } else {
+                            if (
+                                tilesMaxSelect > 0 &&
+                                selectedTilesSet.size >= tilesMaxSelect
+                            ) {
+                                const firstKey = selectedTilesSet
+                                    .values()
+                                    .next().value;
+                                selectedTilesSet.delete(firstKey);
+                                const firstEl = form.querySelector(
+                                    '[data-tile-key="' + firstKey + '"]',
+                                );
+                                if (firstEl) {
+                                    firstEl.classList.remove("selected");
+                                    clearTileLargeSelectedStyle(firstEl);
+                                }
+                            }
+                            selectedTilesSet.add(key);
+                            tileEl.classList.add("selected");
+                            applyTileLargeSelectedStyle(
+                                tileEl,
+                                config.primaryColor,
+                            );
                         }
-                        selectedTilesSet.add(key);
-                        tileEl.classList.add('selected');
-                        applyTileLargeSelectedStyle(tileEl, config.primaryColor);
-                    }
-                    updateCta1Text();
-                });
+                        updateCta1Text();
+                    },
+                );
                 form.insertBefore(grid, refNode);
             } else {
                 // 'tiles' and 'large' both use the large variant
-                const grid = renderTileLargeGrid(tiles, selectedTilesSet, config.primaryColor, function (key, tileEl) {
-                    if (selectedTilesSet.has(key)) {
-                        selectedTilesSet.delete(key);
-                        tileEl.classList.remove('selected');
-                        clearTileLargeSelectedStyle(tileEl);
-                    } else {
-                        if (tilesMaxSelect > 0 && selectedTilesSet.size >= tilesMaxSelect) {
-                            const firstKey = selectedTilesSet.values().next().value;
-                            selectedTilesSet.delete(firstKey);
-                            const firstEl = form.querySelector('[data-tile-key="' + firstKey + '"]');
-                            if (firstEl) { firstEl.classList.remove('selected'); clearTileLargeSelectedStyle(firstEl); }
+                const grid = renderTileLargeGrid(
+                    tiles,
+                    selectedTilesSet,
+                    config.primaryColor,
+                    function (key, tileEl) {
+                        if (selectedTilesSet.has(key)) {
+                            selectedTilesSet.delete(key);
+                            tileEl.classList.remove("selected");
+                            clearTileLargeSelectedStyle(tileEl);
+                        } else {
+                            if (
+                                tilesMaxSelect > 0 &&
+                                selectedTilesSet.size >= tilesMaxSelect
+                            ) {
+                                const firstKey = selectedTilesSet
+                                    .values()
+                                    .next().value;
+                                selectedTilesSet.delete(firstKey);
+                                const firstEl = form.querySelector(
+                                    '[data-tile-key="' + firstKey + '"]',
+                                );
+                                if (firstEl) {
+                                    firstEl.classList.remove("selected");
+                                    clearTileLargeSelectedStyle(firstEl);
+                                }
+                            }
+                            selectedTilesSet.add(key);
+                            tileEl.classList.add("selected");
+                            applyTileLargeSelectedStyle(
+                                tileEl,
+                                config.primaryColor,
+                            );
                         }
-                        selectedTilesSet.add(key);
-                        tileEl.classList.add('selected');
-                        applyTileLargeSelectedStyle(tileEl, config.primaryColor);
-                    }
-                    updateCta1Text();
-                });
+                        updateCta1Text();
+                    },
+                );
                 form.insertBefore(grid, refNode);
             }
         }
 
-        const ctaWrapper = document.createElement('div');
-        ctaWrapper.className = 'embed-cta-wrapper';
+        const ctaWrapper = document.createElement("div");
+        ctaWrapper.className = "embed-cta-wrapper";
 
-        const cta1Btn = document.createElement('button');
-        cta1Btn.type = 'button';
-        cta1Btn.className = 'embed-submit-button embed-cta-primary';
+        const cta1Btn = document.createElement("button");
+        cta1Btn.type = "button";
+        cta1Btn.className = "embed-submit-button embed-cta-primary";
         cta1Btn.style.backgroundColor = config.primaryColor;
-        cta1Btn.style.setProperty('border-radius', config.buttonRadius, 'important');
-        cta1Btn.textContent = isBookingTileSelected() ? cta1TextBooking : cta1Text;
+        cta1Btn.style.setProperty(
+            "border-radius",
+            config.buttonRadius,
+            "important",
+        );
+        setCtaButtonContent(
+            cta1Btn,
+            resolveCtaIcon(1, getSelectedTiles(), ctaCfg),
+            resolveCtaText(1, getSelectedTiles(), ctaCfg),
+        );
         ctaWrapper.appendChild(cta1Btn);
 
         if (showCta2) {
-            const cta2Btn = document.createElement('button');
-            cta2Btn.type = 'button';
-            cta2Btn.className = 'embed-cta-secondary';
-            cta2Btn.style.setProperty('border-radius', config.buttonRadius, 'important');
-            cta2Btn.textContent = cta2Text;
+            const cta2Btn = document.createElement("button");
+            cta2Btn.type = "button";
+            cta2Btn.className = "embed-cta-secondary";
+            cta2Btn.style.setProperty(
+                "border-radius",
+                config.buttonRadius,
+                "important",
+            );
+            setCtaButtonContent(
+                cta2Btn,
+                resolveCtaIcon(2, getSelectedTiles(), ctaCfg),
+                resolveCtaText(2, getSelectedTiles(), ctaCfg),
+            );
             ctaWrapper.appendChild(cta2Btn);
 
-            cta2Btn.addEventListener('click', function () {
-                if (cta2Action === 'pico') {
-                    handleScanCta2(form, tiles, selectedTilesSet, picoKey, picoEnv, picoFlowIdOverride, contactSkipAddress, config, selectedLang, dutchVal, cta2Btn, cta2Text);
+            cta2Btn.addEventListener("click", function () {
+                if (cta2Action === "pico") {
+                    handleScanCta2(
+                        form,
+                        tiles,
+                        selectedTilesSet,
+                        picoKey,
+                        picoEnv,
+                        picoFlowIdOverride,
+                        contactSkipAddress,
+                        config,
+                        selectedLang,
+                        dutchVal,
+                        cta2Btn,
+                        cta2Text,
+                        cta2IconGlobal,
+                    );
                 } else {
                     handleScanCtaClick(2);
                 }
@@ -3548,36 +4504,65 @@
         setupFocusHandlers(form, config.primaryColor);
 
         if (config.googleSearch) {
-            const gInput = form.querySelector('#google-address');
-            if (gInput) setupGoogleAutocomplete(gInput, config.country, config.addressFormat, form, config.language);
+            const gInput = form.querySelector("#google-address");
+            if (gInput)
+                setupGoogleAutocomplete(
+                    gInput,
+                    config.country,
+                    config.addressFormat,
+                    form,
+                    config.language,
+                );
         }
 
-        cta1Btn.addEventListener('click', function () { handleScanCtaClick(1); });
+        cta1Btn.addEventListener("click", function () {
+            handleScanCtaClick(1);
+        });
 
         // Initialise CTA1 text + CTA2 visibility for the default selection
         updateCtas();
 
         // Shared click handler for flow/booking CTAs (pico handled separately above)
         function handleScanCtaClick(ctaIndex) {
-            form.querySelectorAll('.embed-validation-message').forEach(function (m) { m.remove(); });
+            form.querySelectorAll(".embed-validation-message").forEach(
+                function (m) {
+                    m.remove();
+                },
+            );
 
             if (tiles.length > 0 && selectedTilesSet.size === 0) {
-                const selectorEl = form.querySelector('.embed-tile-grid') || form.querySelector('[data-tile-selector]');
+                const selectorEl =
+                    form.querySelector(".embed-tile-grid") ||
+                    form.querySelector("[data-tile-selector]");
                 if (selectorEl) {
-                    const msg = document.createElement('div');
-                    msg.className = 'embed-validation-message';
+                    const msg = document.createElement("div");
+                    msg.className = "embed-validation-message";
                     msg.textContent = selectedLang.tileRequired;
-                    selectorEl.insertAdjacentElement('afterend', msg);
+                    selectorEl.insertAdjacentElement("afterend", msg);
                 }
                 return;
             }
 
-            const target = resolveCtaTarget(ctaIndex, getSelectedTiles(), ctaCfg);
+            const target = resolveCtaTarget(
+                ctaIndex,
+                getSelectedTiles(),
+                ctaCfg,
+            );
             if (!target || !target.url || !isSafeUrl(target.url)) {
-                if (ctaIndex === 1) console.warn('[HomeZero embed] CTA1 heeft geen geldige doel-URL voor de huidige selectie.');
+                if (ctaIndex === 1)
+                    console.warn(
+                        "[HomeZero embed] CTA1 heeft geen geldige doel-URL voor de huidige selectie.",
+                    );
                 return;
             }
-            redirectToFlow(target, form, config, selectedTilesSet, selectedLang, dutchVal);
+            redirectToFlow(
+                target,
+                form,
+                config,
+                selectedTilesSet,
+                selectedLang,
+                dutchVal,
+            );
         }
     }
 
@@ -3589,178 +4574,394 @@
 
         if (ctaIndex === 1) {
             if (n > 1) {
-                if (ctaCfg.cta1ComboUrl) return { url: ctaCfg.cta1ComboUrl, action: 'flow' };
-                return selectedTiles[0].url ? { url: selectedTiles[0].url, action: 'flow' } : null;
+                if (ctaCfg.cta1ComboUrl)
+                    return { url: ctaCfg.cta1ComboUrl, action: "flow" };
+                return selectedTiles[0].url
+                    ? { url: selectedTiles[0].url, action: "flow" }
+                    : null;
             }
             const t = selectedTiles[0];
-            if (t.bookingUrl) return { url: t.bookingUrl, action: 'booking' }; // legacy single-button switch
-            return t.url ? { url: t.url, action: 'flow' } : null;
+            if (t.bookingUrl) return { url: t.bookingUrl, action: "booking" }; // legacy single-button switch
+            return t.url ? { url: t.url, action: "flow" } : null;
         }
 
         // ctaIndex === 2 (only flow/booking route here; pico/ai-chat handled elsewhere)
-        if (ctaCfg.cta2Action !== 'flow' && ctaCfg.cta2Action !== 'booking') return null;
-        const u = n > 1
-            ? (ctaCfg.cta2ComboUrl || ctaCfg.cta2UrlGlobal)
-            : (selectedTiles[0].cta2Url || ctaCfg.cta2UrlGlobal);
+        if (ctaCfg.cta2Action !== "flow" && ctaCfg.cta2Action !== "booking")
+            return null;
+        const u =
+            n > 1
+                ? ctaCfg.cta2ComboUrl || ctaCfg.cta2UrlGlobal
+                : selectedTiles[0].cta2Url || ctaCfg.cta2UrlGlobal;
         return u ? { url: u, action: ctaCfg.cta2Action } : null;
     }
 
-    // Build the HomeZero leadflow URL with referral, address, contact, tiles, checkbox, context and query params.
-    function buildLeadflowUrl(baseUrl, form, config, addrParams, selectedTilesSet) {
-        let url = baseUrl;
-        url += '&ReferralURL=' + encodeURIComponent(window.location.href);
-        Object.keys(addrParams).forEach(function (k) { url += '&' + k + '=' + encodeURIComponent(addrParams[k]); });
+    // Resolve the CTA button label for the current selection. Mirrors resolveCtaTarget's
+    // precedence — CTA1: combo (multi) > tile > global (booking-aware); CTA2: combo (multi) >
+    // tile > global. Falls back to the global text when nothing is selected.
+    function resolveCtaText(ctaIndex, selectedTiles, ctaCfg) {
+        const n = selectedTiles.length;
+        if (ctaIndex === 1) {
+            if (n > 1) return ctaCfg.cta1ComboText || ctaCfg.cta1Text;
+            if (n === 1) {
+                const t = selectedTiles[0];
+                if (t.cta1Text) return t.cta1Text;
+                return t.bookingUrl ? ctaCfg.cta1TextBooking : ctaCfg.cta1Text;
+            }
+            return ctaCfg.cta1Text;
+        }
+        if (n > 1) return ctaCfg.cta2ComboText || ctaCfg.cta2Text;
+        if (n === 1) return selectedTiles[0].cta2Text || ctaCfg.cta2Text;
+        return ctaCfg.cta2Text;
+    }
 
-        const phone = form.querySelector('#telefoon');
-        const email = form.querySelector('#email');
-        if (config.installer) url += '&InstallerID=' + encodeURIComponent(config.installer);
-        if (config.showPhone && phone && phone.value) url += '&Phone=' + encodeURIComponent(phone.value.replace(/\s+/g, ''));
-        if (config.showEmail && email && email.value) url += '&Email=' + encodeURIComponent(email.value);
+    // Resolve the optional base64 CTA icon for the current selection, same precedence as
+    // the text. Returns '' (no icon) when nothing is configured for that CTA/selection.
+    function resolveCtaIcon(ctaIndex, selectedTiles, ctaCfg) {
+        const n = selectedTiles.length;
+        if (ctaIndex === 1) {
+            if (n > 1) return ctaCfg.cta1ComboIcon || ctaCfg.cta1IconGlobal;
+            if (n === 1)
+                return selectedTiles[0].cta1IconSvg || ctaCfg.cta1IconGlobal;
+            return ctaCfg.cta1IconGlobal;
+        }
+        if (n > 1) return ctaCfg.cta2ComboIcon || ctaCfg.cta2IconGlobal;
+        if (n === 1)
+            return selectedTiles[0].cta2IconSvg || ctaCfg.cta2IconGlobal;
+        return ctaCfg.cta2IconGlobal;
+    }
+
+    // Render a CTA button as an optional leading icon + a text label. The label is set via
+    // textContent (XSS-safe); the icon SVG is decoded from base64 (operator config) and
+    // injected the same trusted way tiles render their icons. No icon span when none set.
+    // Layout/sizing lives in embed-styles.css (.embed-cta-primary/.embed-cta-icon); the
+    // width/height attributes are stripped so the stylesheet controls the icon size.
+    function setCtaButtonContent(btn, iconBase64, text) {
+        btn.textContent = "";
+        const iconRaw = decodeIconSvg(iconBase64);
+        if (iconRaw) {
+            const iconSpan = document.createElement("span");
+            iconSpan.className = "embed-cta-icon";
+            iconSpan.innerHTML = iconRaw.replace(
+                "<svg",
+                '<svg aria-hidden="true"',
+            );
+            const svg = iconSpan.querySelector("svg");
+            if (svg) {
+                svg.removeAttribute("width");
+                svg.removeAttribute("height");
+            }
+            btn.appendChild(iconSpan);
+        }
+        const labelSpan = document.createElement("span");
+        labelSpan.className = "embed-cta-label";
+        labelSpan.textContent = text || "";
+        btn.appendChild(labelSpan);
+    }
+
+    // Build the HomeZero leadflow URL with referral, address, contact, tiles, checkbox, context and query params.
+    function buildLeadflowUrl(
+        baseUrl,
+        form,
+        config,
+        addrParams,
+        selectedTilesSet,
+    ) {
+        let url = baseUrl;
+        url += "&ReferralURL=" + encodeURIComponent(window.location.href);
+        Object.keys(addrParams).forEach(function (k) {
+            url += "&" + k + "=" + encodeURIComponent(addrParams[k]);
+        });
+
+        const phone = form.querySelector("#telefoon");
+        const email = form.querySelector("#email");
+        if (config.installer)
+            url += "&InstallerID=" + encodeURIComponent(config.installer);
+        if (config.showPhone && phone && phone.value)
+            url +=
+                "&Phone=" + encodeURIComponent(phone.value.replace(/\s+/g, ""));
+        if (config.showEmail && email && email.value)
+            url += "&Email=" + encodeURIComponent(email.value);
 
         if (selectedTilesSet && selectedTilesSet.size > 0) {
             const keys = Array.from(selectedTilesSet);
-            url += '&Tiles=' + encodeURIComponent(keys.join(','));
+            url += "&Tiles=" + encodeURIComponent(keys.join(","));
             // Always send the primary (first selected) tile — preserves pre-existing behavior
             // for multi-select leadflows that key off PrimaryTile.
-            url += '&PrimaryTile=' + encodeURIComponent(keys[0]);
+            url += "&PrimaryTile=" + encodeURIComponent(keys[0]);
         }
 
         const showCheckbox = !!config.checkboxTitle;
-        const checkbox = form.querySelector('#embed-checkbox');
+        const checkbox = form.querySelector("#embed-checkbox");
         if (showCheckbox && checkbox) {
-            if (config.checkboxShorttitle) url += '&checkboxtitle=' + encodeURIComponent(config.checkboxShorttitle);
-            url += '&checkboxvalue=' + encodeURIComponent(checkbox.checked ? 'true' : 'false');
+            if (config.checkboxShorttitle)
+                url +=
+                    "&checkboxtitle=" +
+                    encodeURIComponent(config.checkboxShorttitle);
+            url +=
+                "&checkboxvalue=" +
+                encodeURIComponent(checkbox.checked ? "true" : "false");
         }
-        if (config.customContext) url += '&context=' + encodeURIComponent(config.customContext);
+        if (config.customContext)
+            url += "&context=" + encodeURIComponent(config.customContext);
 
         const qp = getQueryParams();
-        Object.keys(qp).forEach(function (k) { url += '&' + k + '=' + encodeURIComponent(qp[k]); });
+        Object.keys(qp).forEach(function (k) {
+            url += "&" + k + "=" + encodeURIComponent(qp[k]);
+        });
         return url;
     }
 
     // Route a resolved CTA target. action="flow" → HomeZero leadflow with full validation + fallback check.
     // action="booking" → external calendar opened directly (no offline.html fallback).
-    function redirectToFlow(target, form, config, selectedTilesSet, selectedLang, dutchVal) {
-        const phone = form.querySelector('#telefoon');
-        const email = form.querySelector('#email');
+    function redirectToFlow(
+        target,
+        form,
+        config,
+        selectedTilesSet,
+        selectedLang,
+        dutchVal,
+    ) {
+        const phone = form.querySelector("#telefoon");
+        const email = form.querySelector("#email");
         const showCheckbox = !!config.checkboxTitle;
-        const checkbox = form.querySelector('#embed-checkbox');
+        const checkbox = form.querySelector("#embed-checkbox");
 
-        if (target.action === 'booking') {
-            if (!validatePhone(phone, config.phoneRequired, selectedLang)) return;
-            if (!validateEmail(email, config.emailRequired, selectedLang)) return;
-            if (showCheckbox && config.checkboxRequired && checkbox && !checkbox.checked) {
-                displayValidationMessage(checkbox, selectedLang.validation.checkbox); return;
+        if (target.action === "booking") {
+            if (!validatePhone(phone, config.phoneRequired, selectedLang))
+                return;
+            if (!validateEmail(email, config.emailRequired, selectedLang))
+                return;
+            if (
+                showCheckbox &&
+                config.checkboxRequired &&
+                checkbox &&
+                !checkbox.checked
+            ) {
+                displayValidationMessage(
+                    checkbox,
+                    selectedLang.validation.checkbox,
+                );
+                return;
             }
             if (!isSafeUrl(target.url)) return;
 
             let u = target.url;
             const params = new URLSearchParams();
-            if (config.showPhone && phone && phone.value) params.set('phone', phone.value.replace(/\s+/g, ''));
-            if (config.showEmail && email && email.value) params.set('email', email.value);
+            if (config.showPhone && phone && phone.value)
+                params.set("phone", phone.value.replace(/\s+/g, ""));
+            if (config.showEmail && email && email.value)
+                params.set("email", email.value);
             const ps = params.toString();
-            if (ps) u += (u.includes('?') ? '&' : '?') + ps;
+            if (ps) u += (u.includes("?") ? "&" : "?") + ps;
 
-            window.open(u, '_blank');
-            renderConfirmScreen(form, selectedLang.confirmTitle, selectedLang.confirmBookingMessage, config.primaryColor);
+            window.open(u, "_blank");
+            renderConfirmScreen(
+                form,
+                selectedLang.confirmTitle,
+                selectedLang.confirmBookingMessage,
+                config.primaryColor,
+            );
             return;
         }
 
         // action === 'flow'
-        const addrResult = validateAndGetAddressParams(form, config.googleSearch, config.addressFormat, config.country, selectedLang, dutchVal);
+        const addrResult = validateAndGetAddressParams(
+            form,
+            config.googleSearch,
+            config.addressFormat,
+            config.country,
+            selectedLang,
+            dutchVal,
+        );
         if (!addrResult.valid) return;
         if (!validatePhone(phone, config.phoneRequired, selectedLang)) return;
         if (!validateEmail(email, config.emailRequired, selectedLang)) return;
-        if (showCheckbox && config.checkboxRequired && checkbox && !checkbox.checked) {
-            displayValidationMessage(checkbox, selectedLang.validation.checkbox); return;
+        if (
+            showCheckbox &&
+            config.checkboxRequired &&
+            checkbox &&
+            !checkbox.checked
+        ) {
+            displayValidationMessage(
+                checkbox,
+                selectedLang.validation.checkbox,
+            );
+            return;
         }
         if (!isSafeUrl(target.url)) return;
 
-        const preopenedWin = config.openNewTab === 'true' ? window.open('about:blank', '_blank') : null;
-        const url = buildLeadflowUrl(target.url, form, config, addrResult.params, selectedTilesSet);
-        redirectToUrlWithCheck(url, config.openNewTab, preopenedWin, config.primaryColor);
+        const preopenedWin =
+            config.openNewTab === "true"
+                ? window.open("about:blank", "_blank")
+                : null;
+        const url = buildLeadflowUrl(
+            target.url,
+            form,
+            config,
+            addrResult.params,
+            selectedTilesSet,
+        );
+        redirectToUrlWithCheck(
+            url,
+            config.openNewTab,
+            preopenedWin,
+            config.primaryColor,
+        );
     }
 
     // One-time config sanity checks. Logs clearly and degrades gracefully — never throws.
     function validateScanConfig(tiles, cfg) {
-        const P = '[HomeZero embed]';
+        const P = "[HomeZero embed]";
         if (tiles.length === 0) return;
 
         const multi = cfg.tilesMaxSelect !== 1;
         if (multi && !cfg.cta1ComboUrl) {
-            console.warn(P + ' multi-select zonder data-cta1-combo-url: bij meerdere selecties valt CTA1 terug op de eerste maatregel.');
+            console.warn(
+                P +
+                    " multi-select zonder data-cta1-combo-url: bij meerdere selecties valt CTA1 terug op de eerste maatregel.",
+            );
         }
-        if (cfg.showCta2 && (cfg.cta2Action === 'flow' || cfg.cta2Action === 'booking')) {
-            const anyPerTile = tiles.some(function (t) { return !!t.cta2Url; });
+        if (
+            cfg.showCta2 &&
+            (cfg.cta2Action === "flow" || cfg.cta2Action === "booking")
+        ) {
+            const anyPerTile = tiles.some(function (t) {
+                return !!t.cta2Url;
+            });
             if (!anyPerTile && !cfg.cta2UrlGlobal && !cfg.cta2ComboUrl) {
-                console.warn(P + ' data-cta2-show="true" maar geen secundair doel (geen per-tile cta2-url, combo-url of globale cta2-url). CTA2 blijft verborgen.');
+                console.warn(
+                    P +
+                        ' data-cta2-show="true" maar geen secundair doel (geen per-tile cta2-url, combo-url of globale cta2-url). CTA2 blijft verborgen.',
+                );
             }
             if (cfg.cta2UrlGlobal && !isSafeUrl(cfg.cta2UrlGlobal)) {
-                console.warn(P + ' data-cta2-url is geen geldige http(s) URL.');
+                console.warn(P + " data-cta2-url is geen geldige http(s) URL.");
             }
         }
         tiles.forEach(function (t) {
             if (!t.url || !isSafeUrl(t.url)) {
-                console.warn(P + ' maatregel "' + t.key + '" heeft geen geldige data-tile-' + t.key + '-url.');
+                console.warn(
+                    P +
+                        ' maatregel "' +
+                        t.key +
+                        '" heeft geen geldige data-tile-' +
+                        t.key +
+                        "-url.",
+                );
             }
         });
     }
 
     // Render the AI-chat text link (not a button). Visible only when window.ChatWidget is present.
     function renderAiChatLink(text, config) {
-        const link = document.createElement('a');
-        link.className = 'embed-ai-chat-link';
-        link.href = '#';
+        const link = document.createElement("a");
+        link.className = "embed-ai-chat-link";
+        link.href = "#";
         link.textContent = text;
         link.style.color = config.primaryColor;
-        link.style.display = 'none';
+        link.style.display = "none";
 
-        const tryShow = function () { if (window.ChatWidget) { link.style.display = ''; return true; } return false; };
-        window.addEventListener('hz-chatwidget-removed', function () { link.style.display = 'none'; });
+        const tryShow = function () {
+            if (window.ChatWidget) {
+                link.style.display = "";
+                return true;
+            }
+            return false;
+        };
+        window.addEventListener("hz-chatwidget-removed", function () {
+            link.style.display = "none";
+        });
         if (!tryShow()) {
             let attempts = 0;
-            const poll = setInterval(function () { attempts++; if (tryShow() || attempts >= 10) clearInterval(poll); }, 500);
-            window.addEventListener('hz-chatwidget-ready', function () { tryShow(); });
+            const poll = setInterval(function () {
+                attempts++;
+                if (tryShow() || attempts >= 10) clearInterval(poll);
+            }, 500);
+            window.addEventListener("hz-chatwidget-ready", function () {
+                tryShow();
+            });
         }
 
-        link.addEventListener('click', function (e) {
+        link.addEventListener("click", function (e) {
             e.preventDefault();
-            if (window.ChatWidget && typeof window.ChatWidget.open === 'function') {
+            if (
+                window.ChatWidget &&
+                typeof window.ChatWidget.open === "function"
+            ) {
                 window.ChatWidget.open();
             } else {
-                const toggle = document.querySelector('.chat-widget-toggle, [data-chat-toggle], .hz-chat-toggle');
+                const toggle = document.querySelector(
+                    ".chat-widget-toggle, [data-chat-toggle], .hz-chat-toggle",
+                );
                 if (toggle) toggle.click();
             }
         });
         return link;
     }
 
-    function handleScanCta2(form, tiles, selectedTilesSet, picoKey, picoEnv, picoFlowIdOverride, contactSkipAddress, config, selectedLang, dutchVal, cta2Btn, cta2OrigText) {
-        form.querySelectorAll('.embed-validation-message').forEach(function (m) { m.remove(); });
-        const prevErr = form.querySelector('.embed-inline-error');
+    function handleScanCta2(
+        form,
+        tiles,
+        selectedTilesSet,
+        picoKey,
+        picoEnv,
+        picoFlowIdOverride,
+        contactSkipAddress,
+        config,
+        selectedLang,
+        dutchVal,
+        cta2Btn,
+        cta2OrigText,
+        cta2OrigIcon,
+    ) {
+        form.querySelectorAll(".embed-validation-message").forEach(
+            function (m) {
+                m.remove();
+            },
+        );
+        const prevErr = form.querySelector(".embed-inline-error");
         if (prevErr) prevErr.remove();
 
-        const phone = form.querySelector('#telefoon');
-        const email = form.querySelector('#email');
-        const phoneVal = phone ? phone.value.trim() : '';
-        const emailVal = email ? email.value.trim() : '';
+        const phone = form.querySelector("#telefoon");
+        const email = form.querySelector("#email");
+        const phoneVal = phone ? phone.value.trim() : "";
+        const emailVal = email ? email.value.trim() : "";
 
         let isValid = true;
         if (!phoneVal && !emailVal) {
             const target = phone || email;
-            if (target) displayValidationMessage(target, selectedLang.phoneOrEmailRequired);
+            if (target)
+                displayValidationMessage(
+                    target,
+                    selectedLang.phoneOrEmailRequired,
+                );
             isValid = false;
         }
-        if (phoneVal && !validatePhone(phone, false, selectedLang)) isValid = false;
-        if (emailVal && !validateEmail(email, false, selectedLang)) isValid = false;
+        if (phoneVal && !validatePhone(phone, false, selectedLang))
+            isValid = false;
+        if (emailVal && !validateEmail(email, false, selectedLang))
+            isValid = false;
 
         let addressParams = {};
         if (!contactSkipAddress) {
-            const ar = validateAndGetAddressParams(form, config.googleSearch, config.addressFormat, config.country, selectedLang, dutchVal);
+            const ar = validateAndGetAddressParams(
+                form,
+                config.googleSearch,
+                config.addressFormat,
+                config.country,
+                selectedLang,
+                dutchVal,
+            );
             if (!ar.valid) isValid = false;
             else addressParams = ar.params;
         } else {
-            addressParams = tryGetAddressParams(form, config.googleSearch, config.addressFormat, config.country) || {};
+            addressParams =
+                tryGetAddressParams(
+                    form,
+                    config.googleSearch,
+                    config.addressFormat,
+                    config.country,
+                ) || {};
         }
 
         if (!isValid) return;
@@ -3770,7 +4971,10 @@
         tiles.forEach(function (tile) {
             if (selectedTilesSet.has(tile.key)) {
                 const fid = extractFlowIdFromUrl(tile.url);
-                if (fid) { flowsInterestedIn.push(fid); if (!flowId) flowId = fid; }
+                if (fid) {
+                    flowsInterestedIn.push(fid);
+                    if (!flowId) flowId = fid;
+                }
             }
         });
 
@@ -3779,21 +4983,39 @@
             phone: phoneVal || undefined,
             email: emailVal || undefined,
             flowsInterestedIn: flowsInterestedIn,
-            zipcode: addressParams.Zipcode, housenumber: addressParams.Housenumber,
-            addition: addressParams.Addition, street: addressParams.Street,
-            city: addressParams.City, country: config.country,
+            zipcode: addressParams.Zipcode,
+            housenumber: addressParams.Housenumber,
+            addition: addressParams.Addition,
+            street: addressParams.Street,
+            city: addressParams.City,
+            country: config.country,
         });
 
         cta2Btn.disabled = true;
-        cta2Btn.textContent = '...';
+        cta2Btn.textContent = "...";
 
         submitPicoApi(picoKey, picoEnv, payload)
             .then(function () {
-                renderConfirmScreen(form, selectedLang.confirmTitle, selectedLang.confirmContactMessage, config.primaryColor);
+                renderConfirmScreen(
+                    form,
+                    selectedLang.confirmTitle,
+                    selectedLang.confirmContactMessage,
+                    config.primaryColor,
+                );
             })
             .catch(function (err) {
-                const addrSelector = config.addressFormat === 'dutch' ? '#postcode' : '#city';
-                showPicoError(form, err, config.primaryColor, cta2Btn, cta2OrigText, addrSelector, selectedLang);
+                const addrSelector =
+                    config.addressFormat === "dutch" ? "#postcode" : "#city";
+                showPicoError(
+                    form,
+                    err,
+                    config.primaryColor,
+                    cta2Btn,
+                    cta2OrigText,
+                    addrSelector,
+                    selectedLang,
+                    cta2OrigIcon,
+                );
             });
     }
 
@@ -3802,103 +5024,210 @@
     function initBookingMode(element, form, config) {
         const selectedLang = translations[config.language] || translations.nl;
 
-        const bookingUrl = element.getAttribute('data-booking-url') || '';
-        const cta1Text = element.getAttribute('data-cta1-text') || 'Plan een afspraak';
-        const showTilesAttr = element.getAttribute('data-show-tiles') || '';
-        const tileDisplay = showTilesAttr === 'dropdown' ? 'dropdown' : (showTilesAttr === 'tags' ? 'tags' : (showTilesAttr === 'none' || showTilesAttr === 'false' || showTilesAttr === '' ? 'none' : 'large'));
-        const tilesLabel = element.getAttribute('data-tiles-label') || 'Producten';
-        const passToUrl = element.getAttribute('data-pass-to-url') !== 'false';
-        const tilesMaxSelect = parseInt(element.getAttribute('data-tiles-max-select') || '0', 10) || 0;
-        const tilesDefault = (element.getAttribute('data-tiles-default') || '').split(',').map(function (k) { return k.trim(); }).filter(Boolean);
+        const bookingUrl = element.getAttribute("data-booking-url") || "";
+        const cta1Text =
+            element.getAttribute("data-cta1-text") || "Plan een afspraak";
+        const showTilesAttr = element.getAttribute("data-show-tiles") || "";
+        const tileDisplay =
+            showTilesAttr === "dropdown"
+                ? "dropdown"
+                : showTilesAttr === "tags"
+                  ? "tags"
+                  : showTilesAttr === "none" ||
+                      showTilesAttr === "false" ||
+                      showTilesAttr === ""
+                    ? "none"
+                    : "large";
+        const tilesLabel =
+            element.getAttribute("data-tiles-label") || "Producten";
+        const passToUrl = element.getAttribute("data-pass-to-url") !== "false";
+        const tilesMaxSelect =
+            parseInt(
+                element.getAttribute("data-tiles-max-select") || "0",
+                10,
+            ) || 0;
+        const tilesDefault = (element.getAttribute("data-tiles-default") || "")
+            .split(",")
+            .map(function (k) {
+                return k.trim();
+            })
+            .filter(Boolean);
 
         addTitleSubtitle(form, config.title, config.subtitle);
 
         // All innerHTML-based additions must happen BEFORE appendChild(grid)
-        form.innerHTML += buildContactFieldsHtml(config.showPhone, config.showEmail, config.phoneRequired, config.emailRequired, selectedLang);
+        form.innerHTML += buildContactFieldsHtml(
+            config.showPhone,
+            config.showEmail,
+            config.phoneRequired,
+            config.emailRequired,
+            selectedLang,
+            config.placeholders,
+        );
 
         if (config.checkboxTitle) {
             form.innerHTML += buildCheckboxHtml();
-            attachCheckboxText(form, config.checkboxTitle, config.checkboxRequired);
+            attachCheckboxText(
+                form,
+                config.checkboxTitle,
+                config.checkboxRequired,
+            );
         }
 
-        if (tileDisplay !== 'none') {
+        if (tileDisplay !== "none") {
             const tiles = parseTilesFromElement(element);
-            let _preselected = tilesDefault.filter(function (k) { return tiles.some(function (t) { return t.key === k; }); });
-            if (tilesMaxSelect > 0) _preselected = _preselected.slice(0, tilesMaxSelect);
+            let _preselected = tilesDefault.filter(function (k) {
+                return tiles.some(function (t) {
+                    return t.key === k;
+                });
+            });
+            if (tilesMaxSelect > 0)
+                _preselected = _preselected.slice(0, tilesMaxSelect);
             const selectedTilesSet = new Set(_preselected);
             if (tiles.length > 0) {
-                const header = form.querySelector('.embed-header');
+                const header = form.querySelector(".embed-header");
                 const refNode = header ? header.nextSibling : form.firstChild;
-                if (tileDisplay === 'dropdown') {
-                    const ddWrap = renderTileDropdown(tiles, selectedTilesSet, config.primaryColor, tilesMaxSelect, tilesLabel, null, selectedLang);
+                if (tileDisplay === "dropdown") {
+                    const ddWrap = renderTileDropdown(
+                        tiles,
+                        selectedTilesSet,
+                        config.primaryColor,
+                        tilesMaxSelect,
+                        tilesLabel,
+                        null,
+                        selectedLang,
+                    );
                     form.insertBefore(ddWrap, refNode);
-                } else if (tileDisplay === 'tags') {
-                    const tagsWrap = renderTileTagsSelect(tiles, selectedTilesSet, config.primaryColor, tilesMaxSelect, tilesLabel, null, selectedLang);
+                } else if (tileDisplay === "tags") {
+                    const tagsWrap = renderTileTagsSelect(
+                        tiles,
+                        selectedTilesSet,
+                        config.primaryColor,
+                        tilesMaxSelect,
+                        tilesLabel,
+                        null,
+                        selectedLang,
+                    );
                     form.insertBefore(tagsWrap, refNode);
-                } else if (tileDisplay === 'large') {
-                    const grid = renderTileLargeGrid(tiles, selectedTilesSet, config.primaryColor, function (key, tileEl) {
-                        if (selectedTilesSet.has(key)) {
-                            selectedTilesSet.delete(key);
-                            tileEl.classList.remove('selected');
-                            clearTileLargeSelectedStyle(tileEl);
-                        } else {
-                            if (tilesMaxSelect > 0 && selectedTilesSet.size >= tilesMaxSelect) {
-                                const firstKey = selectedTilesSet.values().next().value;
-                                selectedTilesSet.delete(firstKey);
-                                const firstEl = form.querySelector('[data-tile-key="' + firstKey + '"]');
-                                if (firstEl) { firstEl.classList.remove('selected'); clearTileLargeSelectedStyle(firstEl); }
+                } else if (tileDisplay === "large") {
+                    const grid = renderTileLargeGrid(
+                        tiles,
+                        selectedTilesSet,
+                        config.primaryColor,
+                        function (key, tileEl) {
+                            if (selectedTilesSet.has(key)) {
+                                selectedTilesSet.delete(key);
+                                tileEl.classList.remove("selected");
+                                clearTileLargeSelectedStyle(tileEl);
+                            } else {
+                                if (
+                                    tilesMaxSelect > 0 &&
+                                    selectedTilesSet.size >= tilesMaxSelect
+                                ) {
+                                    const firstKey = selectedTilesSet
+                                        .values()
+                                        .next().value;
+                                    selectedTilesSet.delete(firstKey);
+                                    const firstEl = form.querySelector(
+                                        '[data-tile-key="' + firstKey + '"]',
+                                    );
+                                    if (firstEl) {
+                                        firstEl.classList.remove("selected");
+                                        clearTileLargeSelectedStyle(firstEl);
+                                    }
+                                }
+                                selectedTilesSet.add(key);
+                                tileEl.classList.add("selected");
+                                applyTileLargeSelectedStyle(
+                                    tileEl,
+                                    config.primaryColor,
+                                );
                             }
-                            selectedTilesSet.add(key);
-                            tileEl.classList.add('selected');
-                            applyTileLargeSelectedStyle(tileEl, config.primaryColor);
-                        }
-                    });
+                        },
+                    );
                     form.insertBefore(grid, refNode);
                 } else {
-                    const grid = renderTileLargeGrid(tiles, selectedTilesSet, config.primaryColor, function (key, tileEl) {
-                        if (selectedTilesSet.has(key)) {
-                            selectedTilesSet.delete(key);
-                            tileEl.classList.remove('selected');
-                            clearTileLargeSelectedStyle(tileEl);
-                        } else {
-                            if (tilesMaxSelect > 0 && selectedTilesSet.size >= tilesMaxSelect) {
-                                const firstKey = selectedTilesSet.values().next().value;
-                                selectedTilesSet.delete(firstKey);
-                                const firstEl = form.querySelector('[data-tile-key="' + firstKey + '"]');
-                                if (firstEl) { firstEl.classList.remove('selected'); clearTileLargeSelectedStyle(firstEl); }
+                    const grid = renderTileLargeGrid(
+                        tiles,
+                        selectedTilesSet,
+                        config.primaryColor,
+                        function (key, tileEl) {
+                            if (selectedTilesSet.has(key)) {
+                                selectedTilesSet.delete(key);
+                                tileEl.classList.remove("selected");
+                                clearTileLargeSelectedStyle(tileEl);
+                            } else {
+                                if (
+                                    tilesMaxSelect > 0 &&
+                                    selectedTilesSet.size >= tilesMaxSelect
+                                ) {
+                                    const firstKey = selectedTilesSet
+                                        .values()
+                                        .next().value;
+                                    selectedTilesSet.delete(firstKey);
+                                    const firstEl = form.querySelector(
+                                        '[data-tile-key="' + firstKey + '"]',
+                                    );
+                                    if (firstEl) {
+                                        firstEl.classList.remove("selected");
+                                        clearTileLargeSelectedStyle(firstEl);
+                                    }
+                                }
+                                selectedTilesSet.add(key);
+                                tileEl.classList.add("selected");
+                                applyTileLargeSelectedStyle(
+                                    tileEl,
+                                    config.primaryColor,
+                                );
                             }
-                            selectedTilesSet.add(key);
-                            tileEl.classList.add('selected');
-                            applyTileLargeSelectedStyle(tileEl, config.primaryColor);
-                        }
-                    });
+                        },
+                    );
                     form.insertBefore(grid, refNode);
                 }
             }
         }
 
-        const cta1Btn = document.createElement('button');
-        cta1Btn.type = 'button';
-        cta1Btn.className = 'embed-submit-button embed-cta-primary';
+        const cta1Btn = document.createElement("button");
+        cta1Btn.type = "button";
+        cta1Btn.className = "embed-submit-button embed-cta-primary";
         cta1Btn.style.backgroundColor = config.primaryColor;
-        cta1Btn.style.setProperty('border-radius', config.buttonRadius, 'important');
+        cta1Btn.style.setProperty(
+            "border-radius",
+            config.buttonRadius,
+            "important",
+        );
         cta1Btn.textContent = cta1Text;
         form.appendChild(cta1Btn);
 
         setupFocusHandlers(form, config.primaryColor);
 
-        cta1Btn.addEventListener('click', function () {
-            form.querySelectorAll('.embed-validation-message').forEach(function (m) { m.remove(); });
+        cta1Btn.addEventListener("click", function () {
+            form.querySelectorAll(".embed-validation-message").forEach(
+                function (m) {
+                    m.remove();
+                },
+            );
 
-            const phone = form.querySelector('#telefoon');
-            const email = form.querySelector('#email');
-            if (!validatePhone(phone, config.phoneRequired, selectedLang)) return;
-            if (!validateEmail(email, config.emailRequired, selectedLang)) return;
+            const phone = form.querySelector("#telefoon");
+            const email = form.querySelector("#email");
+            if (!validatePhone(phone, config.phoneRequired, selectedLang))
+                return;
+            if (!validateEmail(email, config.emailRequired, selectedLang))
+                return;
 
             const showCheckbox = !!config.checkboxTitle;
-            const checkbox = form.querySelector('#embed-checkbox');
-            if (showCheckbox && config.checkboxRequired && checkbox && !checkbox.checked) {
-                displayValidationMessage(checkbox, selectedLang.validation.checkbox); return;
+            const checkbox = form.querySelector("#embed-checkbox");
+            if (
+                showCheckbox &&
+                config.checkboxRequired &&
+                checkbox &&
+                !checkbox.checked
+            ) {
+                displayValidationMessage(
+                    checkbox,
+                    selectedLang.validation.checkbox,
+                );
+                return;
             }
 
             if (!bookingUrl || !isSafeUrl(bookingUrl)) return;
@@ -3906,14 +5235,21 @@
             let targetUrl = bookingUrl;
             if (passToUrl) {
                 const params = new URLSearchParams();
-                if (config.showPhone && phone && phone.value) params.set('phone', phone.value.replace(/\s+/g, ''));
-                if (config.showEmail && email && email.value) params.set('email', email.value);
+                if (config.showPhone && phone && phone.value)
+                    params.set("phone", phone.value.replace(/\s+/g, ""));
+                if (config.showEmail && email && email.value)
+                    params.set("email", email.value);
                 const ps = params.toString();
-                if (ps) targetUrl += (targetUrl.includes('?') ? '&' : '?') + ps;
+                if (ps) targetUrl += (targetUrl.includes("?") ? "&" : "?") + ps;
             }
 
-            window.open(targetUrl, '_blank');
-            renderConfirmScreen(form, selectedLang.confirmAppointmentTitle, selectedLang.confirmAppointmentMessage, config.primaryColor);
+            window.open(targetUrl, "_blank");
+            renderConfirmScreen(
+                form,
+                selectedLang.confirmAppointmentTitle,
+                selectedLang.confirmAppointmentMessage,
+                config.primaryColor,
+            );
         });
     }
 
@@ -3923,120 +5259,237 @@
         const selectedLang = translations[config.language] || translations.nl;
         const dutchVal = translations.dutchValidation;
 
-        const picoKey = element.getAttribute('data-pico-key') || '';
-        const picoEnv = element.getAttribute('data-pico-env') || 'production';
-        const picoFlowId = element.getAttribute('data-pico-flow-id') || '';
-        const cta1Text = element.getAttribute('data-cta1-text') || 'Stuur mij de brochure';
-        const successMessage = element.getAttribute('data-success-message') || 'De brochure is onderweg naar jouw inbox!';
-        const showName = element.getAttribute('data-show-name') === 'true';
-        const showPhone = element.getAttribute('data-show-phone') === 'true';
-        const showAddress = element.getAttribute('data-show-address') === 'true';
-        const country = element.getAttribute('data-country') || 'nl';
-        const addressFormat = element.getAttribute('data-address-format') || 'dutch';
-        const googleSearch = element.getAttribute('data-google-search') === 'true';
+        const picoKey = element.getAttribute("data-pico-key") || "";
+        const picoEnv = element.getAttribute("data-pico-env") || "production";
+        const picoFlowId = element.getAttribute("data-pico-flow-id") || "";
+        const cta1Text =
+            element.getAttribute("data-cta1-text") || "Stuur mij de brochure";
+        const successMessage =
+            element.getAttribute("data-success-message") ||
+            "De brochure is onderweg naar jouw inbox!";
+        const showName = element.getAttribute("data-show-name") === "true";
+        const showPhone = element.getAttribute("data-show-phone") === "true";
+        const showAddress =
+            element.getAttribute("data-show-address") === "true";
+        const country = element.getAttribute("data-country") || "nl";
+        const addressFormat =
+            element.getAttribute("data-address-format") || "dutch";
+        const googleSearch =
+            element.getAttribute("data-google-search") === "true";
 
         addTitleSubtitle(form, config.title, config.subtitle);
 
         if (showName) {
-            form.innerHTML += '<div class="embed-row"><div class="embed-col"><div class="embed-flex-container">' +
-                '<div class="embed-form-container"><label for="firstname" class="embed-label-bold">' + selectedLang.firstnameLabel + '</label>' +
-                '<input type="text" id="firstname" class="embed-input-field" placeholder="' + selectedLang.firstnamePlaceholder + '" maxlength="100"></div>' +
-                '<div class="embed-form-container"><label for="lastname" class="embed-label-bold">' + selectedLang.lastnameLabel + '</label>' +
-                '<input type="text" id="lastname" class="embed-input-field" placeholder="' + selectedLang.lastnamePlaceholder + '" maxlength="100"></div>' +
-                '</div></div></div>';
+            form.innerHTML +=
+                '<div class="embed-row"><div class="embed-col"><div class="embed-flex-container">' +
+                '<div class="embed-form-container"><label for="firstname" class="embed-label-bold">' +
+                selectedLang.firstnameLabel +
+                "</label>" +
+                '<input type="text" id="firstname" class="embed-input-field" placeholder="' +
+                selectedLang.firstnamePlaceholder +
+                '" maxlength="100"></div>' +
+                '<div class="embed-form-container"><label for="lastname" class="embed-label-bold">' +
+                selectedLang.lastnameLabel +
+                "</label>" +
+                '<input type="text" id="lastname" class="embed-input-field" placeholder="' +
+                selectedLang.lastnamePlaceholder +
+                '" maxlength="100"></div>' +
+                "</div></div></div>";
         }
 
-        form.innerHTML += '<div class="embed-row"><div class="embed-col"><div class="embed-form-container">' +
-            '<label for="email" class="embed-label-bold">' + selectedLang.emailLabel + '<span>*</span></label>' +
-            '<input type="email" id="email" class="embed-input-field" placeholder="jandevries@gmail.com" maxlength="100"></div></div></div>';
+        form.innerHTML +=
+            '<div class="embed-row"><div class="embed-col"><div class="embed-form-container">' +
+            '<label for="email" class="embed-label-bold">' +
+            selectedLang.emailLabel +
+            "<span>*</span></label>" +
+            '<input type="email" id="email" class="embed-input-field" placeholder="' +
+            escapeAttr(
+                config.placeholders && config.placeholders.email != null
+                    ? config.placeholders.email
+                    : "jandevries@gmail.com",
+            ) +
+            '" maxlength="100"></div></div></div>';
 
         if (showPhone) {
-            form.innerHTML += '<div class="embed-row"><div class="embed-col"><div class="embed-form-container">' +
-                '<label for="telefoon" class="embed-label-bold">' + selectedLang.phoneLabel + '</label>' +
-                '<input type="tel" id="telefoon" class="embed-input-field" placeholder="0612345678" maxlength="20"></div></div></div>';
+            form.innerHTML +=
+                '<div class="embed-row"><div class="embed-col"><div class="embed-form-container">' +
+                '<label for="telefoon" class="embed-label-bold">' +
+                selectedLang.phoneLabel +
+                "</label>" +
+                '<input type="tel" id="telefoon" class="embed-input-field" placeholder="' +
+                escapeAttr(
+                    config.placeholders && config.placeholders.phone != null
+                        ? config.placeholders.phone
+                        : "0612345678",
+                ) +
+                '" maxlength="20"></div></div></div>';
         }
 
-        if (showAddress) form.innerHTML += buildAddressFieldsHtml(googleSearch, addressFormat, selectedLang, country);
+        if (showAddress)
+            form.innerHTML += buildAddressFieldsHtml(
+                googleSearch,
+                addressFormat,
+                selectedLang,
+                country,
+                config.placeholders,
+            );
 
         if (config.checkboxTitle) {
             form.innerHTML += buildCheckboxHtml();
-            attachCheckboxText(form, config.checkboxTitle, config.checkboxRequired);
+            attachCheckboxText(
+                form,
+                config.checkboxTitle,
+                config.checkboxRequired,
+            );
         }
 
-        const cta1Btn = document.createElement('button');
-        cta1Btn.type = 'button';
-        cta1Btn.className = 'embed-submit-button embed-cta-primary';
+        const cta1Btn = document.createElement("button");
+        cta1Btn.type = "button";
+        cta1Btn.className = "embed-submit-button embed-cta-primary";
         cta1Btn.style.backgroundColor = config.primaryColor;
-        cta1Btn.style.setProperty('border-radius', config.buttonRadius, 'important');
+        cta1Btn.style.setProperty(
+            "border-radius",
+            config.buttonRadius,
+            "important",
+        );
         cta1Btn.textContent = cta1Text;
         form.appendChild(cta1Btn);
 
         setupFocusHandlers(form, config.primaryColor);
 
         if (showAddress && googleSearch) {
-            const gInput = form.querySelector('#google-address');
-            if (gInput) setupGoogleAutocomplete(gInput, country, addressFormat, form, config.language);
+            const gInput = form.querySelector("#google-address");
+            if (gInput)
+                setupGoogleAutocomplete(
+                    gInput,
+                    country,
+                    addressFormat,
+                    form,
+                    config.language,
+                );
         }
 
-        cta1Btn.addEventListener('click', function () {
-            form.querySelectorAll('.embed-validation-message').forEach(function (m) { m.remove(); });
-            const prevErr = form.querySelector('.embed-inline-error');
+        cta1Btn.addEventListener("click", function () {
+            form.querySelectorAll(".embed-validation-message").forEach(
+                function (m) {
+                    m.remove();
+                },
+            );
+            const prevErr = form.querySelector(".embed-inline-error");
             if (prevErr) prevErr.remove();
 
-            const email = form.querySelector('#email');
-            const phone = form.querySelector('#telefoon');
-            const emailRegex = /^[A-Za-z0-9!#$%&'*+\=?^_`{|}~-]+(?:\.[A-Za-z0-9!#$%&'*+\=?^_`{|}~-]+)*@(?:[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?\.)+[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?$/;
+            const email = form.querySelector("#email");
+            const phone = form.querySelector("#telefoon");
+            const emailRegex =
+                /^[A-Za-z0-9!#$%&'*+\=?^_`{|}~-]+(?:\.[A-Za-z0-9!#$%&'*+\=?^_`{|}~-]+)*@(?:[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?\.)+[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?$/;
 
             let isValid = true;
             if (!email || !email.value.trim()) {
-                if (email) displayValidationMessage(email, selectedLang.validation.emailRequired);
+                if (email)
+                    displayValidationMessage(
+                        email,
+                        selectedLang.validation.emailRequired,
+                    );
                 isValid = false;
             } else if (!email.value.match(emailRegex)) {
                 displayValidationMessage(email, selectedLang.validation.email);
                 isValid = false;
             }
-            if (showPhone && phone && phone.value && !phone.value.match(/^\+?[0-9\s-]{7,20}$/)) {
+            if (
+                showPhone &&
+                phone &&
+                phone.value &&
+                !phone.value.match(/^\+?[0-9\s-]{7,20}$/)
+            ) {
                 displayValidationMessage(phone, selectedLang.validation.phone);
                 isValid = false;
             }
             if (showAddress) {
-                const ar = validateAndGetAddressParams(form, googleSearch, addressFormat, country, selectedLang, dutchVal);
+                const ar = validateAndGetAddressParams(
+                    form,
+                    googleSearch,
+                    addressFormat,
+                    country,
+                    selectedLang,
+                    dutchVal,
+                );
                 if (!ar.valid) isValid = false;
             }
 
             const showCheckbox = !!config.checkboxTitle;
-            const checkbox = form.querySelector('#embed-checkbox');
-            if (showCheckbox && config.checkboxRequired && checkbox && !checkbox.checked) {
-                displayValidationMessage(checkbox, selectedLang.validation.checkbox);
+            const checkbox = form.querySelector("#embed-checkbox");
+            if (
+                showCheckbox &&
+                config.checkboxRequired &&
+                checkbox &&
+                !checkbox.checked
+            ) {
+                displayValidationMessage(
+                    checkbox,
+                    selectedLang.validation.checkbox,
+                );
                 isValid = false;
             }
             if (!isValid) return;
 
-            const addressParams = showAddress ? (tryGetAddressParams(form, googleSearch, addressFormat, country) || {}) : {};
-            const firstname = showName && form.querySelector('#firstname') ? form.querySelector('#firstname').value.trim() : '';
-            const lastname = showName && form.querySelector('#lastname') ? form.querySelector('#lastname').value.trim() : '';
+            const addressParams = showAddress
+                ? tryGetAddressParams(
+                      form,
+                      googleSearch,
+                      addressFormat,
+                      country,
+                  ) || {}
+                : {};
+            const firstname =
+                showName && form.querySelector("#firstname")
+                    ? form.querySelector("#firstname").value.trim()
+                    : "";
+            const lastname =
+                showName && form.querySelector("#lastname")
+                    ? form.querySelector("#lastname").value.trim()
+                    : "";
 
             const payload = buildPicoPayload({
                 flowId: picoFlowId || undefined,
                 email: email.value.trim(),
-                phone: showPhone && phone ? (phone.value.trim() || undefined) : undefined,
+                phone:
+                    showPhone && phone
+                        ? phone.value.trim() || undefined
+                        : undefined,
                 firstname: firstname || undefined,
                 lastname: lastname || undefined,
-                zipcode: addressParams.Zipcode, housenumber: addressParams.Housenumber,
-                addition: addressParams.Addition, street: addressParams.Street,
-                city: addressParams.City, country: country,
+                zipcode: addressParams.Zipcode,
+                housenumber: addressParams.Housenumber,
+                addition: addressParams.Addition,
+                street: addressParams.Street,
+                city: addressParams.City,
+                country: country,
             });
 
             cta1Btn.disabled = true;
-            cta1Btn.textContent = '...';
+            cta1Btn.textContent = "...";
 
             submitPicoApi(picoKey, picoEnv, payload)
                 .then(function () {
-                    renderConfirmScreen(form, selectedLang.confirmBrochureTitle, successMessage, config.primaryColor);
+                    renderConfirmScreen(
+                        form,
+                        selectedLang.confirmBrochureTitle,
+                        successMessage,
+                        config.primaryColor,
+                    );
                 })
                 .catch(function (err) {
-                    const addrSelector = addressFormat === 'dutch' ? '#postcode' : '#city';
-                    showPicoError(form, err, config.primaryColor, cta1Btn, cta1Text, showAddress ? addrSelector : null, selectedLang);
+                    const addrSelector =
+                        addressFormat === "dutch" ? "#postcode" : "#city";
+                    showPicoError(
+                        form,
+                        err,
+                        config.primaryColor,
+                        cta1Btn,
+                        cta1Text,
+                        showAddress ? addrSelector : null,
+                        selectedLang,
+                    );
                 });
         });
     }
