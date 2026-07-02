@@ -3590,7 +3590,9 @@
             const c2 = form.querySelector('.embed-cta-secondary');
             if (c2 && (cta2Action === 'flow' || cta2Action === 'booking')) {
                 const t2 = resolveCtaTarget(2, sel, ctaCfg);
-                c2.style.display = (t2 && t2.url) ? '' : 'none';
+                // .embed-cta-secondary has `display: inline-flex !important` in CSS, so a plain
+                // inline `display` (non-important) can't hide it — must set with priority.
+                c2.style.setProperty('display', (t2 && t2.url) ? 'inline-flex' : 'none', 'important');
             }
             if (c2) setCtaButtonContent(c2, resolveCtaIcon(2, sel, ctaCfg), resolveCtaText(2, sel, ctaCfg));
         }
