@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HomeZero Widget — Dropdown preview</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #eef1f5;
+      color: #132039;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 16px;
+      min-height: 100vh;
+      box-sizing: border-box;
+    }
+    h1 { font-size: 18px; margin: 0 0 24px; color: #4b5563; font-weight: 600; }
+    .stage { width: 100%; max-width: 460px; }
+  </style>
+</head>
+<body>
+  <h1>HomeZero Widget — single-select dropdown</h1>
+
+  <div class="stage">
+    <!-- HomeZero Widget (single-select dropdown) -->
+    <hz-embed
+      data-mode="scan"
+      data-color="#F79422"
+      data-button-radius="24px"
+      data-open-new-tab="true"
+      data-title="Waarin bent u geïnteresseerd?"
+      data-tile-display="dropdown"
+      data-tiles-label=""
+      data-tiles-max-select="1"
+      data-tile-homebattery-url="https://start.feenstra.com/link/start?id=f468555a-5d06-40db-a93b-7a429eb0ac4a"
+      data-tile-homebattery-title="Thuisbatterij"
+      data-tile-homebattery-cta2-url="https://start.feenstra.com/link/start?id=f34a954c-4dcd-4151-9ea3-27c2978f12a5"
+      data-tile-solarpanels-url="https://start.feenstra.com/link/start?id=f0baa922-7b84-4804-8d8b-bbda2c46c64f"
+      data-tile-solarpanels-title="Zonnepanelen"
+      data-tile-solarboiler-url="https://start.feenstra.com/link/start?id=85c1a259-f0b6-40b2-b112-bd69270510e9"
+      data-tile-solarboiler-title="Zonneboiler"
+      data-tile-airconditioning-url="https://start.feenstra.com/link/start?id=ba0862c3-213d-4412-b5ac-a6a1c216a113"
+      data-tile-airconditioning-title="Airco"
+      data-tile-airconditioning-cta2-url="https://start.feenstra.com/link/start?id=179399a5-ca9a-42a9-a884-1deeec65a69b"
+      data-cta2-show="true"
+      data-ai-chat-show="true"
+      data-ai-chat-text="Chat met fleur onze AI adviseur"
+      data-show-email="true"
+      data-cta1-text="Direct een offerte"
+      data-cta2-text="Adviesgesprek aanvraag"
+      data-bg-color="#ffffff"
+      data-block-radius="25px"
+      data-block-padding="28px"
+      data-block-border="none"
+    ></hz-embed>
+  </div>
+
+  <!-- Local Acceptance build (contains the dropdown feature) -->
+  <script defer src="./Acceptance/embed.js"></script>
+</body>
+</html>
