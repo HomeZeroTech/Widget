@@ -186,6 +186,9 @@ hz-embed {
     align-items: center;
     gap: 10px;
     font-weight: 500;
+    /* Reserve the icon-badge height so the trigger doesn't jump between the
+       empty (text-only) state and the selected (icon badge) state. */
+    min-height: 32px;
 }
 
 .dropdown-selected .chevron-icon {
@@ -448,9 +451,7 @@ hz-embed {
 }
 
 .embed-checkbox-input:checked + .embed-checkbox-custom:hover,
-.embed-checkbox-label:hover
-    .embed-checkbox-input:checked
-    ~ .embed-checkbox-custom {
+.embed-checkbox-label:hover .embed-checkbox-input:checked ~ .embed-checkbox-custom {
     background-color: color-mix(in srgb, var(--primary-color) 85%, black);
     border-color: color-mix(in srgb, var(--primary-color) 85%, black);
 }
@@ -503,10 +504,7 @@ hz-embed {
     border: 1.5px solid #dadee7;
     border-radius: 10px;
     cursor: pointer;
-    transition:
-        background 0.18s ease,
-        border-color 0.18s ease,
-        color 0.18s ease;
+    transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
     background: #fff;
     position: relative;
     gap: 6px;
@@ -643,7 +641,7 @@ hz-embed {
     font-weight: 500;
     text-decoration: underline;
     cursor: pointer;
-    color: var(--primary-color, #2a6df4);
+    color: var(--primary-color, #2A6DF4);
     background: none;
     border: none;
 }
