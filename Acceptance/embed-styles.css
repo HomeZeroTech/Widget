@@ -186,6 +186,9 @@ hz-embed {
     align-items: center;
     gap: 10px;
     font-weight: 500;
+    /* Reserve the icon-badge height so the trigger doesn't jump between the
+       empty (text-only) state and the selected (icon badge) state. */
+    min-height: 32px;
 }
 
 .dropdown-selected .chevron-icon {
