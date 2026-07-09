@@ -1488,9 +1488,6 @@
     }
 
     function buildPicoPayload(opts) {
-        const params = new URLSearchParams(window.location.search);
-        const getParam = function (key) { return params.get(key) || undefined; };
-
         const payload = { ReferralURL: window.location.href };
         if (opts.flowId) payload.FlowID = opts.flowId;
         if (opts.email) payload.Email = opts.email;
@@ -1516,9 +1513,9 @@
             wbraid: 'WBRAID', dclid: 'DCLID', ttclid: 'TTCLID', fbclid: 'FBCLID',
             li_fat_id: 'LI_FAT_ID', ad_id: 'AD_ID',
         };
-        Object.keys(utmMap).forEach(function (k) {
-            const v = getParam(k);
-            if (v) payload[utmMap[k]] = v;
+        const trackingParams = getQueryParams();
+        Object.keys(trackingParams).forEach(function (k) {
+            if (utmMap[k]) payload[utmMap[k]] = trackingParams[k];
         });
 
         return payload;
