@@ -6,7 +6,11 @@ Build a **widget configuration tool** that allows HomeZero partners to visually 
 
 This tool replaces the "Pico Widget Generator" prototype at `flowmatchwidgetgenerator.lovable.app`. It must have a significantly more complete configuration surface and an accurate live preview.
 
-> **What changed 30 June 2026 (read first — newest revision):**
+> **What changed 5 August 2026 (read first — newest revision):**
+> - **Static consent text above the CTA.** `data-consent-text` renders a fixed line of copy directly below the consent checkbox and above the CTA button — the "by continuing you accept our terms" pattern, where nothing has to be ticked. Supports the same inline markdown links `[label](url)` as the checkbox (class `embed-consent-link`), allows multiple links in one string, and works in all modes (`scan`, `classic`, `booking`, `brochure`). Purely informational: no validation, not passed to the leadflow URL. Rendered at the same size as the input labels (12px / weight 500 / line-height 150% / `#132039`).
+> - **Host-CSS hardening.** `.embed-title`, `.embed-subtitle` and `.embed-consent-text` now force `border: 0` and `padding: 0`, so a partner theme styling bare elements (e.g. `h2 { border-bottom: 1px solid }`) can no longer draw a stray grey rule inside the widget. Mirror this in the preview: never let the generator's own page CSS style bare `h2`/`p` inside the preview surface.
+>
+> **What changed 30 June 2026:**
 > - **Per-measurement & combination CTA *texts*** (not just URLs). CTA1/CTA2 labels can now be set per tile (`data-tile-{key}-cta1-text` / `-cta2-text`), per combination (`data-cta1-combo-text` / `data-cta2-combo-text`) and globally (`data-cta1-text` / `data-cta2-text`). Resolution order: **combo → tile → global**.
 > - **CTA icons (optional leading icon per CTA).** A base64 SVG can be placed on each CTA, with the same precedence: per-tile (`data-tile-{key}-cta1-icon-svg` / `-cta2-icon-svg`), per-combination (`data-cta1-combo-icon-svg` / `data-cta2-combo-icon-svg`) and global (`data-cta1-icon-svg` / `data-cta2-icon-svg`). No default icon — text-only when unset. Size is fixed by the stylesheet (18×18); supplied `width`/`height` are stripped.
 > - **Checkbox link.** `data-checkbox-title` now supports inline markdown links `[label](url)`, rendered as real anchors (class `embed-checkbox-link`).
@@ -264,6 +268,7 @@ The available fields differ by widget type.
 | Mobielveld | Mobiel nummer | `data-show-phone="true"` | Sub-toggle: "Verplicht" → `data-phone-required="true"`. Niet-verplicht toont label "(Optioneel)". |
 | E-mailveld | E-mailadres | `data-show-email="true"` | Sub-toggle: "Verplicht" → `data-email-required="true"`. Niet-verplicht toont label "(Optioneel)". |
 | Toestemmingsvak | Toestemming checkbox | `data-checkbox-title="..."` | Sub-toggle: "Verplicht" → `data-checkbox-required="true"`. Verkorte sleutel: `data-checkbox-shorttitle="..."` (meegestuurd als URL-param `checkboxtitle`). **Inline link:** `data-checkbox-title` ondersteunt markdown `[label](url)`, bv. `Ik ga akkoord met de [privacyverklaring](https://homezero.nl/privacy)` → gerenderd als echte link (class `embed-checkbox-link`). |
+| Toestemmingstekst | Tekst boven de CTA | `data-consent-text="..."` | Statische regel **onder de checkbox, boven de CTA-knop** — voor passief akkoord ("Door hieronder door te gaan accepteert u onze [algemene voorwaarden](https://homezero.nl/voorwaarden)."). Zelfde inline markdown `[label](url)`, meerdere links toegestaan, link-class `embed-consent-link`. Onafhankelijk van de checkbox: los of samen te gebruiken. Geen validatie, niet meegestuurd naar de leadflow-URL. Leeg/afwezig = niet gerenderd. Surface als een multiline tekstveld (textarea) met een hint dat markdown-links mogen. |
 
 > The "(Optioneel)" suffix is added automatically by the widget for any shown-but-not-required phone/email field, translated per `data-language`.
 
@@ -430,6 +435,22 @@ Single full-width button.
 #### `ConfirmScreen` / `CheckboxField`
 As before — confirm screen is center-aligned with a checkmark in a primary-color circle; checkbox matches `embed-styles.css`.
 
+#### `ConsentText` (all modes)
+```
+Props: text, primaryColor
+
+A <p> rendered between CheckboxField and the CTA block — the LAST element before the button(s).
+Not rendered at all when text is empty.
+Style (matches .embed-consent-text): 12px, weight 500, line-height 150%, color #132039,
+  margin: 0 0 16px 0, padding 0, border 0 — i.e. the same size as the input labels.
+Links (class embed-consent-link): primary color + underline, target="_blank" rel="noopener noreferrer".
+
+Parse `[label](url)` with the same helper used for the checkbox label — build text nodes and
+anchors, never innerHTML. Reject any URL that is not http(s): render the raw `[label](url)`
+markdown as plain text instead of a link (mirrors the widget's isSafeUrl behaviour).
+Multiple links per string must work.
+```
+
 ### Live preview tile icons
 
 Use **inline SVG** copied from the `measurementIcons` object in `embed.js`. Must match exactly. Do not substitute Lucide icons.
@@ -555,6 +576,7 @@ interface WidgetConfig {
   checkboxTitle: string;
   checkboxShortTitle: string;
   checkboxRequired: boolean;
+  consentText: string;     // static line above the CTA — data-consent-text (markdown links allowed)
 
   // CTAs (scan)
   cta1Text: string;                // default "Bereken wat je bespaart" (global fallback label)
@@ -796,6 +818,9 @@ function generateEmbedCode(config: WidgetConfig): string {
     if (config.checkboxShortTitle) attrs.push(['data-checkbox-shorttitle', config.checkboxShortTitle]);
     if (config.checkboxRequired) attrs.push(['data-checkbox-required', 'true']);
   }
+
+  // Static consent line above the CTA — independent of the checkbox, same markdown links
+  if (config.consentText) attrs.push(['data-consent-text', config.consentText]);
 
   // Block styling (card) — all optional
   if (config.bgColor) attrs.push(['data-bg-color', config.bgColor]);

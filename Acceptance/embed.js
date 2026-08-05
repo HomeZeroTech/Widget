@@ -2188,45 +2188,55 @@
             '</div></div></div>';
     }
 
-    // Render checkbox label text, converting inline markdown links [label](url) into
+    // Render operator-supplied copy, converting inline markdown links [label](url) into
     // real <a> elements. Built entirely with text nodes / createElement (no innerHTML),
-    // so the operator-supplied title cannot inject markup. Links open in a new tab and
-    // stop propagation so clicking them doesn't toggle the surrounding checkbox label.
-    function appendCheckboxText(span, text) {
+    // so the supplied text cannot inject markup. Links open in a new tab and stop
+    // propagation so clicking one inside a checkbox label doesn't toggle the checkbox.
+    function appendTextWithLinks(target, text, linkClass) {
         const re = /\[([^\]]+)\]\(([^)]+)\)/g;
         let lastIndex = 0;
         let match;
         while ((match = re.exec(text)) !== null) {
             if (match.index > lastIndex) {
-                span.appendChild(document.createTextNode(text.slice(lastIndex, match.index)));
+                target.appendChild(document.createTextNode(text.slice(lastIndex, match.index)));
             }
             const label = match[1];
             const url = match[2];
             if (isSafeUrl(url)) {
                 const a = document.createElement('a');
-                a.className = 'embed-checkbox-link';
+                a.className = linkClass;
                 a.href = url;
                 a.target = '_blank';
                 a.rel = 'noopener noreferrer';
                 a.textContent = label;
                 a.addEventListener('click', function (e) { e.stopPropagation(); });
-                span.appendChild(a);
+                target.appendChild(a);
             } else {
                 // Unsafe/invalid URL → render the original markdown as plain text.
-                span.appendChild(document.createTextNode(match[0]));
+                target.appendChild(document.createTextNode(match[0]));
             }
             lastIndex = re.lastIndex;
         }
         if (lastIndex < text.length) {
-            span.appendChild(document.createTextNode(text.slice(lastIndex)));
+            target.appendChild(document.createTextNode(text.slice(lastIndex)));
         }
+    }
+
+    // Static consent/disclaimer line rendered between the consent checkbox and the CTA
+    // (e.g. "Door hieronder door te gaan accepteert u onze [voorwaarden](url)").
+    // Same font size as the input labels; supports the same inline markdown links.
+    function renderConsentText(text) {
+        const p = document.createElement('p');
+        p.className = 'embed-consent-text';
+        appendTextWithLinks(p, text, 'embed-consent-link');
+        return p;
     }
 
     function attachCheckboxText(form, checkboxTitle, checkboxRequired) {
         const textSpan = form.querySelector('.embed-checkbox-text');
         if (!textSpan) return;
         textSpan.textContent = '';
-        appendCheckboxText(textSpan, checkboxTitle || '');
+        appendTextWithLinks(textSpan, checkboxTitle || '', 'embed-checkbox-link');
         if (checkboxRequired) {
             const asterisk = document.createElement('span');
             asterisk.className = 'embed-checkbox-required';
@@ -2540,6 +2550,12 @@
                     element.getAttribute("data-checkbox-required") === "true";
                 const showCheckbox = !!checkboxTitle; // Show checkbox if title is provided
 
+                // Static consent/disclaimer line shown under the checkbox, above the CTA.
+                // Supports inline markdown links [label](url); shown when non-empty.
+                const consentText = (
+                    element.getAttribute("data-consent-text") || ""
+                ).trim();
+
                 // Add CSS variables for primary color
                 form.style.setProperty("--primary-color", primaryColor);
                 form.setAttribute("data-address-format", addressFormat); // Store format for submit handler
@@ -2581,7 +2597,7 @@
                         googleSearch: googleSearch, country: country, addressFormat: addressFormat,
                         language: language, title: title, subtitle: subtitle,
                         checkboxTitle: checkboxTitle, checkboxShorttitle: checkboxShorttitle,
-                        checkboxRequired: checkboxRequired,
+                        checkboxRequired: checkboxRequired, consentText: consentText,
                         gradientFrom: gradientFrom, gradientTo: gradientTo,
                         placeholders: placeholders,
                     };
@@ -3149,34 +3165,16 @@
                 }
                 form.innerHTML += contactFieldsHtml;
 
-                // Add checkbox if configured
+                // Add checkbox if configured (title may contain inline markdown links)
                 if (showCheckbox) {
-                    const checkboxHtml = `
-                        <div class="embed-row">
-                            <div class="embed-col">
-                                <div class="embed-form-container embed-checkbox-container">
-                                    <label class="embed-checkbox-label">
-                                        <input type="checkbox" id="embed-checkbox" class="embed-checkbox-input">
-                                        <span class="embed-checkbox-custom">
-                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                                                <polyline points="20 6 9 17 4 12"></polyline>
-                                            </svg>
-                                        </span>
-                                        <span class="embed-checkbox-text"></span>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                    form.innerHTML += checkboxHtml;
-                    const textSpan = form.querySelector(".embed-checkbox-text");
-                    textSpan.textContent = checkboxTitle;
-                    if (checkboxRequired) {
-                        const asterisk = document.createElement("span");
-                        asterisk.className = "embed-checkbox-required";
-                        asterisk.textContent = "*";
-                        textSpan.appendChild(asterisk);
-                    }
+                    form.innerHTML += buildCheckboxHtml();
+                    attachCheckboxText(form, checkboxTitle, checkboxRequired);
+                }
+
+                // Consent/disclaimer line — appended as a DOM node, so it must come after
+                // every `innerHTML +=` above and before the CTA below.
+                if (consentText) {
+                    form.appendChild(renderConsentText(consentText));
                 }
 
                 // Add the submit button
@@ -3660,6 +3658,11 @@
             }
         }
 
+        // Consent/disclaimer line directly above the CTA block
+        if (config.consentText) {
+            form.appendChild(renderConsentText(config.consentText));
+        }
+
         const ctaWrapper = document.createElement('div');
         ctaWrapper.className = 'embed-cta-wrapper';
 
@@ -4082,6 +4085,11 @@
             }
         }
 
+        // Consent/disclaimer line directly above the CTA
+        if (config.consentText) {
+            form.appendChild(renderConsentText(config.consentText));
+        }
+
         const cta1Btn = document.createElement('button');
         cta1Btn.type = 'button';
         cta1Btn.className = 'embed-submit-button embed-cta-primary';
@@ -4166,6 +4174,11 @@
         if (config.checkboxTitle) {
             form.innerHTML += buildCheckboxHtml();
             attachCheckboxText(form, config.checkboxTitle, config.checkboxRequired);
+        }
+
+        // Consent/disclaimer line directly above the CTA
+        if (config.consentText) {
+            form.appendChild(renderConsentText(config.consentText));
         }
 
         const cta1Btn = document.createElement('button');

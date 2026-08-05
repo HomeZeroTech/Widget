@@ -221,12 +221,17 @@ op de pagina aanwezig is.
 
 ---
 
-## 7. Checkbox met inline link (privacyverklaring)
+## 7. Toestemming: checkbox en vrije tekstregel (met inline link)
 
-Met `data-checkbox-title` toon je een verplicht/optioneel akkoord-vinkje. De tekst ondersteunt
-**inline markdown-links** in de vorm `[label](url)`, die veilig worden omgezet naar echte links
-(class `embed-checkbox-link`, openen in nieuw tabblad). Een ongeldige/onveilige URL wordt als platte
-tekst getoond.
+Er zijn twee onafhankelijke manieren om toestemming/voorwaarden te tonen. Beide ondersteunen
+dezelfde **inline markdown-links** `[label](url)`, die veilig worden omgezet naar echte links
+(openen in nieuw tabblad, `rel="noopener noreferrer"`). Een ongeldige of onveilige URL — alles
+buiten `http(s)` — wordt als platte tekst getoond in plaats van als link.
+
+### 7a. Checkbox (actief aanvinken)
+
+Met `data-checkbox-title` toon je een verplicht/optioneel akkoord-vinkje (link-class
+`embed-checkbox-link`).
 
 | Attribuut | Beschrijving |
 |---|---|
@@ -238,6 +243,34 @@ tekst getoond.
 data-checkbox-title="Ik ga akkoord met de [privacyverklaring](https://homezero.nl/privacy)"
 data-checkbox-required="true"
 ```
+
+### 7b. Statische toestemmingstekst (passief akkoord)
+
+Met `data-consent-text` plaats je een vaste tekstregel **onder de checkbox en direct boven de
+CTA-knop** — voor het "door verder te gaan gaat u akkoord"-patroon, waarbij de gebruiker niets hoeft
+aan te vinken. Puur informatief: er wordt niets gevalideerd en niets naar de leadflow-URL
+meegestuurd.
+
+| Attribuut | Beschrijving |
+|---|---|
+| `data-consent-text` | Tekstregel boven de CTA, mag `[tekst](url)` bevatten. Leeg/afwezig = niet gerenderd. |
+
+```html
+data-consent-text="Door hieronder door te gaan accepteert u onze [algemene voorwaarden](https://homezero.nl/voorwaarden)."
+```
+
+Details voor de generator:
+
+- **Werkt in alle modi**: `scan`, `classic`, `booking` en `brochure`.
+- **Combineerbaar**: checkbox en tekstregel kunnen los of samen gebruikt worden; de checkbox staat
+  altijd boven de tekstregel.
+- **Meerdere links** in één tekst zijn toegestaan (bv. voorwaarden *en* privacyverklaring).
+- **Opmaak**: 12px, `font-weight: 500`, `line-height: 150%`, kleur `#132039`, `margin-bottom: 16px` —
+  dezelfde tekstgrootte als de invoerlabels ("Postcode", "E-mail"). Links krijgen de primaire
+  widgetkleur met onderstreping (class `embed-consent-link`).
+- **Host-proof**: de widget neutraliseert `border` en `padding` op titel, subtitel en
+  toestemmingstekst met `!important`, zodat CSS van de host-pagina (bijvoorbeeld een thema met
+  `h2 { border-bottom: 1px solid }`) geen ongewenste grijze streep in de widget trekt.
 
 ---
 
@@ -360,6 +393,7 @@ de standaard; een **afwezig** attribuut behoudt de default.
 
   data-checkbox-title="Ik ga akkoord met de [privacyverklaring](https://homezero.nl/privacy)"
   data-checkbox-required="true"
+  data-consent-text="Door hieronder door te gaan accepteert u onze [algemene voorwaarden](https://homezero.nl/voorwaarden)."
 
   data-postcode-placeholder="Bijv. 1011AB"
   data-toevoeging-placeholder=""
@@ -438,6 +472,12 @@ De generator moet deze fouten actief vermijden:
   `!important` gezet omdat `.embed-cta-secondary` in CSS `display: inline-flex !important` heeft.
 - **2 juli** — Feature-branch `widget-cta-styling-enhancements` samengevoegd en naar productie
   gereleased; test-pagina (`test-combinatie.html`) toegevoegd.
+- **5 augustus** — Nieuw attribuut `data-consent-text`: statische toestemmingsregel onder de
+  checkbox en boven de CTA, met dezelfde veilige inline markdown-links als `data-checkbox-title`.
+  Werkt in alle modi (zie §7b).
+- **5 augustus** — Titel, subtitel en toestemmingstekst forceren nu `border: 0` en `padding: 0`,
+  zodat CSS van de host-pagina (thema's die kale `h2`/`p` stylen) geen grijze streep of extra
+  witruimte in de widget kan veroorzaken.
 
 ## 15. Samenvatting van alle capabilities
 
@@ -453,6 +493,8 @@ De generator moet deze fouten actief vermijden:
 - **AI-chat-link**: losstaande tekstlink (`data-ai-chat-show`/`-text`).
 - **Checkbox-link**: veilige inline markdown `[tekst](url)` in `data-checkbox-title` (+ required +
   shorttitle).
+- **Toestemmingstekst**: statische regel boven de CTA via `data-consent-text`, zelfde inline
+  markdown-links, geen validatie (passief akkoord).
 - **Blok-styling**: `data-bg-color`, `data-bg-opacity`, `data-block-radius`, `data-block-padding`,
   `data-block-border`.
 - **Adres & contact**: `dutch`/internationaal formaat, Google Places, telefoon/e-mail (optioneel of
