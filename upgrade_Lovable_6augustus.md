@@ -6,9 +6,96 @@ embed-code. Het is bedoeld als promptbron/specificatie voor het Lovable widget-g
 zodat de generator geldige `<hz-embed>` embed-codes kan produceren **en veelgemaakte fouten
 vermijdt** (zie §13).
 
-> Laatst bijgewerkt: **6 juli 2026** — synchroon met de code na de dropdown- en CTA-styling-release
-> van 1–2 juli. Startpunt van dit document was de branch-samenvatting van 30 juni; alle wijzigingen
-> daarna zijn hierin verwerkt.
+> Laatst bijgewerkt: **6 augustus 2026**. Startpunt van dit document was de branch-samenvatting van
+> 30 juni; alle wijzigingen daarna zijn hierin verwerkt. De upgrade van vandaag staat hieronder.
+
+---
+
+## Upgrade 6 augustus 2026 — wat de generator moet toevoegen
+
+Deze release voegt **twee nieuwe attributen** toe en breidt er **één** uit. Alles hieronder is nieuw
+sinds de vorige overdracht; de rest van dit document is ongewijzigd en blijft gelden.
+
+### 1. Naamvelden in alle modi — `data-show-name` (uitgebreid)
+
+`data-show-name="true"` bestond al, maar werkte **alleen in brochure-modus**. Vanaf nu werkt het in
+**alle vier de modi**: `scan`, `classic`, `booking` en `brochure`. Er verandert niets aan bestaande
+brochure-widgets.
+
+Voornaam en achternaam zijn **altijd één paar**: ze worden samen getoond, naast elkaar in één rij,
+en zijn niet los aan of uit te zetten. Bouw in de configurator dus één toggle, geen twee.
+
+### 2. Naamvelden verplicht maken — `data-name-required` (nieuw)
+
+`data-name-required="true"` maakt **beide** naamvelden verplicht. Zonder dit attribuut zijn ze
+optioneel en mag de gebruiker ze leeg laten. Het werkt alleen in combinatie met
+`data-show-name="true"`; los heeft het geen effect.
+
+```html
+<hz-embed
+  data-mode="scan"
+  data-title="Waar ben je in geïnteresseerd?"
+  data-show-name="true"
+  data-name-required="true"
+  data-show-email="true"
+  data-tile-solar-title="Zonnepanelen"
+  data-tile-solar-url="https://configurator.homezero.nl/link/start?ID=zon"
+></hz-embed>
+```
+
+### 3. Waar de velden landen in het formulier
+
+| Modus | Positie | Label als níet verplicht |
+|---|---|---|
+| `scan` | ná de adresvelden, vóór telefoon/e-mail | `(Optioneel)` |
+| `booking` | bovenaan (geen adres), vóór telefoon/e-mail | `(Optioneel)` |
+| `classic` | ná het adres, vóór telefoon/e-mail | geen achtervoegsel |
+| `brochure` | bovenaan, vóór e-mail | geen achtervoegsel |
+
+Het achtervoegsel volgt per modus wat de overige labels in dat formulier al doen — scan en booking
+zetten `(Optioneel)` achter niet-verplichte velden, classic en brochure niet. Zodra
+`data-name-required="true"` staat, krijgen beide labels een `*`.
+
+### 4. Doorgifte van de ingevulde namen
+
+| Route | Parameters |
+|---|---|
+| `scan` + `classic` → leadflow-URL | `Firstname` / `Lastname` — **exact deze hoofdletters** |
+| Externe agenda (`data-pass-to-url="true"`, CTA2 `action="booking"`) | `firstname` / `lastname` (kleine letters) |
+| Pico-payload (CTA2 quick contact, brochure) | `Firstname` / `Lastname` |
+
+Alle waarden worden **getrimd** voordat ze worden meegestuurd: spaties aan begin en eind gaan eraf,
+en een veld met alleen spaties telt als leeg en wordt weggelaten. Er blijft dus nooit een lege
+`Firstname=` of `Email=` in de URL staan. Dit geldt sinds deze release ook voor het e-mailveld in
+scan-, classic- en booking-modus, dat voorheen ongetrimd werd doorgegeven. Het telefoonnummer wordt
+zoals altijd volledig van spaties ontdaan (`06 12 34 56 78` → `0612345678`).
+
+### 5. Placeholders van de naamvelden — `data-firstname-placeholder` / `data-lastname-placeholder` (nieuw)
+
+Beide naamvelden hebben een instelbare placeholder, met exact dezelfde regel als de andere velden:
+een **expliciet gezet** attribuut overschrijft de standaard, een **afwezig** attribuut behoudt hem.
+Een leeg gezet attribuut (`data-firstname-placeholder=""`) maakt de placeholder bewust leeg.
+
+| Attribuut | Default |
+|---|---|
+| `data-firstname-placeholder` | taalafhankelijk: `Jan` (nl), `John` (en), `Max` (de) |
+| `data-lastname-placeholder` | taalafhankelijk: `de Vries` (nl), `Smith` (en), `Müller` (de) |
+
+```html
+data-show-name="true"
+data-firstname-placeholder="Bijv. Jan"
+data-lastname-placeholder="Bijv. de Vries"
+```
+
+Labels en foutmeldingen zijn wél vast en komen uit de taal; alleen de placeholders zijn instelbaar.
+
+### 6. Wat de configurator níet moet aanbieden
+
+- **Geen aparte toggle** voor alleen voornaam of alleen achternaam — het is altijd één paar.
+
+> Ook nieuw sinds de vorige overdracht (5 augustus): `data-consent-text`, een statische
+> toestemmingsregel boven de CTA met dezelfde inline markdown-links als de checkbox. Volledige
+> uitleg in **§7b**.
 
 > **Kernprincipes**
 > - Alle configuratie gebeurt via `data-*` attributen op het `<hz-embed>` element. Er is geen JS-API.
@@ -74,6 +161,8 @@ gericht). De andere modi bestaan in de code en worden hier volledigheidshalve ge
 | `data-google-search` | Google Places-autocomplete voor het adres (`true`/`false`). | `false` |
 | `data-show-phone` / `data-show-email` | Telefoon-/e-mailveld tonen (`true`/`false`). | `false` |
 | `data-phone-required` / `data-email-required` | Bijbehorend veld verplicht maken (`true`/`false`). | `false` |
+| `data-show-name` | Voornaam **én** achternaam tonen — altijd als paar (`true`/`false`). Werkt in alle modi. | `false` |
+| `data-name-required` | Beide naamvelden verplicht maken (`true`/`false`). | `false` |
 | `data-installer` | Installer-ID dat als `InstallerID` wordt meegestuurd. | — |
 | `data-context` | Vrije context-string, meegestuurd als `context`. | — |
 | `data-tile-display` | Tegel-weergave: `large`, `dropdown` of `tags` (zie §4). | `large` |
@@ -83,6 +172,41 @@ gericht). De andere modi bestaan in de code en worden hier volledigheidshalve ge
 
 > Deze tabel dekt scan-modus. Modus-specifieke attributen (`data-pico-*`, `data-success-message`,
 > `data-pass-to-url`, `data-contact-skip-address`) staan bij de betreffende feature.
+
+### 3a. Naamvelden (voornaam + achternaam)
+
+`data-show-name="true"` toont voornaam en achternaam **altijd samen**, naast elkaar in één rij; ze
+zijn niet los aan of uit te zetten. Sinds 6 augustus werkt dit in **alle modi** (scan, classic,
+booking, brochure) — daarvoor alleen in brochure. Met `data-name-required="true"` worden beide
+velden verplicht; standaard zijn ze optioneel en mag de gebruiker ze leeg laten.
+
+| Modus | Positie in het formulier | Label bij optioneel |
+|---|---|---|
+| `scan` | ná de adresvelden, vóór telefoon/e-mail | `(Optioneel)` |
+| `booking` | bovenaan, vóór telefoon/e-mail | `(Optioneel)` |
+| `classic` | ná het adres, vóór telefoon/e-mail | geen achtervoegsel |
+| `brochure` | bovenaan, vóór e-mail | geen achtervoegsel |
+
+Het achtervoegsel volgt per modus wat de rest van dat formulier al doet: scan en booking zetten
+`(Optioneel)` achter niet-verplichte labels, classic en brochure niet. Zodra
+`data-name-required="true"` staat, krijgen beide labels een `*`.
+
+**Doorgifte naar de leadflow.** In scan- en classic-modus worden de ingevulde namen als
+`Firstname` en `Lastname` aan de start-scan-URL gehangen — exact die hoofdletters, zoals de
+URL-opbouwdocumentatie voorschrijft. Lege velden worden weggelaten. Bij een externe agenda
+(`data-booking-url` met `data-pass-to-url="true"`, en CTA2 met `action="booking"`) gaan ze mee als
+`firstname` en `lastname` in kleine letters, passend bij de bestaande `phone`/`email` daar. Naar de
+Pico-flow (CTA2 quick contact en brochure) gaan ze als `Firstname`/`Lastname` in de payload.
+
+```html
+data-show-name="true"
+data-name-required="true"
+```
+
+Labels, placeholders en de foutmeldingen zijn vertaald: Voornaam/Achternaam (nl), First name/Last
+name (en), Vorname/Nachname (de). De placeholders zijn net als bij de andere velden te overschrijven
+met `data-firstname-placeholder` en `data-lastname-placeholder` (zie §10); labels en foutmeldingen
+liggen vast.
 
 ---
 
@@ -344,6 +468,8 @@ de standaard; een **afwezig** attribuut behoudt de default.
 | `data-city-placeholder` | taalafhankelijk |
 | `data-phone-placeholder` | `0612345678` |
 | `data-email-placeholder` | `jandevries@gmail.com` |
+| `data-firstname-placeholder` | taalafhankelijk (`Jan` / `John` / `Max`) |
+| `data-lastname-placeholder` | taalafhankelijk (`de Vries` / `Smith` / `Müller`) |
 
 > Een toevoeging-placeholder leegmaken: `data-toevoeging-placeholder=""`.
 
@@ -475,6 +601,14 @@ De generator moet deze fouten actief vermijden:
 - **5 augustus** — Nieuw attribuut `data-consent-text`: statische toestemmingsregel onder de
   checkbox en boven de CTA, met dezelfde veilige inline markdown-links als `data-checkbox-title`.
   Werkt in alle modi (zie §7b).
+- **6 augustus** — Ingevulde waarden worden consistent getrimd voordat ze de leadflow-URL of de
+  agenda-URL in gaan; een veld met alleen spaties geldt als leeg en wordt weggelaten. Voorheen ging
+  het e-mailveld in scan, classic en booking ongetrimd mee.
+- **6 augustus** — Nieuwe placeholder-attributen `data-firstname-placeholder` en
+  `data-lastname-placeholder`, met dezelfde expliciet-versus-afwezig-regel als de overige velden.
+- **6 augustus** — `data-show-name` werkt nu in **alle** modi in plaats van alleen brochure, en met
+  het nieuwe `data-name-required` zijn voornaam en achternaam verplicht te maken. In scan en
+  classic gaan ze als `Firstname`/`Lastname` mee naar de leadflow-URL (zie §3a).
 - **5 augustus** — Titel, subtitel en toestemmingstekst forceren nu `border: 0` en `padding: 0`,
   zodat CSS van de host-pagina (thema's die kale `h2`/`p` stylen) geen grijze streep of extra
   witruimte in de widget kan veroorzaken.
@@ -499,6 +633,8 @@ De generator moet deze fouten actief vermijden:
   `data-block-border`.
 - **Adres & contact**: `dutch`/internationaal formaat, Google Places, telefoon/e-mail (optioneel of
   verplicht), volledig aanpasbare placeholders.
+- **Naamvelden**: voornaam + achternaam als vast paar via `data-show-name`, in alle modi, optioneel
+  verplicht met `data-name-required`; doorgegeven als `Firstname`/`Lastname`.
 - **Meertalig**: `nl`, `en`, `de`.
 - **Styling**: primaire kleur + optioneel kleurverloop, knop-radius, WCAG-contrastkleur automatisch.
 - **Veiligheid**: XSS-veilige tekst, base64-SVG uit vertrouwde config, `http(s)`-URL-validatie,

@@ -6,7 +6,14 @@ Build a **widget configuration tool** that allows HomeZero partners to visually 
 
 This tool replaces the "Pico Widget Generator" prototype at `flowmatchwidgetgenerator.lovable.app`. It must have a significantly more complete configuration surface and an accurate live preview.
 
-> **What changed 5 August 2026 (read first — newest revision):**
+> **What changed 6 August 2026 (read first — newest revision):**
+> - **Name fields in every mode.** `data-show-name="true"` renders first name + last name as a fixed pair (never individually toggleable) and now works in **scan, classic, booking and brochure** — previously brochure only. The new `data-name-required="true"` makes both mandatory; without it they stay optional and may be left blank.
+> - **Names are passed on.** In scan and classic the values are appended to the leadflow URL as `Firstname` and `Lastname` — that exact capitalisation, per the start-scan URL spec; empty values are omitted. External calendars (`data-pass-to-url`, CTA2 `action="booking"`) receive lower-case `firstname`/`lastname`, matching the `phone`/`email` already sent there. The Pico payload (CTA2 quick contact, brochure) carries `Firstname`/`Lastname`.
+> - **Label suffix follows the mode.** Scan and booking append "(Optioneel)" to non-required name labels because their other fields do; classic and brochure add nothing. When required, both labels get a `*`.
+> - **Name placeholders are configurable.** `data-firstname-placeholder` and `data-lastname-placeholder` follow the same rule as every other placeholder: an explicitly-set value (including `""`) overrides, an absent attribute keeps the language default. Surface them as advanced fields under the name toggle.
+> - **Submitted values are trimmed.** Leading/trailing whitespace is stripped before a value is appended to the leadflow or calendar URL, and a whitespace-only field counts as empty and is omitted entirely — so no empty `Firstname=` or `Email=` ever appears. This now also covers the email field in scan/classic/booking, which was previously passed through untrimmed. Phone keeps its stricter rule: all whitespace removed (`06 12 34 56 78` → `0612345678`). Mirror this in the preview's generated-URL output.
+>
+> **What changed 5 August 2026:**
 > - **Static consent text above the CTA.** `data-consent-text` renders a fixed line of copy directly below the consent checkbox and above the CTA button — the "by continuing you accept our terms" pattern, where nothing has to be ticked. Supports the same inline markdown links `[label](url)` as the checkbox (class `embed-consent-link`), allows multiple links in one string, and works in all modes (`scan`, `classic`, `booking`, `brochure`). Purely informational: no validation, not passed to the leadflow URL. Rendered at the same size as the input labels (12px / weight 500 / line-height 150% / `#132039`).
 > - **Host-CSS hardening.** `.embed-title`, `.embed-subtitle` and `.embed-consent-text` now force `border: 0` and `padding: 0`, so a partner theme styling bare elements (e.g. `h2 { border-bottom: 1px solid }`) can no longer draw a stray grey rule inside the widget. Mirror this in the preview: never let the generator's own page CSS style bare `h2`/`p` inside the preview surface.
 >
@@ -16,7 +23,7 @@ This tool replaces the "Pico Widget Generator" prototype at `flowmatchwidgetgene
 > - **Checkbox link.** `data-checkbox-title` now supports inline markdown links `[label](url)`, rendered as real anchors (class `embed-checkbox-link`).
 > - **Block styling.** The widget can paint its own card: `data-bg-color`, `data-bg-opacity` (0–1, background only), `data-block-radius`, `data-block-padding`, `data-block-border` (full CSS shorthand; use `solid`/`none`).
 > - **Customisable input placeholders** for every field (`data-*-placeholder`); an explicitly-set (even empty) value overrides the default.
-> - See `upgrade_Lovable_30juni.md` for the partner-facing embed reference of these additions.
+> - See `upgrade_Lovable_6augustus.md` for the partner-facing embed reference of these additions.
 >
 > **What changed in the previous revision:**
 > - **Unified dual-CTA model.** Scan mode now supports **1 or 2 CTAs that route to two different leadflows** per measurement. CTA2 is no longer Pico-only: it can route to a HomeZero leadflow (`flow`) or an external calendar (`booking`), per-tile, per-combination, or a global fallback.
@@ -265,6 +272,7 @@ The available fields differ by widget type.
 | Toggle | Label | Attribuut | Sub-opties |
 |---|---|---|---|
 | Adresveld | Adresveld (altijd aan) | — | Format: "Nederlands" (`data-address-format="dutch"`, standaard → Postcode + Huisnummer + Toevoeging) / "Internationaal" (`data-address-format="international"`) / "Google autocomplete" (`data-google-search="true"` + `data-country="nl"`). |
+| Naamvelden | Voor- en achternaam | `data-show-name="true"` | Altijd één toggle voor **beide** velden — nooit los aan te zetten. Sub-toggle: "Verplicht" → `data-name-required="true"` (maakt allebei verplicht). Werkt in alle modi. Positie: ná het adres en vóór telefoon/e-mail (booking en brochure hebben geen adres, dus daar bovenaan). Placeholders zijn instelbaar via `data-firstname-placeholder` / `data-lastname-placeholder` (defaults per taal: Jan/de Vries, John/Smith, Max/Müller) — zelfde expliciet-versus-afwezig-regel als de andere placeholders. Labels en foutmeldingen liggen vast. |
 | Mobielveld | Mobiel nummer | `data-show-phone="true"` | Sub-toggle: "Verplicht" → `data-phone-required="true"`. Niet-verplicht toont label "(Optioneel)". |
 | E-mailveld | E-mailadres | `data-show-email="true"` | Sub-toggle: "Verplicht" → `data-email-required="true"`. Niet-verplicht toont label "(Optioneel)". |
 | Toestemmingsvak | Toestemming checkbox | `data-checkbox-title="..."` | Sub-toggle: "Verplicht" → `data-checkbox-required="true"`. Verkorte sleutel: `data-checkbox-shorttitle="..."` (meegestuurd als URL-param `checkboxtitle`). **Inline link:** `data-checkbox-title` ondersteunt markdown `[label](url)`, bv. `Ik ga akkoord met de [privacyverklaring](https://homezero.nl/privacy)` → gerenderd als echte link (class `embed-checkbox-link`). |
@@ -286,6 +294,8 @@ The available fields differ by widget type.
 | `data-city-placeholder` | taalafhankelijk |
 | `data-phone-placeholder` | `0612345678` |
 | `data-email-placeholder` | `jandevries@gmail.com` |
+| `data-firstname-placeholder` | language default (`Jan` / `John` / `Max`) |
+| `data-lastname-placeholder` | language default (`de Vries` / `Smith` / `Müller`) |
 
 **Booking mode fields:**
 
@@ -299,7 +309,7 @@ The available fields differ by widget type.
 
 | Toggle | Label | Sub-options |
 |---|---|---|
-| Naamvelden | Voor- en achternaam | `data-show-name="true"` |
+| Naamvelden | Voor- en achternaam | `data-show-name="true"` — see the shared row in Section 4; no longer brochure-only |
 | Mobielveld | Mobiel nummer | `data-show-phone="true"` |
 | E-mailveld | E-mailadres (altijd aan) | Always required in brochure mode |
 
@@ -406,6 +416,28 @@ Renders one of three variants based on display style:
 Dutch: [Postcode] [Huisnummer] [Toevoeging] in a row
 International: [Straat] [Huisnummer] then [Postcode] [Stad]
 Google: single text input with search icon
+```
+
+#### `NameFields` (all modes)
+```
+Props: nameRequired, showOptionalSuffix, language
+
+Two text inputs side by side in one row (ids: firstname, lastname) — always rendered together,
+never one without the other. Labels + placeholders come from the language table:
+  nl: Voornaam / Jan      · Achternaam / de Vries
+  en: First name / John   · Last name / Smith
+  de: Vorname / Max       · Nachname / Müller
+Placeholders are configurable via data-firstname-placeholder / data-lastname-placeholder, with
+the language value as default. Surface them as advanced "Placeholder" fields under the name
+toggle, exactly like the phone/email placeholder fields. Labels and error messages are fixed.
+
+Position: after the address block and before phone/email. Booking and brochure have no address
+block, so they end up at the top of the form.
+Label suffix: `*` when nameRequired; otherwise "(Optioneel)" in scan/booking and nothing in
+classic/brochure — match whatever the other labels in that mode already do.
+
+Values are trimmed before being sent; a whitespace-only field is treated as empty, so it is
+neither accepted as a filled-in required field nor appended to the URL.
 ```
 
 #### `ContactFields` (scan + booking mode)
@@ -572,7 +604,8 @@ interface WidgetConfig {
   emailRequired: boolean;
   addressFormat: 'dutch' | 'international' | 'google';
   country: string;
-  showName: boolean;       // brochure mode
+  showName: boolean;       // first + last name pair — all modes
+  nameRequired: boolean;   // both name fields mandatory — data-name-required
   checkboxTitle: string;
   checkboxShortTitle: string;
   checkboxRequired: boolean;
@@ -796,9 +829,14 @@ function generateEmbedCode(config: WidgetConfig): string {
     }
   }
 
+  // Name pair — valid in every mode, so emitted outside the per-mode blocks
+  if (config.showName) {
+    attrs.push(['data-show-name', 'true']);
+    if (config.nameRequired) attrs.push(['data-name-required', 'true']);
+  }
+
   if (config.mode === 'brochure') {
     if (config.cta1Text_single !== 'Stuur mij de brochure') attrs.push(['data-cta1-text', config.cta1Text_single]);
-    if (config.showName) attrs.push(['data-show-name', 'true']);
     if (config.showPhone) attrs.push(['data-show-phone', 'true']);
     if (config.successMessage !== 'De brochure is onderweg naar jouw inbox!') {
       attrs.push(['data-success-message', config.successMessage]);
@@ -836,6 +874,7 @@ function generateEmbedCode(config: WidgetConfig): string {
     street: 'data-street-placeholder', housenumber: 'data-housenumber-placeholder',
     zipcode: 'data-zipcode-placeholder', city: 'data-city-placeholder',
     phone: 'data-phone-placeholder', email: 'data-email-placeholder',
+    firstname: 'data-firstname-placeholder', lastname: 'data-lastname-placeholder',
   };
   Object.entries(config.placeholders || {}).forEach(([k, v]) => {
     if (v !== undefined && phKeys[k]) attrs.push([phKeys[k], v]); // "" is intentional and respected

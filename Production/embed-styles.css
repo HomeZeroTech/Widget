@@ -370,15 +370,23 @@ hz-embed {
     line-height: 150% !important;
 }
 
+/* Host-pagina's stylen vaak kale h2/p-elementen (WordPress-thema's zetten bijvoorbeeld
+   `h2 { border-bottom: 1px solid }`). Zonder deze reset zou dat als grijze streep of
+   extra witruimte in de widget verschijnen. Alleen border/padding worden geneutraliseerd,
+   de typografie blijft ongemoeid. */
 .embed-form .embed-title {
     font-size: 26px;
     font-weight: 500;
     margin: 0 0 4px 0;
+    padding: 0 !important;
+    border: 0 !important;
 }
 
 .embed-form .embed-subtitle {
     font-size: 18px;
     margin: 0 0 16px 0;
+    padding: 0 !important;
+    border: 0 !important;
 }
 
 /* Checkbox styling */
@@ -484,6 +492,29 @@ hz-embed {
 .embed-checkbox-container .embed-validation-message {
     margin-top: 6px;
     margin-left: 0;
+}
+
+/* ── Consent / disclaimer text (between the checkbox and the CTA) ─────────── */
+
+/* Same type scale as the input labels (.embed-label-bold), so the line reads as
+   fine print belonging to the form rather than as body copy of the host page. */
+.embed-form .embed-consent-text {
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    line-height: 150% !important;
+    color: #132039 !important;
+    margin: 0 0 16px 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+}
+
+.embed-form .embed-consent-link {
+    color: var(--primary-color) !important;
+    text-decoration: underline !important;
+}
+
+.embed-form .embed-consent-link:hover {
+    opacity: 0.85;
 }
 
 /* ── Tile grid ────────────────────────────────────────────────────────────── */

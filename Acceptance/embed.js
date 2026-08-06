@@ -124,6 +124,8 @@
                 phoneRequired: "Please enter a phone number.",
                 email: "Please enter a valid e-mail address.",
                 emailRequired: "Please enter an e-mail address.",
+                firstnameRequired: "Please enter a first name.",
+                lastnameRequired: "Please enter a last name.",
                 dropdown: "Please select an option.",
                 address: "Please enter a valid address.",
                 checkbox: "Please check this box to continue.",
@@ -172,6 +174,8 @@
                 phoneRequired: "Vul een telefoonnummer in.",
                 email: "Vul een geldig e-mailadres in.",
                 emailRequired: "Vul een e-mailadres in.",
+                firstnameRequired: "Vul een voornaam in.",
+                lastnameRequired: "Vul een achternaam in.",
                 dropdown: "Selecteer een maatregel.",
                 address: "Vul een geldig adres in.",
                 checkbox: "Vink aan om door te gaan.",
@@ -220,6 +224,8 @@
                 phoneRequired: "Bitte geben Sie eine Telefonnummer ein.",
                 email: "Bitte geben Sie eine gültige E-Mail-Adresse ein.",
                 emailRequired: "Bitte geben Sie eine E-Mail-Adresse ein.",
+                firstnameRequired: "Bitte geben Sie einen Vornamen ein.",
+                lastnameRequired: "Bitte geben Sie einen Nachnamen ein.",
                 dropdown: "Bitte wählen Sie eine Option aus.",
                 address: "Bitte geben Sie eine gültige Adresse ein.",
                 checkbox:
@@ -2116,6 +2122,8 @@
             city: r('data-city-placeholder', selectedLang.cityPlaceholder),
             phone: r('data-phone-placeholder', '0612345678'),
             email: r('data-email-placeholder', 'jandevries@gmail.com'),
+            firstname: r('data-firstname-placeholder', selectedLang.firstnamePlaceholder),
+            lastname: r('data-lastname-placeholder', selectedLang.lastnamePlaceholder),
         };
     }
 
@@ -2175,6 +2183,25 @@
                 '<input type="email" id="email" class="embed-input-field"' + (emailRequired ? ' aria-required="true"' : '') + ' placeholder="' + emailPh + '" maxlength="100"></div></div></div>';
         }
         return '';
+    }
+
+    // First name + last name, always rendered together as a side-by-side pair.
+    // `showOptionalSuffix` follows the surrounding mode: scan and booking build their contact
+    // fields with the "(Optioneel)" suffix, classic and brochure don't — so the name labels
+    // match whichever convention the rest of that form already uses.
+    function buildNameFieldsHtml(nameRequired, selectedLang, showOptionalSuffix, placeholders) {
+        const ph = placeholders || {};
+        const firstnamePh = escapeAttr(ph.firstname != null ? ph.firstname : selectedLang.firstnamePlaceholder);
+        const lastnamePh = escapeAttr(ph.lastname != null ? ph.lastname : selectedLang.lastnamePlaceholder);
+        const optionalSuffix = ' <span class="embed-label-optional">' + (selectedLang.optional || '(Optioneel)') + '</span>';
+        const suffix = nameRequired ? '<span>*</span>' : (showOptionalSuffix ? optionalSuffix : '');
+        const req = nameRequired ? ' aria-required="true"' : '';
+        return '<div class="embed-row"><div class="embed-col"><div class="embed-flex-container">' +
+            '<div class="embed-form-container"><label for="firstname" class="embed-label-bold">' + selectedLang.firstnameLabel + suffix + '</label>' +
+            '<input type="text" id="firstname" class="embed-input-field"' + req + ' placeholder="' + firstnamePh + '" maxlength="100"></div>' +
+            '<div class="embed-form-container"><label for="lastname" class="embed-label-bold">' + selectedLang.lastnameLabel + suffix + '</label>' +
+            '<input type="text" id="lastname" class="embed-input-field"' + req + ' placeholder="' + lastnamePh + '" maxlength="100"></div>' +
+            '</div></div></div>';
     }
 
     function buildCheckboxHtml() {
@@ -2395,6 +2422,35 @@
         return true;
     }
 
+    // Name fields are optional by default; `data-name-required` makes both mandatory.
+    // Unlike the phone/email helpers this reports on both inputs in one pass, so a user
+    // who left both empty sees both messages instead of fixing them one at a time.
+    function validateNames(form, showName, nameRequired, selectedLang) {
+        if (!showName || !nameRequired) return true;
+        const firstname = form.querySelector('#firstname');
+        const lastname = form.querySelector('#lastname');
+        let ok = true;
+        if (firstname && !firstname.value.trim()) {
+            displayValidationMessage(firstname, selectedLang.validation.firstnameRequired);
+            ok = false;
+        }
+        if (lastname && !lastname.value.trim()) {
+            displayValidationMessage(lastname, selectedLang.validation.lastnameRequired);
+            ok = false;
+        }
+        return ok;
+    }
+
+    // Trimmed name values, or empty strings when the fields aren't rendered.
+    function getNameValues(form) {
+        const firstname = form.querySelector('#firstname');
+        const lastname = form.querySelector('#lastname');
+        return {
+            firstname: firstname ? firstname.value.trim() : '',
+            lastname: lastname ? lastname.value.trim() : '',
+        };
+    }
+
     // ─── End new-mode helpers ────────────────────────────────────────────────
 
     function init() {
@@ -2528,6 +2584,11 @@
                     element.getAttribute("data-phone-required") === "true";
                 const emailRequired =
                     element.getAttribute("data-email-required") === "true";
+                // First and last name are always asked for as a pair, in every mode.
+                const showName =
+                    element.getAttribute("data-show-name") === "true";
+                const nameRequired =
+                    element.getAttribute("data-name-required") === "true";
                 const googleSearch =
                     element.getAttribute("data-google-search") === "true";
                 const country = element.getAttribute("data-country") || "nl";
@@ -2594,6 +2655,7 @@
                         installer: installer, customContext: customContext, openNewTab: openNewTab,
                         showPhone: showPhone, showEmail: showEmail,
                         phoneRequired: phoneRequired, emailRequired: emailRequired,
+                        showName: showName, nameRequired: nameRequired,
                         googleSearch: googleSearch, country: country, addressFormat: addressFormat,
                         language: language, title: title, subtitle: subtitle,
                         checkboxTitle: checkboxTitle, checkboxShorttitle: checkboxShorttitle,
@@ -2854,6 +2916,11 @@
                         }
                     }
 
+                    // Name validation (only enforced when data-name-required is set)
+                    if (!validateNames(form, showName, nameRequired, selectedLang)) {
+                        isValid = false;
+                    }
+
                     // Checkbox validation
                     const checkbox = form.querySelector("#embed-checkbox");
                     if (
@@ -2902,8 +2969,26 @@
                             url +=
                                 "&Phone=" + encodeURIComponent(strippedPhone);
                         }
-                        if (showEmail && email.value) {
-                            url += "&Email=" + encodeURIComponent(email.value);
+                        // Trimmed like the name fields, so a stray space never reaches the leadflow
+                        const trimmedEmail = email ? email.value.trim() : "";
+                        if (showEmail && trimmedEmail) {
+                            url +=
+                                "&Email=" + encodeURIComponent(trimmedEmail);
+                        }
+
+                        // Firstname/Lastname use the capitalisation the leadflow expects
+                        if (showName) {
+                            const names = getNameValues(form);
+                            if (names.firstname) {
+                                url +=
+                                    "&Firstname=" +
+                                    encodeURIComponent(names.firstname);
+                            }
+                            if (names.lastname) {
+                                url +=
+                                    "&Lastname=" +
+                                    encodeURIComponent(names.lastname);
+                            }
                         }
 
                         // Add checkbox to URL if checkbox is shown
@@ -3162,6 +3247,11 @@
                             </div>
                         </div>
                     `;
+                }
+                // Name pair sits between the address and the contact fields. Classic mode
+                // labels its optional fields without a "(Optioneel)" suffix, so neither do these.
+                if (showName) {
+                    form.innerHTML += buildNameFieldsHtml(nameRequired, selectedLang, false, placeholders);
                 }
                 form.innerHTML += contactFieldsHtml;
 
@@ -3598,6 +3688,7 @@
         // All innerHTML-based additions must happen BEFORE appendChild(grid)
         // to avoid innerHTML += destroying DOM nodes with event listeners.
         form.innerHTML += buildAddressFieldsHtml(config.googleSearch, config.addressFormat, selectedLang, config.country, config.placeholders);
+        if (config.showName) form.innerHTML += buildNameFieldsHtml(config.nameRequired, selectedLang, true, config.placeholders);
         form.innerHTML += buildContactFieldsHtml(config.showPhone, config.showEmail, config.phoneRequired, config.emailRequired, selectedLang, config.placeholders);
 
         if (config.checkboxTitle) {
@@ -3822,8 +3913,16 @@
         const phone = form.querySelector('#telefoon');
         const email = form.querySelector('#email');
         if (config.installer) url += '&InstallerID=' + encodeURIComponent(config.installer);
+        // Firstname/Lastname are capitalised exactly as the leadflow start-scan URL expects.
+        if (config.showName) {
+            const names = getNameValues(form);
+            if (names.firstname) url += '&Firstname=' + encodeURIComponent(names.firstname);
+            if (names.lastname) url += '&Lastname=' + encodeURIComponent(names.lastname);
+        }
+        // Trimmed like the name fields, so a stray space never reaches the leadflow.
+        const emailValue = email ? email.value.trim() : '';
         if (config.showPhone && phone && phone.value) url += '&Phone=' + encodeURIComponent(phone.value.replace(/\s+/g, ''));
-        if (config.showEmail && email && email.value) url += '&Email=' + encodeURIComponent(email.value);
+        if (config.showEmail && emailValue) url += '&Email=' + encodeURIComponent(emailValue);
 
         if (selectedTilesSet && selectedTilesSet.size > 0) {
             const keys = Array.from(selectedTilesSet);
@@ -3855,6 +3954,7 @@
         const checkbox = form.querySelector('#embed-checkbox');
 
         if (target.action === 'booking') {
+            if (!validateNames(form, config.showName, config.nameRequired, selectedLang)) return;
             if (!validatePhone(phone, config.phoneRequired, selectedLang)) return;
             if (!validateEmail(email, config.emailRequired, selectedLang)) return;
             if (showCheckbox && config.checkboxRequired && checkbox && !checkbox.checked) {
@@ -3864,8 +3964,14 @@
 
             let u = target.url;
             const params = new URLSearchParams();
+            // External calendars, so lower-case keys matching the existing phone/email pair.
+            if (config.showName) {
+                const names = getNameValues(form);
+                if (names.firstname) params.set('firstname', names.firstname);
+                if (names.lastname) params.set('lastname', names.lastname);
+            }
             if (config.showPhone && phone && phone.value) params.set('phone', phone.value.replace(/\s+/g, ''));
-            if (config.showEmail && email && email.value) params.set('email', email.value);
+            if (config.showEmail && email && email.value.trim()) params.set('email', email.value.trim());
             const ps = params.toString();
             if (ps) u += (u.includes('?') ? '&' : '?') + ps;
 
@@ -3877,6 +3983,7 @@
         // action === 'flow'
         const addrResult = validateAndGetAddressParams(form, config.googleSearch, config.addressFormat, config.country, selectedLang, dutchVal);
         if (!addrResult.valid) return;
+        if (!validateNames(form, config.showName, config.nameRequired, selectedLang)) return;
         if (!validatePhone(phone, config.phoneRequired, selectedLang)) return;
         if (!validateEmail(email, config.emailRequired, selectedLang)) return;
         if (showCheckbox && config.checkboxRequired && checkbox && !checkbox.checked) {
@@ -3961,6 +4068,7 @@
         }
         if (phoneVal && !validatePhone(phone, false, selectedLang)) isValid = false;
         if (emailVal && !validateEmail(email, false, selectedLang)) isValid = false;
+        if (!validateNames(form, config.showName, config.nameRequired, selectedLang)) isValid = false;
 
         let addressParams = {};
         if (!contactSkipAddress) {
@@ -3982,10 +4090,13 @@
             }
         });
 
+        const scanNames = config.showName ? getNameValues(form) : { firstname: '', lastname: '' };
         const payload = buildPicoPayload({
             flowId: flowId || undefined,
             phone: phoneVal || undefined,
             email: emailVal || undefined,
+            firstname: scanNames.firstname || undefined,
+            lastname: scanNames.lastname || undefined,
             flowsInterestedIn: flowsInterestedIn,
             zipcode: addressParams.Zipcode, housenumber: addressParams.Housenumber,
             addition: addressParams.Addition, street: addressParams.Street,
@@ -4022,6 +4133,7 @@
         addTitleSubtitle(form, config.title, config.subtitle);
 
         // All innerHTML-based additions must happen BEFORE appendChild(grid)
+        if (config.showName) form.innerHTML += buildNameFieldsHtml(config.nameRequired, selectedLang, true, config.placeholders);
         form.innerHTML += buildContactFieldsHtml(config.showPhone, config.showEmail, config.phoneRequired, config.emailRequired, selectedLang, config.placeholders);
 
         if (config.checkboxTitle) {
@@ -4105,6 +4217,7 @@
 
             const phone = form.querySelector('#telefoon');
             const email = form.querySelector('#email');
+            if (!validateNames(form, config.showName, config.nameRequired, selectedLang)) return;
             if (!validatePhone(phone, config.phoneRequired, selectedLang)) return;
             if (!validateEmail(email, config.emailRequired, selectedLang)) return;
 
@@ -4119,8 +4232,14 @@
             let targetUrl = bookingUrl;
             if (passToUrl) {
                 const params = new URLSearchParams();
+                // External calendars, so lower-case keys matching the existing phone/email pair.
+                if (config.showName) {
+                    const names = getNameValues(form);
+                    if (names.firstname) params.set('firstname', names.firstname);
+                    if (names.lastname) params.set('lastname', names.lastname);
+                }
                 if (config.showPhone && phone && phone.value) params.set('phone', phone.value.replace(/\s+/g, ''));
-                if (config.showEmail && email && email.value) params.set('email', email.value);
+                if (config.showEmail && email && email.value.trim()) params.set('email', email.value.trim());
                 const ps = params.toString();
                 if (ps) targetUrl += (targetUrl.includes('?') ? '&' : '?') + ps;
             }
@@ -4141,7 +4260,10 @@
         const picoFlowId = element.getAttribute('data-pico-flow-id') || '';
         const cta1Text = element.getAttribute('data-cta1-text') || 'Stuur mij de brochure';
         const successMessage = element.getAttribute('data-success-message') || 'De brochure is onderweg naar jouw inbox!';
-        const showName = element.getAttribute('data-show-name') === 'true';
+        // Read from the shared config rather than re-reading the element, so the name
+        // settings have a single source of truth across all four modes.
+        const showName = config.showName;
+        const nameRequired = config.nameRequired;
         const showPhone = element.getAttribute('data-show-phone') === 'true';
         const showAddress = element.getAttribute('data-show-address') === 'true';
         const country = element.getAttribute('data-country') || 'nl';
@@ -4150,14 +4272,9 @@
 
         addTitleSubtitle(form, config.title, config.subtitle);
 
-        if (showName) {
-            form.innerHTML += '<div class="embed-row"><div class="embed-col"><div class="embed-flex-container">' +
-                '<div class="embed-form-container"><label for="firstname" class="embed-label-bold">' + selectedLang.firstnameLabel + '</label>' +
-                '<input type="text" id="firstname" class="embed-input-field" placeholder="' + selectedLang.firstnamePlaceholder + '" maxlength="100"></div>' +
-                '<div class="embed-form-container"><label for="lastname" class="embed-label-bold">' + selectedLang.lastnameLabel + '</label>' +
-                '<input type="text" id="lastname" class="embed-input-field" placeholder="' + selectedLang.lastnamePlaceholder + '" maxlength="100"></div>' +
-                '</div></div></div>';
-        }
+        // Brochure labels its optional fields without a "(Optioneel)" suffix, so the name
+        // pair follows suit — only an asterisk when data-name-required is set.
+        if (showName) form.innerHTML += buildNameFieldsHtml(nameRequired, selectedLang, false, config.placeholders);
 
         form.innerHTML += '<div class="embed-row"><div class="embed-col"><div class="embed-form-container">' +
             '<label for="email" class="embed-label-bold">' + selectedLang.emailLabel + '<span>*</span></label>' +
@@ -4217,6 +4334,7 @@
                 displayValidationMessage(phone, selectedLang.validation.phone);
                 isValid = false;
             }
+            if (!validateNames(form, showName, nameRequired, selectedLang)) isValid = false;
             if (showAddress) {
                 const ar = validateAndGetAddressParams(form, googleSearch, addressFormat, country, selectedLang, dutchVal);
                 if (!ar.valid) isValid = false;
@@ -4231,15 +4349,14 @@
             if (!isValid) return;
 
             const addressParams = showAddress ? (tryGetAddressParams(form, googleSearch, addressFormat, country) || {}) : {};
-            const firstname = showName && form.querySelector('#firstname') ? form.querySelector('#firstname').value.trim() : '';
-            const lastname = showName && form.querySelector('#lastname') ? form.querySelector('#lastname').value.trim() : '';
+            const names = showName ? getNameValues(form) : { firstname: '', lastname: '' };
 
             const payload = buildPicoPayload({
                 flowId: picoFlowId || undefined,
                 email: email.value.trim(),
                 phone: showPhone && phone ? (phone.value.trim() || undefined) : undefined,
-                firstname: firstname || undefined,
-                lastname: lastname || undefined,
+                firstname: names.firstname || undefined,
+                lastname: names.lastname || undefined,
                 zipcode: addressParams.Zipcode, housenumber: addressParams.Housenumber,
                 addition: addressParams.Addition, street: addressParams.Street,
                 city: addressParams.City, country: country,
