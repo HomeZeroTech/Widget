@@ -165,7 +165,7 @@ gericht). De andere modi bestaan in de code en worden hier volledigheidshalve ge
 | `data-name-required` | Beide naamvelden verplicht maken (`true`/`false`). | `false` |
 | `data-installer` | Installer-ID dat als `InstallerID` wordt meegestuurd. | — |
 | `data-context` | Vrije context-string, meegestuurd als `context`. | — |
-| `data-tile-display` | Tegel-weergave: `large`, `dropdown` of `tags` (zie §4). | `large` |
+| `data-tile-display` | Tegel-weergave: `large`, `dropdown`, `tags` of `none` (zie §4). | `large` |
 | `data-tiles-label` | Label boven de tegel-/dropdown-selectie. | `Producten` |
 | `data-tiles-max-select` | Max. aantal selecteerbare tegels (`0` = onbeperkt). Bij `dropdown` altijd `1`. | `0` |
 | `data-tiles-default` | Komma-gescheiden lijst van voorgeselecteerde tegels, bv. `heatpump,solarpanels`. | — |
@@ -244,6 +244,14 @@ sleutel zoals `heatpump`, `solarpanels`, `carcharger`, `homebattery`.
   naar `1`. Sinds 1 juli sluit de dropdown automatisch zodra je een optie kiest en blijft de hoogte
   van de trigger stabiel (geen "sprong") tussen lege en gekozen staat.
 - `tags` — selecteerbare chips.
+- `none` — **geen kiezer**. Voor een widget met één maatregel, waar de bezoeker niets te kiezen
+  heeft. De tegel bepaalt nog steeds het CTA-doel: is er geen `data-tiles-default`, dan selecteert
+  de widget automatisch de eerste tegel. Ook `data-tile-display="false"` wordt als `none` gelezen.
+
+> **Injecteer hier géén eigen CSS voor.** Een `<style>hz-embed [data-tile-selector]{display:none}</style>`
+> naast de embed-code was vroeger de enige manier om de kiezer te verbergen in scan-modus; dat is
+> nu vervangen door `data-tile-display="none"`. Booking-modus doet hetzelfde via
+> `data-show-tiles="none"`.
 
 ### 4.3 Ingebouwde iconen (geen base64 nodig)
 
@@ -604,6 +612,9 @@ De generator moet deze fouten actief vermijden:
 - **6 augustus** — Ingevulde waarden worden consistent getrimd voordat ze de leadflow-URL of de
   agenda-URL in gaan; een veld met alleen spaties geldt als leeg en wordt weggelaten. Voorheen ging
   het e-mailveld in scan, classic en booking ongetrimd mee.
+- **6 augustus** — `data-tile-display="none"` verbergt de tegelkiezer in scan-modus, zodat een
+  widget met één maatregel geen `<style>`-blok meer nodig heeft naast de embed-code. Zonder
+  `data-tiles-default` wordt de eerste tegel automatisch geselecteerd.
 - **6 augustus** — Nieuwe placeholder-attributen `data-firstname-placeholder` en
   `data-lastname-placeholder`, met dezelfde expliciet-versus-afwezig-regel als de overige velden.
 - **6 augustus** — `data-show-name` werkt nu in **alle** modi in plaats van alleen brochure, en met

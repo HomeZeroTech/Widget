@@ -2196,7 +2196,7 @@
         const optionalSuffix = ' <span class="embed-label-optional">' + (selectedLang.optional || '(Optioneel)') + '</span>';
         const suffix = nameRequired ? '<span>*</span>' : (showOptionalSuffix ? optionalSuffix : '');
         const req = nameRequired ? ' aria-required="true"' : '';
-        return '<div class="embed-row"><div class="embed-col"><div class="embed-flex-container">' +
+        return '<div class="embed-row"><div class="embed-col"><div class="embed-flex-container embed-name-container">' +
             '<div class="embed-form-container"><label for="firstname" class="embed-label-bold">' + selectedLang.firstnameLabel + suffix + '</label>' +
             '<input type="text" id="firstname" class="embed-input-field"' + req + ' placeholder="' + firstnamePh + '" maxlength="100"></div>' +
             '<div class="embed-form-container"><label for="lastname" class="embed-label-bold">' + selectedLang.lastnameLabel + suffix + '</label>' +
@@ -3628,7 +3628,12 @@
         const tilesDefault = (element.getAttribute('data-tiles-default') || '').split(',').map(function (k) { return k.trim(); }).filter(Boolean);
         let tilesMaxSelect = parseInt(element.getAttribute('data-tiles-max-select') || '0', 10);
         if (isNaN(tilesMaxSelect) || tilesMaxSelect < 0) tilesMaxSelect = 0;
-        const tileDisplay = element.getAttribute('data-tile-display') || 'large';
+        // 'none' hides the selector entirely — for a widget with a single measure, where the
+        // visitor has nothing to choose. The tile still determines the CTA target. Mirrors
+        // what booking mode already accepts via data-show-tiles, so partners no longer need
+        // to inject their own CSS to hide it.
+        const tileDisplayAttr = (element.getAttribute('data-tile-display') || 'large').trim().toLowerCase();
+        const tileDisplay = (tileDisplayAttr === 'none' || tileDisplayAttr === 'false') ? 'none' : tileDisplayAttr;
         const tilesLabel = element.hasAttribute('data-tiles-label')
             ? element.getAttribute('data-tiles-label') : 'Producten';
 
@@ -3647,6 +3652,13 @@
         let _preselected = tilesDefault.filter(function (k) { return tiles.some(function (t) { return t.key === k; }); });
         if (tilesMaxSelect > 0) _preselected = _preselected.slice(0, tilesMaxSelect);
         const selectedTilesSet = new Set(_preselected);
+
+        // With the selector hidden the visitor cannot pick anything, so fall back to the first
+        // tile when data-tiles-default is absent. Without this the CTA would refuse to submit
+        // on an empty selection while there is no visible selector to correct it.
+        if (tileDisplay === 'none' && tiles.length > 0 && selectedTilesSet.size === 0) {
+            selectedTilesSet.add(tiles[0].key);
+        }
 
         const ctaCfg = {
             cta2Action: cta2Action, cta2UrlGlobal: cta2UrlGlobal,
@@ -3696,7 +3708,7 @@
             attachCheckboxText(form, config.checkboxTitle, config.checkboxRequired);
         }
 
-        if (tiles.length > 0) {
+        if (tiles.length > 0 && tileDisplay !== 'none') {
             const header = form.querySelector('.embed-header');
             const refNode = header ? header.nextSibling : form.firstChild;
             if (tileDisplay === 'dropdown') {
@@ -3805,7 +3817,9 @@
         function handleScanCtaClick(ctaIndex) {
             form.querySelectorAll('.embed-validation-message').forEach(function (m) { m.remove(); });
 
-            if (tiles.length > 0 && selectedTilesSet.size === 0) {
+            // Skipped when the selector is hidden: there would be no element to anchor the
+            // message to, so the CTA would refuse without telling the visitor why.
+            if (tiles.length > 0 && tileDisplay !== 'none' && selectedTilesSet.size === 0) {
                 const selectorEl = form.querySelector('.embed-tile-grid') || form.querySelector('[data-tile-selector]');
                 if (selectorEl) {
                     const msg = document.createElement('div');

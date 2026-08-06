@@ -7,6 +7,7 @@ Build a **widget configuration tool** that allows HomeZero partners to visually 
 This tool replaces the "Pico Widget Generator" prototype at `flowmatchwidgetgenerator.lovable.app`. It must have a significantly more complete configuration surface and an accurate live preview.
 
 > **What changed 6 August 2026 (read first — newest revision):**
+> - **`data-tile-display="none"` hides the tile selector in scan mode.** Previously only booking mode could do this (`data-show-tiles="none"`), so a single-measurement scan widget had to ship a `<style>hz-embed [data-tile-selector]{display:none!important;}</style>` block alongside the embed code. That workaround must be removed from the generator: emit the attribute instead. The tile still drives the CTA target, and the first tile is auto-selected when `data-tiles-default` is absent. Also note `data-title` needs no such handling — an empty or omitted title renders no header at all, so simply leave the attribute out.
 > - **Name fields in every mode.** `data-show-name="true"` renders first name + last name as a fixed pair (never individually toggleable) and now works in **scan, classic, booking and brochure** — previously brochure only. The new `data-name-required="true"` makes both mandatory; without it they stay optional and may be left blank.
 > - **Names are passed on.** In scan and classic the values are appended to the leadflow URL as `Firstname` and `Lastname` — that exact capitalisation, per the start-scan URL spec; empty values are omitted. External calendars (`data-pass-to-url`, CTA2 `action="booking"`) receive lower-case `firstname`/`lastname`, matching the `phone`/`email` already sent there. The Pico payload (CTA2 quick contact, brochure) carries `Firstname`/`Lastname`.
 > - **Label suffix follows the mode.** Scan and booking append "(Optioneel)" to non-required name labels because their other fields do; classic and brochure add nothing. When required, both labels get a `*`.
@@ -174,7 +175,9 @@ This section is the most complex. It allows the partner to build their tile/drop
 | `large` | Grote tegels (standaard) | single **of** multi | `data-tile-display="large"` (default, omit) | `data-show-tiles="large"` |
 | `dropdown` | Dropdown | **single only** | `data-tile-display="dropdown"` | `data-show-tiles="dropdown"` |
 | `tags` | Tags / chips | single **of** multi | `data-tile-display="tags"` | `data-show-tiles="tags"` |
+| `none` | Geen kiezer tonen | n.v.t. — één maatregel | `data-tile-display="none"` | `data-show-tiles="none"` |
 
+- **`none` — hiding the selector.** For a single-measurement widget where the visitor has nothing to choose. The tile still resolves the CTA target; when `data-tiles-default` is absent the widget auto-selects the first tile. **Never emit a `<style>` block to hide the selector** — a hand-rolled `hz-embed [data-tile-selector]{display:none!important}` next to the embed code used to be the only way in scan mode, and it must now be replaced by this attribute. The embed output should be a single `<hz-embed>` element plus the one shared `<script>` tag, nothing else.
 - **Selectie-modus** (single / multi) maps to `data-tiles-max-select`: **single = `1`**, **multi = `0`** (unlimited) or a number > 1.
 - **Dropdown is single-select only.** The widget forces `data-tiles-max-select="1"` for dropdown and logs a warning if you set anything else. In the generator, hide the multi option when `dropdown` is selected.
 - **Important:** Scan mode uses `data-tile-display`; booking mode uses `data-show-tiles` (different name — same values).
@@ -735,7 +738,7 @@ function generateEmbedCode(config: WidgetConfig): string {
   if (config.subtitle) attrs.push(['data-subtitle', config.subtitle]);
 
   if (config.mode === 'scan') {
-    // Selector
+    // Selector — 'none' hides it; never emit a <style> block for this
     if (config.tileDisplay !== 'large') attrs.push(['data-tile-display', config.tileDisplay]);
     if (config.tilesLabel !== 'Producten') attrs.push(['data-tiles-label', config.tilesLabel]); // "" respected
     if (maxSelect === 1) attrs.push(['data-tiles-max-select', '1']);

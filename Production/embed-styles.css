@@ -31,6 +31,15 @@ hz-embed {
         flex-direction: column;
         column-gap: 0;
     }
+
+    /* Voornaam en achternaam blijven wél naast elkaar staan, net als huisnummer en
+       toevoeging in de adresrij: twee korte velden passen ook op een telefoon prima
+       samen op één regel. Het paar telefoon/e-mail stapelt wel, want een e-mailadres
+       heeft de volle breedte nodig om leesbaar te blijven. */
+    .embed-flex-container.embed-name-container {
+        flex-direction: row;
+        column-gap: 16px;
+    }
 }
 
 .embed-address-container {
