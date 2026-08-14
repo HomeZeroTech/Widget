@@ -140,7 +140,8 @@ These are the **only** style attributes settable via the embed code. Everything 
 | Field | Component | Notes |
 |---|---|---|
 | Primaire kleur | Color picker + hex input | Default: `#2A6DF4`. Drives primary button fill, tile-selection accents, the **secondary CTA outline**, and the AI-chat link color. Sanitized server-side via `sanitizeColor()`; invalid colors fall back to `#2A6DF4`. `data-color` |
-| Kleurverloop (gradient) | Toggle + two color pickers | When enabled, shows "Van kleur" and "Naar kleur". Used for tile-selection background. `data-gradient-from` / `data-gradient-to` |
+| Kleurverloop (gradient) | Toggle + two color pickers | When enabled, shows "Van kleur" and "Naar kleur". **Emit both or neither** — a single stop is ignored by the widget and yields no gradient. Applies to the **selected-tile background only**; the CTA button always uses the solid `data-color`. `data-gradient-from` / `data-gradient-to` |
+| Tekstkleur op knop | Color picker, empty = automatic | Overrides the WCAG-calculated `--contrast-color` used for CTA text/icon, tag chips, checkbox tick and selected-tile text. Leave empty to keep the automatic choice. Invalid values are ignored by the widget with a console warning. `data-cta-text-color` |
 | Knop afronding | Slider (0–24px) + label "px" | Default: 10. Applies to both CTAs. `data-button-radius` |
 | Taal | Segmented control: NL / EN / DE | Default: NL. Drives field labels, the "(Optioneel)" suffix and validation messages. `data-language` |
 | Link openen | Toggle: "In nieuw tabblad" | Default: off. `data-open-new-tab` |
@@ -501,7 +502,12 @@ Use **inline SVG** copied from the `measurementIcons` object in `embed.js`. Must
 - AI-chat link: `14px`, weight `500`, underline, `color: var(--primary-color)`, centered, `margin-top: 12px`
 - Dropdown icon badge: `32×32`, radius `8px`, background `#f0f2f5`
 - Hover (buttons/link): `opacity: 0.8`
-- **`--contrast-color` (WCAG dynamic):** Auto-calculated at init from the primary color. Picks `#ffffff` or `#132039` — whichever gives the higher WCAG contrast ratio against the primary color. Used for: primary button text, small-tile selected text, tag-chip text, checkbox checkmark. Implement in preview:
+- **`--contrast-color` (WCAG dynamic):** Auto-calculated at init. Picks `#ffffff` or `#132039` — whichever gives the higher WCAG contrast ratio against the button background. Used for: primary button text and icon, small-tile selected text, tag-chip text, checkbox checkmark.
+
+  **One variable, several backgrounds.** The CTA button, tag chips, checkbox tick, selected dropdown row and confirm icon are all painted with the solid `data-color`; the **selected tile is the only element that uses the gradient**. Because a single variable serves all of them, evaluate the contrast against the primary colour *and* both gradient stops, then pick the option whose **lowest** ratio is highest — never the average, which is readable in the middle and fails at the edges. The CTA is 16px at weight 500, which is not WCAG "large text", so the threshold is **4.5:1**. The widget stays silent when that is unreachable — it simply applies the best available colour — so **flagging a too-low ratio is the configurator's job**: show the computed ratio next to the colour pickers and warn there when it drops below 4.5:1.
+
+  **`data-cta-text-color` overrides it.** When the partner sets an explicit colour, skip the calculation entirely and use that value; the widget does the same and does not check the contrast of a manually chosen colour. Offer it as an advanced "Tekstkleur op knop" field, defaulting to empty (= automatic), and warn in the UI when the chosen colour drops below 4.5:1 against either stop.
+
   ```ts
   function relativeLuminance(hex: string): number {
     hex = hex.replace('#', '');
@@ -511,12 +517,20 @@ Use **inline SVG** copied from the `measurementIcons` object in `embed.js`. Must
     });
     return 0.2126 * r + 0.7152 * g + 0.0722 * b;
   }
-  function getContrastColor(primary: string): string {
-    const lum = relativeLuminance(primary);
-    const darkRatio = (lum + 0.05) / (relativeLuminance('#132039') + 0.05);
-    const lightRatio = (1.05) / (lum + 0.05);
-    return lightRatio >= darkRatio ? '#ffffff' : '#132039';
+  const ratio = (a: number, b: number) =>
+    (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+
+  // stops = [primary] for a solid button, [from, to] for a gradient
+  function getContrastColor(stops: string[]): { color: string; ratio: number } {
+    const lums = stops.map(relativeLuminance);
+    const worst = (text: string) =>
+      Math.min(...lums.map(l => ratio(l, relativeLuminance(text))));
+    const dark = worst('#132039'), light = worst('#ffffff');
+    return dark >= light
+      ? { color: '#132039', ratio: dark }
+      : { color: '#ffffff', ratio: light };
   }
+  // ratio < 4.5 → show an accessibility warning in the configurator
   ```
 
 ---
@@ -729,8 +743,13 @@ function generateEmbedCode(config: WidgetConfig): string {
   attrs.push(['data-mode', config.mode]);
   attrs.push(['data-color', config.color]);
 
-  if (config.gradientFrom) attrs.push(['data-gradient-from', config.gradientFrom]);
-  if (config.gradientTo) attrs.push(['data-gradient-to', config.gradientTo]);
+  // All-or-nothing: the widget ignores a lone stop, so emitting one without the other
+  // silently produces no gradient at all.
+  if (config.gradientFrom && config.gradientTo) {
+    attrs.push(['data-gradient-from', config.gradientFrom]);
+    attrs.push(['data-gradient-to', config.gradientTo]);
+  }
+  if (config.ctaTextColor) attrs.push(['data-cta-text-color', config.ctaTextColor]);
   if (config.buttonRadius !== 10) attrs.push(['data-button-radius', `${config.buttonRadius}px`]);
   if (config.language !== 'nl') attrs.push(['data-language', config.language]);
   if (config.openNewTab) attrs.push(['data-open-new-tab', 'true']);

@@ -340,6 +340,63 @@
         return darkRatio >= lightRatio ? DARK : LIGHT;
     }
 
+    // True when the browser accepts the value as a CSS colour. Unlike sanitizeColor this
+    // reports invalid input instead of silently substituting the default blue.
+    function isValidCssColor(value) {
+        if (!value) return false;
+        const s = new Option().style;
+        s.color = value;
+        return s.color !== "";
+    }
+
+    // Text colour for one or more background colours. Picks whichever of dark/white keeps
+    // the *worst* of those backgrounds as readable as possible, rather than judging an
+    // average — a colour that only works on the midpoint of a gradient fails at its edges.
+    function getReadableTextColorForStops(stops) {
+        const DARK = "#132039";
+        const LIGHT = "#ffffff";
+        const lums = stops.map(relativeLuminance);
+        const worstAgainst = function (textLum) {
+            return lums.reduce(function (lowest, bgLum) {
+                return Math.min(lowest, contrastRatio(bgLum, textLum));
+            }, Infinity);
+        };
+        const darkWorst = worstAgainst(relativeLuminance(DARK));
+        const lightWorst = worstAgainst(relativeLuminance(LIGHT));
+        // Deliberately silent when neither option reaches 4.5:1 — the best available colour
+        // is applied without logging. Flagging a too-low ratio is the configurator's job.
+        return darkWorst >= lightWorst ? DARK : LIGHT;
+    }
+
+    // Resolve and apply --contrast-color: the colour used for anything drawn on top of the
+    // primary colour (CTA text and icon, selected tile text, tag chips, checkbox tick).
+    // An explicit data-cta-text-color wins over the automatic WCAG choice.
+    function applyContrastColor(element, form, primaryColor) {
+        const override = (element.getAttribute("data-cta-text-color") || "").trim();
+        if (override) {
+            if (isValidCssColor(override)) {
+                form.style.setProperty("--contrast-color", override);
+                return;
+            }
+            console.warn(
+                "[HomeZero embed] data-cta-text-color is geen geldige kleur (" + override +
+                "); de automatisch berekende WCAG-kleur wordt gebruikt.",
+            );
+        }
+        // One variable serves several backgrounds: the CTA button, tag chips, the checkbox
+        // tick, the dropdown's selected row and the confirm icon all sit on the solid
+        // primary colour, while the selected tile is the only element painted with the
+        // gradient. So the colour has to survive the primary colour *and* both stops.
+        const gradientFrom = (element.getAttribute("data-gradient-from") || "").trim();
+        const gradientTo = (element.getAttribute("data-gradient-to") || "").trim();
+        const stops = [primaryColor];
+        // Both stops are required — one on its own is not a gradient.
+        if (gradientFrom && gradientTo) {
+            stops.push(sanitizeColor(gradientFrom), sanitizeColor(gradientTo));
+        }
+        form.style.setProperty("--contrast-color", getReadableTextColorForStops(stops));
+    }
+
     function isSafeUrl(url) {
         try {
             const parsed = new URL(url);
@@ -1792,7 +1849,9 @@
             optEl.setAttribute('role', 'option');
             optEl.setAttribute('aria-selected', isSelected ? 'true' : 'false');
             optEl.style.cssText = 'padding:10px 12px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;font-size:14px;color:#7585a3;font-weight:500;border-radius:8px;transition:background-color 0.15s;';
-            if (isSelected) { optEl.style.backgroundColor = primaryColor; optEl.style.color = contrast; }
+            // Same gradient treatment as the large tiles and the tag chips, so all three
+            // display styles look alike when a gradient is configured.
+            if (isSelected) { optEl.style.background = 'var(--primary-gradient, ' + primaryColor + ')'; optEl.style.color = contrast; }
 
             const icon = iconBadge(tile);
 
@@ -1820,7 +1879,7 @@
                     selectedTilesSet.delete(tile.key);
                     optEl.classList.remove('selected');
                     optEl.setAttribute('aria-selected', 'false');
-                    optEl.style.backgroundColor = '';
+                    optEl.style.background = '';
                     optEl.style.color = '#7585a3';
                     ck.style.display = 'none';
                 } else {
@@ -1831,7 +1890,7 @@
                         if (firstEl) {
                             firstEl.classList.remove('selected');
                             firstEl.setAttribute('aria-selected', 'false');
-                            firstEl.style.backgroundColor = '';
+                            firstEl.style.background = '';
                             firstEl.style.color = '#7585a3';
                             const firstCk = firstEl.querySelector('.dd-check');
                             if (firstCk) firstCk.style.display = 'none';
@@ -1840,7 +1899,7 @@
                     selectedTilesSet.add(tile.key);
                     optEl.classList.add('selected');
                     optEl.setAttribute('aria-selected', 'true');
-                    optEl.style.backgroundColor = primaryColor;
+                    optEl.style.background = 'var(--primary-gradient, ' + primaryColor + ')';
                     optEl.style.color = contrast;
                     ck.style.display = 'block';
                 }
@@ -1863,13 +1922,13 @@
         function optionEl_hoverSetup(optEl, primaryColor, contrast) {
             optEl.addEventListener('mouseenter', function () {
                 if (!optEl.classList.contains('selected')) {
-                    optEl.style.backgroundColor = '#f0f4fa';
+                    optEl.style.background = '#f0f4fa';
                     optEl.style.color = '#132039';
                 }
             });
             optEl.addEventListener('mouseleave', function () {
                 if (!optEl.classList.contains('selected')) {
-                    optEl.style.backgroundColor = '';
+                    optEl.style.background = '';
                     optEl.style.color = '#7585a3';
                 }
             });
@@ -1952,7 +2011,7 @@
             const chip = document.createElement('div');
             chip.className = 'embed-tag-chip';
             chip.setAttribute('data-chip-key', tile.key);
-            chip.style.cssText = 'display:inline-flex;align-items:center;gap:5px;padding:4px 8px 4px 4px;border-radius:20px;background:' + primaryColor + ';color:var(--contrast-color, #fff);font-size:13px;font-weight:500;cursor:default;flex-shrink:0;max-width:180px;';
+            chip.style.cssText = 'display:inline-flex;align-items:center;gap:5px;padding:4px 8px 4px 4px;border-radius:20px;background:var(--primary-gradient, ' + primaryColor + ');color:var(--contrast-color, #fff);font-size:13px;font-weight:500;cursor:default;flex-shrink:0;max-width:180px;';
 
             const iconCircle = document.createElement('span');
             iconCircle.style.cssText = 'width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,0.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;';
@@ -2033,8 +2092,8 @@
                 nameSpan.textContent = tile.title;
                 optEl.appendChild(nameSpan);
 
-                optEl.addEventListener('mouseenter', function () { optEl.style.backgroundColor = '#f0f4fa'; });
-                optEl.addEventListener('mouseleave', function () { optEl.style.backgroundColor = ''; });
+                optEl.addEventListener('mouseenter', function () { optEl.style.background = '#f0f4fa'; });
+                optEl.addEventListener('mouseleave', function () { optEl.style.background = ''; });
                 optEl.addEventListener('click', function (e) {
                     e.stopPropagation();
                     if (maxSelect > 0 && selectedTilesSet.size >= maxSelect) {
@@ -2631,14 +2690,7 @@
                 }
 
                 // Set --contrast-color for text on primary/gradient backgrounds.
-                // Uses the WCAG contrast ratio to pick whichever of dark/white is more readable.
-                (function () {
-                    var lum = relativeLuminance(primaryColor);
-                    if (gradientFrom && gradientTo) {
-                        lum = (relativeLuminance(sanitizeColor(gradientFrom)) + relativeLuminance(sanitizeColor(gradientTo))) / 2;
-                    }
-                    form.style.setProperty('--contrast-color', getReadableTextColor(null, lum));
-                })();
+                applyContrastColor(element, form, primaryColor);
 
                 // Optional widget-block styling (applied to the form root itself, so the
                 // widget is self-contained and doesn't rely on host-page card styling).
@@ -3271,7 +3323,7 @@
                 const submitBtn = document.createElement("button");
                 submitBtn.type = "submit";
                 submitBtn.className = "embed-submit-button";
-                submitBtn.style.backgroundColor = primaryColor;
+                submitBtn.style.background = 'var(--primary-gradient, ' + primaryColor + ')';
                 submitBtn.textContent = buttonText;
                 form.appendChild(submitBtn);
 
@@ -3433,8 +3485,9 @@
             form.style.getPropertyValue("--primary-color") ||
             getComputedStyle(form).getPropertyValue("--primary-color")
         ).trim();
-        const contrastColor = getReadableTextColor(primaryColor);
-        form.style.setProperty("--contrast-color", contrastColor);
+        // Same resolver as init, so a gradient or an explicit data-cta-text-color is not
+        // overwritten here with a value derived from the primary colour alone.
+        applyContrastColor(element, form, primaryColor);
 
         // Update selected content with icon and text inside a flex container - Initial state uses placeholder
         selected.innerHTML = `
@@ -3772,7 +3825,10 @@
         const cta1Btn = document.createElement('button');
         cta1Btn.type = 'button';
         cta1Btn.className = 'embed-submit-button embed-cta-primary';
-        cta1Btn.style.backgroundColor = config.primaryColor;
+        // --primary-gradient is always set on the form: the gradient when both stops are
+        // configured, otherwise the solid primary colour. Using it here keeps the CTA in
+        // step with the tiles and chips instead of staying flat when a gradient is set.
+        cta1Btn.style.background = 'var(--primary-gradient, ' + config.primaryColor + ')';
         cta1Btn.style.setProperty('border-radius', config.buttonRadius, 'important');
         setCtaButtonContent(cta1Btn, resolveCtaIcon(1, getSelectedTiles(), ctaCfg), resolveCtaText(1, getSelectedTiles(), ctaCfg));
         ctaWrapper.appendChild(cta1Btn);
@@ -4219,7 +4275,10 @@
         const cta1Btn = document.createElement('button');
         cta1Btn.type = 'button';
         cta1Btn.className = 'embed-submit-button embed-cta-primary';
-        cta1Btn.style.backgroundColor = config.primaryColor;
+        // --primary-gradient is always set on the form: the gradient when both stops are
+        // configured, otherwise the solid primary colour. Using it here keeps the CTA in
+        // step with the tiles and chips instead of staying flat when a gradient is set.
+        cta1Btn.style.background = 'var(--primary-gradient, ' + config.primaryColor + ')';
         cta1Btn.style.setProperty('border-radius', config.buttonRadius, 'important');
         cta1Btn.textContent = cta1Text;
         form.appendChild(cta1Btn);
@@ -4315,7 +4374,10 @@
         const cta1Btn = document.createElement('button');
         cta1Btn.type = 'button';
         cta1Btn.className = 'embed-submit-button embed-cta-primary';
-        cta1Btn.style.backgroundColor = config.primaryColor;
+        // --primary-gradient is always set on the form: the gradient when both stops are
+        // configured, otherwise the solid primary colour. Using it here keeps the CTA in
+        // step with the tiles and chips instead of staying flat when a gradient is set.
+        cta1Btn.style.background = 'var(--primary-gradient, ' + config.primaryColor + ')';
         cta1Btn.style.setProperty('border-radius', config.buttonRadius, 'important');
         cta1Btn.textContent = cta1Text;
         form.appendChild(cta1Btn);

@@ -21,6 +21,18 @@ hz-embed {
     width: 100%;
 }
 
+/* Formulierelementen erven font-family niet van hun ouder — browsers zetten daar hun
+   eigen UI-lettertype op. Zonder deze regel staan titel, labels en toestemmingstekst
+   in het lettertype van de partnerpagina, terwijl de invoervelden en knoppen in het
+   standaardfont van de browser blijven staan. Alleen de familie wordt geërfd; grootte
+   en gewicht blijven per element geregeld. */
+.embed-form input,
+.embed-form button,
+.embed-form select,
+.embed-form textarea {
+    font-family: inherit;
+}
+
 .embed-form .embed-flex-container {
     display: flex;
     column-gap: 16px;
