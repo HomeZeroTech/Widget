@@ -1721,6 +1721,8 @@
 
     function renderTileLargeGrid(tiles, selectedTilesSet, primaryColor, onSelect) {
         ensureTileStyles();
+        // The only place the 4-measure limit is enforced: this grid is laid out as a fixed
+        // 4-column row (2 columns below 379px), so a fifth tile has nowhere to go.
         const visibleTiles = tiles.slice(0, 4);
 
         const grid = document.createElement('div');
@@ -2167,8 +2169,10 @@
                     cta1IconSvg: element.getAttribute('data-tile-' + key + '-cta1-icon-svg') || '',
                     cta2IconSvg: element.getAttribute('data-tile-' + key + '-cta2-icon-svg') || '',
                 };
-            })
-            .slice(0, 4);
+            });
+        // Deliberately unbounded here: only the large-tile grid has a fixed 4-column layout
+        // and caps itself in renderTileLargeGrid. Dropdown and tags are lists that scroll
+        // and wrap, so they take as many measures as the partner configures.
     }
 
     // Resolve input placeholders: an explicitly-set (even empty) data-attribute overrides

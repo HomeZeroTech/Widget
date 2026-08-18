@@ -135,7 +135,33 @@ altijd.
 
 ---
 
-## 6. Kleurverloop werkt nu overal
+## 6. Limiet van 4 maatregelen geldt alleen nog voor grote tegels
+
+De widget kapte het aantal maatregelen af op vier in `parseTilesFromElement()`, dus **vóórdat** de
+weergavevorm werd gekozen. Daardoor gold de limiet ook voor `dropdown` en `tags`, terwijl daar geen
+reden voor is: dat zijn lijsten die scrollen en doorlopen.
+
+De afkapping is verplaatst naar `renderTileLargeGrid()`, de enige plek waar hij thuishoort — dat
+grid heeft een vaste vier-koloms opmaak (twee kolommen onder 379px), dus een vijfde tegel kan daar
+niet staan.
+
+| Weergavevorm | Limiet |
+|---|---|
+| `large` | **4** — de rest wordt niet gerenderd |
+| `dropdown` | geen limiet |
+| `tags` | geen limiet |
+
+**Voor de generator:** begrens het aantal maatregelen op vier zolang `large` gekozen is, en laat het
+vrij bij `dropdown` en `tags`. Waarschuw wanneer iemand met meer dan vier maatregelen terugschakelt
+naar `large` — die extra maatregelen verdwijnen dan uit de widget zonder melding, want de widget
+logt hier niets over.
+
+Let op dat `data-tiles-max-select` iets anders begrenst: hoeveel maatregelen de bezoeker tegelijk mag
+aanvinken, niet hoeveel er getoond worden.
+
+---
+
+## 7. Kleurverloop werkt nu overal
 
 **Beide stops zijn verplicht.** De widget controleert op `data-gradient-from` **en**
 `data-gradient-to`. Emit ze als paar of geen van beide — één stop alleen wordt genegeerd en levert
@@ -160,7 +186,7 @@ data-gradient-to="#F39332"
 
 ---
 
-## 7. Tekstkleur op de primaire kleur — `data-cta-text-color` *(nieuw)*
+## 8. Tekstkleur op de primaire kleur — `data-cta-text-color` *(nieuw)*
 
 De widget berekent automatisch of de tekst zwart-blauw (`#132039`) of wit (`#ffffff`) moet zijn, en
 zet die als `--contrast-color`. Die ene kleur wordt gebruikt voor de CTA-tekst en het CTA-icoon, de
@@ -198,7 +224,7 @@ Bied dit aan als een geavanceerd veld "Tekstkleur op knop", standaard leeg (= au
 
 ---
 
-## 8. Ingevulde waarden worden getrimd
+## 9. Ingevulde waarden worden getrimd
 
 Spaties aan begin en eind gaan eraf voordat een waarde in de leadflow- of agenda-URL belandt, en een
 veld met alleen spaties telt als leeg en wordt weggelaten. Er verschijnt dus nooit een lege
@@ -210,7 +236,7 @@ Laat de URL-preview in de configurator hetzelfde doen.
 
 ---
 
-## 9. Lettertype van invoervelden en knoppen
+## 10. Lettertype van invoervelden en knoppen
 
 De widget bevat geen enkele `font-family`-declaratie: alle tekst erft het lettertype van de
 partnerpagina. Invoervelden en knoppen erfden dat echter niet, omdat browsers daar hun eigen
@@ -222,7 +248,7 @@ plaats van een eigen font op te leggen. Grootte en gewicht blijven per element g
 
 ---
 
-## 10. Regels voor de embed-uitvoer
+## 11. Regels voor de embed-uitvoer
 
 **Eén element, geen CSS ernaast.** De gegenereerde code bestaat altijd uit precies twee dingen: één
 `<hz-embed>`-element met data-attributen en het gedeelde `<script defer>`-tag. Geen `<style>`-blok,
@@ -246,8 +272,9 @@ waarde. Overal anders hoort een leeg configuratieveld helemaal niet in de embed-
 
 ---
 
-## 11. Checklist voor de generator
+## 12. Checklist voor de generator
 
+- [ ] Maximum van 4 maatregelen alleen afdwingen bij `large`; dropdown en tags onbeperkt.
 - [ ] Per maatregel een veld "Weergavenaam" dat `data-tile-{key}-title` emit; key nooit wijzigen.
       Standaardnaam voor `solarboiler` is nu "Zonnestroomboiler".
 - [ ] Eén toggle "Naamvelden" die `data-show-name="true"` emit, met sub-toggle "Verplicht" →

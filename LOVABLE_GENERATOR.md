@@ -192,7 +192,8 @@ Show a list of configurable tiles. Each row:
 [drag handle] [icon preview] [name field] [primary URL] [2e CTA URL toggle] [delete]
 ```
 
-- Maximum: 4 tiles — the widget enforces this in `parseTilesFromElement()` via `.slice(0, 4)`. The UI must hard-cap at 4.
+- **Maximum depends on the display style.** Only `large` is capped: that grid is a fixed 4-column row (2 columns below 379px), so `renderTileLargeGrid()` renders the first 4 and drops the rest. `dropdown` and `tags` are lists that scroll and wrap, and take **as many measures as you configure** — the parser no longer truncates.
+- In the UI, hard-cap at 4 only while `large` is selected. Warn rather than silently drop when the partner switches from `dropdown`/`tags` (with more than 4 measures) to `large`, because the surplus would disappear from the widget without any message.
 - Minimum: 1 tile (when section enabled)
 - **Add tile button:** opens a modal to pick from the supported icon types
 
@@ -1069,7 +1070,7 @@ Each tile can have a custom SVG icon instead of the built-in one. The widget rea
 - [ ] Secondary CTA preview is an outline in the primary color (transparent bg)
 - [ ] "(Optioneel)" suffix shown for non-required phone/email
 - [ ] Booking mode emits `data-show-tiles` (not `data-tile-display`)
-- [ ] Max 4 tiles enforced in UI
+- [ ] Max 4 tiles enforced in UI **for `large` only**; `dropdown` and `tags` unlimited
 - [ ] Custom SVG icon upload + AI generation store base64 SVG
 - [ ] Generator validation mirrors `validateScanConfig` warnings
 - [ ] Environment toggle switches script src between `/Acceptance/` and `/Production/`
