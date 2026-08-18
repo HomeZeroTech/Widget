@@ -1858,7 +1858,14 @@
             const content = document.createElement('div');
             content.className = 'option-content';
             content.style.cssText = 'display:flex;align-items:center;gap:10px;';
-            content.innerHTML = icon + '<span>' + tile.title + '</span>';
+            // Icon is trusted markup (built-in set or operator base64 SVG), but the title is
+            // partner-supplied free text — so it goes in as a text node, like the tile grid and
+            // the tag chips already do. Interpolating it into innerHTML would break on a title
+            // containing & or <.
+            content.innerHTML = icon;
+            const optLabel = document.createElement('span');
+            optLabel.textContent = tile.title;
+            content.appendChild(optLabel);
 
             const ck = document.createElement('svg');
             ck.setAttribute('class', 'dd-check');

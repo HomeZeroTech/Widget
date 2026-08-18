@@ -100,7 +100,42 @@ geen effect meer.
 
 ---
 
-## 5. Kleurverloop werkt nu overal
+## 5. Maatregelnamen zijn vrij instelbaar
+
+De namen van de maatregelen liggen **niet** in de widget vast. Elke maatregel heeft twee gescheiden
+dingen:
+
+- de **key** — technisch: die vormt de attribuutnamen (`data-tile-{key}-url`), kiest het ingebouwde
+  icoon, en is wat de leadflow ontvangt in `Tiles=` en `PrimaryTile=`. Beperkt tot `[a-z0-9]+`, en
+  hoort niet zichtbaar te zijn in de configurator.
+- de **weergavenaam** — vrije tekst via `data-tile-{key}-title`, en het enige wat de bezoeker leest.
+
+Een partner mag dus afwijken van jullie terminologie zonder dat het icoon of de leadflow verandert:
+
+```html
+data-tile-solarboiler-url="https://configurator.homezero.nl/..."
+data-tile-solarboiler-title="Zonnestroomboiler"
+```
+
+**Wat de generator moet toevoegen:** per gekozen maatregel een tekstveld "Weergavenaam", voorgevuld
+met de standaardnaam, dat `data-tile-{key}-title` emit. Wijzig nooit de key om een naam te
+veranderen — dan valt het icoon terug op het generieke exemplaar en ontvangt de leadflow een
+onbekende waarde.
+
+Ontbreekt het title-attribuut, dan toont de widget de **ruwe key** (`solarboiler`). Emit hem dus
+altijd.
+
+> **Standaardnaam gewijzigd:** `solarboiler` heet vanaf nu **Zonnestroomboiler** in plaats van
+> Zonneboiler. Werk die default in de generator bij.
+
+> **Let op — er zijn geen aliassen.** Het icoon wordt op de exacte key gezocht. Keys als `ems`,
+> `meterkast`, `zon`, `airco`, `batterij`, `laadpaal` of `advies` hebben géén eigen icoon en vallen
+> terug op het generieke. Lever daar zelf een `data-tile-{key}-icon-svg` bij. De iconenlijst in
+> `LOVABLE_GENERATOR.md` is bijgewerkt met de keys die er wél een hebben.
+
+---
+
+## 6. Kleurverloop werkt nu overal
 
 **Beide stops zijn verplicht.** De widget controleert op `data-gradient-from` **en**
 `data-gradient-to`. Emit ze als paar of geen van beide — één stop alleen wordt genegeerd en levert
@@ -125,7 +160,7 @@ data-gradient-to="#F39332"
 
 ---
 
-## 6. Tekstkleur op de primaire kleur — `data-cta-text-color` *(nieuw)*
+## 7. Tekstkleur op de primaire kleur — `data-cta-text-color` *(nieuw)*
 
 De widget berekent automatisch of de tekst zwart-blauw (`#132039`) of wit (`#ffffff`) moet zijn, en
 zet die als `--contrast-color`. Die ene kleur wordt gebruikt voor de CTA-tekst en het CTA-icoon, de
@@ -163,7 +198,7 @@ Bied dit aan als een geavanceerd veld "Tekstkleur op knop", standaard leeg (= au
 
 ---
 
-## 7. Ingevulde waarden worden getrimd
+## 8. Ingevulde waarden worden getrimd
 
 Spaties aan begin en eind gaan eraf voordat een waarde in de leadflow- of agenda-URL belandt, en een
 veld met alleen spaties telt als leeg en wordt weggelaten. Er verschijnt dus nooit een lege
@@ -175,7 +210,7 @@ Laat de URL-preview in de configurator hetzelfde doen.
 
 ---
 
-## 8. Lettertype van invoervelden en knoppen
+## 9. Lettertype van invoervelden en knoppen
 
 De widget bevat geen enkele `font-family`-declaratie: alle tekst erft het lettertype van de
 partnerpagina. Invoervelden en knoppen erfden dat echter niet, omdat browsers daar hun eigen
@@ -187,7 +222,7 @@ plaats van een eigen font op te leggen. Grootte en gewicht blijven per element g
 
 ---
 
-## 9. Regels voor de embed-uitvoer
+## 10. Regels voor de embed-uitvoer
 
 **Eén element, geen CSS ernaast.** De gegenereerde code bestaat altijd uit precies twee dingen: één
 `<hz-embed>`-element met data-attributen en het gedeelde `<script defer>`-tag. Geen `<style>`-blok,
@@ -211,8 +246,10 @@ waarde. Overal anders hoort een leeg configuratieveld helemaal niet in de embed-
 
 ---
 
-## 10. Checklist voor de generator
+## 11. Checklist voor de generator
 
+- [ ] Per maatregel een veld "Weergavenaam" dat `data-tile-{key}-title` emit; key nooit wijzigen.
+      Standaardnaam voor `solarboiler` is nu "Zonnestroomboiler".
 - [ ] Eén toggle "Naamvelden" die `data-show-name="true"` emit, met sub-toggle "Verplicht" →
       `data-name-required="true"`. Beschikbaar in alle modi, niet alleen brochure.
 - [ ] Twee geavanceerde placeholder-velden voor voornaam en achternaam, met de taalstandaard als

@@ -216,25 +216,30 @@ Show a list of configurable tiles. Each row:
 **Supported icon types** (show in add modal with icons):
 
 ```
-solarpanels     → Zonnepanelen          (alias: zon)
+solarpanels     → Zonnepanelen
 heatpump        → Warmtepomp
-airconditioning → Airco                  (alias: airco)
-homebattery     → Thuisbatterij         (alias: batterij)
-carcharger      → Laadpaal              (alias: laadpaal)
+airconditioning → Airco
+homebattery     → Thuisbatterij
+carcharger      → Laadpaal
 floorinsulation → Vloerisolatie
 wallinsulation  → Spouwmuurisolatie
 roofinsulation  → Dakisolatie
 glassinsulation → Glas / HR++
 gasboiler       → CV-Ketel
-ems             → EMS
 advicescan      → Advies scan
-advisormodule   → Adviseur / Advies     (alias: advies)
-solarboiler     → Zonneboiler / Zonnestroomboiler
-meterkast       → Meterkast / Groepenkast
+advisormodule   → Adviseur / Advies
+solarboiler     → Zonnestroomboiler
 general         → Algemeen
 ```
 
-Aliases are short keys that resolve to the same built-in icon (e.g. `data-tile-batterij-url` uses the `homebattery` icon). Both the canonical key and the alias work as the `{key}` in `data-tile-{key}-*`.
+**Key vs. display name — two separate things.**
+
+- The **key** is technical: it forms the attribute names (`data-tile-{key}-url`), selects the built-in icon, and is what the leadflow receives in `Tiles=` and `PrimaryTile=`. It must match `[a-z0-9]+` and should not be surfaced in the configurator UI.
+- The **display name** is free text set with `data-tile-{key}-title`, and it is the only thing the visitor reads. When the attribute is absent the widget falls back to the raw key, so **always emit a title**.
+
+The names above are the defaults to pre-fill in the configurator. Give every selected measure an editable **"Weergavenaam"** field pre-filled with its default, and emit `data-tile-{key}-title` whenever it is set — which, per the point above, should be always. This lets a partner use their own terminology (e.g. "Zonnestroomboiler" instead of "Zonneboiler") without touching the key, so the icon and the leadflow parameters stay intact.
+
+**Only the keys listed above have a built-in icon.** Any other key — including `ems`, `meterkast` and short forms like `zon`, `airco`, `batterij`, `laadpaal` or `advies` — falls back to the generic `general` icon. For those, supply your own artwork via `data-tile-{key}-icon-svg`. There is no alias mechanism in the widget: the icon is looked up on the exact key (`measurementIcons[tile.key] || measurementIcons.general`).
 
 ### CTA-routing logic (read carefully — this is the core)
 
