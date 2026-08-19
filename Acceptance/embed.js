@@ -57,7 +57,7 @@
                       </svg>`,
         general: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <g clip-path="url(#clip0_4387_117838)">
-                        <path d="M20.4201 10.184L12.7101 2.30403C12.6172 2.21018 12.5066 2.13568 12.3848 2.08484C12.2629 2.03399 12.1322 2.00781 12.0001 2.00781C11.8681 2.00781 11.7373 2.03399 11.6155 2.08484C11.4936 2.13568 11.383 2.21018 11.2901 2.30403L3.58012 10.194C3.39355 10.3821 3.24621 10.6054 3.14664 10.8508C3.04708 11.0963 2.99727 11.3591 3.00012 11.624V20.004C2.99934 20.5159 3.19489 21.0087 3.54649 21.3807C3.89809 21.7528 4.37898 21.9759 4.89012 22.004H19.1101C19.6213 21.9759 20.1021 21.7528 20.4537 21.3807C20.8053 21.0087 21.0009 20.5159 21.0001 20.004V11.624C21.0009 11.087 20.7929 10.5706 20.4201 10.184ZM10.0001 20.004V14.004H14.0001V20.004H10.0001ZM19.0001 20.004H16.0001V13.004C16.0001 12.7388 15.8948 12.4845 15.7072 12.2969C15.5197 12.1094 15.2653 12.004 15.0001 12.004H9.00012C8.7349 12.004 8.48055 12.1094 8.29301 12.2969C8.10547 12.4845 8.00012 12.7388 8.00012 13.004V20.004H5.00012V11.584L12.0001 4.43403L19.0001 11.624V20.004Z" fill="black"/>
+                        <path d="M20.4201 10.184L12.7101 2.30403C12.6172 2.21018 12.5066 2.13568 12.3848 2.08484C12.2629 2.03399 12.1322 2.00781 12.0001 2.00781C11.8681 2.00781 11.7373 2.03399 11.6155 2.08484C11.4936 2.13568 11.383 2.21018 11.2901 2.30403L3.58012 10.194C3.39355 10.3821 3.24621 10.6054 3.14664 10.8508C3.04708 11.0963 2.99727 11.3591 3.00012 11.624V20.004C2.99934 20.5159 3.19489 21.0087 3.54649 21.3807C3.89809 21.7528 4.37898 21.9759 4.89012 22.004H19.1101C19.6213 21.9759 20.1021 21.7528 20.4537 21.3807C20.8053 21.0087 21.0009 20.5159 21.0001 20.004V11.624C21.0009 11.087 20.7929 10.5706 20.4201 10.184ZM10.0001 20.004V14.004H14.0001V20.004H10.0001ZM19.0001 20.004H16.0001V13.004C16.0001 12.7388 15.8948 12.4845 15.7072 12.2969C15.5197 12.1094 15.2653 12.004 15.0001 12.004H9.00012C8.7349 12.004 8.48055 12.1094 8.29301 12.2969C8.10547 12.4845 8.00012 12.7388 8.00012 13.004V20.004H5.00012V11.584L12.0001 4.43403L19.0001 11.624V20.004Z" fill="currentColor"/>
                         </g>
                         <defs>
                         <clipPath id="clip0_4387_117838">
@@ -66,8 +66,11 @@
                         </defs>
                       </svg>`,
         gasboiler: `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="21" viewBox="0 0 22 21" fill="none">
-                        <path d="M9.71771 0.414932C10.2974 -0.138289 11.2104 -0.138333 11.79 0.414932L21.1963 9.39443C21.8485 10.0174 21.4078 11.117 20.5059 11.1171H19.2539V18.6171C19.2538 19.4454 18.5822 20.117 17.7539 20.1171H3.75381C2.92544 20.1171 2.25388 19.4454 2.2538 18.6171V11.1171H1.00185C0.0997649 11.1171 -0.340905 10.0174 0.311412 9.39443L9.71771 0.414932ZM11.0996 1.13759C10.9065 0.953347 10.6024 0.953687 10.4091 1.13759L1.00185 10.1171H2.2538C2.80592 10.1172 3.2537 10.565 3.25381 11.1171V18.6171C3.25388 18.8932 3.47773 19.1171 3.75381 19.1171H17.7539C18.0299 19.117 18.2538 18.8931 18.2539 18.6171V11.1171C18.254 10.5649 18.7017 10.1171 19.2539 10.1171H20.5059L11.0996 1.13759ZM16.2539 17.1171C16.5299 17.1172 16.7538 17.3411 16.7539 17.6171C16.7538 17.8931 16.5299 18.117 16.2539 18.1171H5.25382C4.97773 18.1171 4.75388 17.8932 4.75382 17.6171C4.75393 17.3411 4.97776 17.1171 5.25382 17.1171H16.2539ZM11.039 8.14052C11.1571 8.06826 11.3029 8.17535 11.2724 8.31435C10.8519 10.194 12.5937 10.2644 13.083 11.5575C13.4318 12.4069 13.1945 13.3832 12.5468 13.995C11.9581 14.5433 11.1387 14.686 10.3818 14.5878C9.85195 14.5179 8.37809 13.973 8.25969 12.1981C8.25974 11.3963 8.47562 10.8637 8.68743 10.5341C8.77776 10.3983 8.98774 10.4772 8.96966 10.6415C8.9199 11.0884 8.98037 11.7132 9.54388 12.1474C9.66533 12.242 9.83319 12.1055 9.77728 11.9599C9.09555 10.1788 9.90845 8.81887 11.039 8.14052ZM10.9052 10.8065C10.6345 11.5225 11.0349 11.9668 10.9326 12.4198C10.8702 12.7112 10.6403 13.0411 10.1923 13.1522C11.0954 13.906 11.9474 13.2186 11.9228 12.4169C11.9222 11.7707 11.0083 11.3989 10.9052 10.8065Z" fill="#132039"/>
+                        <path d="M9.71771 0.414932C10.2974 -0.138289 11.2104 -0.138333 11.79 0.414932L21.1963 9.39443C21.8485 10.0174 21.4078 11.117 20.5059 11.1171H19.2539V18.6171C19.2538 19.4454 18.5822 20.117 17.7539 20.1171H3.75381C2.92544 20.1171 2.25388 19.4454 2.2538 18.6171V11.1171H1.00185C0.0997649 11.1171 -0.340905 10.0174 0.311412 9.39443L9.71771 0.414932ZM11.0996 1.13759C10.9065 0.953347 10.6024 0.953687 10.4091 1.13759L1.00185 10.1171H2.2538C2.80592 10.1172 3.2537 10.565 3.25381 11.1171V18.6171C3.25388 18.8932 3.47773 19.1171 3.75381 19.1171H17.7539C18.0299 19.117 18.2538 18.8931 18.2539 18.6171V11.1171C18.254 10.5649 18.7017 10.1171 19.2539 10.1171H20.5059L11.0996 1.13759ZM16.2539 17.1171C16.5299 17.1172 16.7538 17.3411 16.7539 17.6171C16.7538 17.8931 16.5299 18.117 16.2539 18.1171H5.25382C4.97773 18.1171 4.75388 17.8932 4.75382 17.6171C4.75393 17.3411 4.97776 17.1171 5.25382 17.1171H16.2539ZM11.039 8.14052C11.1571 8.06826 11.3029 8.17535 11.2724 8.31435C10.8519 10.194 12.5937 10.2644 13.083 11.5575C13.4318 12.4069 13.1945 13.3832 12.5468 13.995C11.9581 14.5433 11.1387 14.686 10.3818 14.5878C9.85195 14.5179 8.37809 13.973 8.25969 12.1981C8.25974 11.3963 8.47562 10.8637 8.68743 10.5341C8.77776 10.3983 8.98774 10.4772 8.96966 10.6415C8.9199 11.0884 8.98037 11.7132 9.54388 12.1474C9.66533 12.242 9.83319 12.1055 9.77728 11.9599C9.09555 10.1788 9.90845 8.81887 11.039 8.14052ZM10.9052 10.8065C10.6345 11.5225 11.0349 11.9668 10.9326 12.4198C10.8702 12.7112 10.6403 13.0411 10.1923 13.1522C11.0954 13.906 11.9474 13.2186 11.9228 12.4169C11.9222 11.7707 11.0083 11.3989 10.9052 10.8065Z" fill="currentColor"/>
                     </svg>`,
+        dynamicenergy: `<svg viewBox="170.6 -917 682.8 938" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M474 21L474 21Q470 21 465.50 20Q461 19 457 18L457 18Q453 16 449 13Q445 10 442 7L442 7Q439 4 437 0Q435-4 434-8L434-8Q432-13 431.50-17.50Q431-22 432-26L432-26L465-329L213-329Q208-329 202-330.50Q196-332 191-335L191-335Q186-338 182-342Q178-346 176-351L176-351Q173-356 171.50-362Q170-368 171-373L171-373Q171-379 173-384.50Q175-390 178-395L178-395L515-899Q519-904 524.50-908.50Q530-913 537-915L537-915Q544-917 551-917Q558-917 564-915L564-915Q571-912 576.50-908Q582-904 585-898L585-898Q589-892 591-885.50Q593-879 592-872L592-872L559-567L811-567Q816-567 822-565.50Q828-564 833-561L833-561Q838-558 842-554Q846-550 848-545L848-545Q851-540 852.50-534Q854-528 853-523L853-523Q853-517 851-511.50Q849-506 846-501L846-501L509 3Q507 7 503 10.50Q499 14 494 16L494 16Q489 19 484 20Q479 21 474 21L474 21ZM293-414L293-414L512-414Q516-414 520.50-413Q525-412 529-410L529-410Q533-408 537-405.50Q541-403 544-400L544-400Q547-396 549-392Q551-388 552-384L552-384Q554-380 554.50-375.50Q555-371 554-367L554-367L535-189L731-482L512-482Q507-482 503-483Q499-484 495-486L495-486Q490-488 486.50-490.50Q483-493 480-496L480-496Q477-500 475-503.50Q473-507 471-512L471-512Q470-516 469.50-520.50Q469-525 469-529L469-529L489-707L293-414Z" fill="currentColor"/></svg>`,
+        combination: `<svg viewBox="0 -960 1229 1024" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M398-960L398-959Q392-959 386-956.50Q380-954 376-950L376-950L376-950L29-619Q17-607 8.50-593Q0-579 0-561L0-561Q0-544 9.50-529Q19-514 32-504L32-504Q36-501 41-499Q46-497 52-497L52-497L68-497L68-181Q68-165 72.50-150Q77-135 88-123L88-123Q100-111 115.50-106.50Q131-102 146-102L146-102L651-102L670-103L670-63Q670-50 679.50-40.50Q689-31 702-31L702-31L702-31L749-31Q747-21 747-12L747-12Q747 20 769 42Q791 64 823 64L823 64Q854 64 876 41.50Q898 19 898-12L898-12Q898-17 897.50-22Q897-27 896-31L896-31L896-31L1002-31Q999-21 999-12L999-12Q999 20 1021.50 42Q1044 64 1075 64L1075 64Q1106 64 1128.50 41.50Q1151 19 1151-12L1151-12Q1151-17 1150-22Q1149-27 1148-31L1148-31L1148-31L1195-31Q1209-31 1218.50-40.50Q1228-50 1229-63L1229-63L1229-63L1229-118Q1229-135 1223.50-151.50Q1218-168 1206-180L1206-180Q1194-190 1179-196.50Q1164-203 1147-203L1147-203Q1146-203 1145.50-203Q1145-203 1144-203L1144-203L1144-203L1146-203L1098-283L1097-285Q1086-302 1067-312.50Q1048-323 1026-323L1026-323L871-323Q850-323 831-312.50Q812-302 800-285L800-285L800-283L752-203L754-203Q742-203 729-200L729-200L729-498L745-498Q745-498 745.50-498Q746-498 746-498L746-498Q751-498 756-499.50Q761-501 766-504L766-504L765-504Q778-514 787.50-528.50Q797-543 797-562L797-562Q797-579 788.50-593Q780-607 768-619L768-619L628-754L634-759Q638-764 640.50-770Q643-776 643-783L643-783Q643-789 640-795.50Q637-802 633-806L633-806L633-806L517-917Q512-921 506-923.50Q500-926 493-926L493-926Q486-926 480-923.50Q474-921 470-916L470-916L470-916L464-910L421-950Q417-955 411-957.50Q405-960 399-960L399-960L398-960ZM75-571L398-881L722-572Q728-568 728-566Q728-564 729-564L729-564L697-564Q683-563 674-553.50Q665-544 664-531L664-531L664-531L664-181Q664-174 663-172Q662-170 662-170L662-170Q662-170 660-169Q658-168 650-168L650-168L469-168L469-459Q469-480 454-495Q439-510 419-510L419-510L264-510Q244-510 229-495Q214-480 214-459L214-459L214-168L146-168Q139-168 137-169Q135-170 135-170L135-170Q135-170 134.50-172Q134-174 134-182L134-182L134-531Q133-544 123.50-553.50Q114-563 100-563L100-563L68-563Q68-564 69-565.50Q70-567 74-571L74-571L75-571ZM264-461L264-461L419-461Q420-461 420-459L420-459L420-410L263-410L263-459Q263-461 264-461ZM263-173L263-361L420-361L420-173Q420-171 419-171L419-171L355-171L394-236Q395-238 396-240Q397-242 397-244L397-244Q397-251 392.50-255.50Q388-260 381-261L381-261L381-261L346-261L381-317Q382-318 382-320Q382-322 382-324L382-324Q382-329 380-332.50Q378-336 375-338L375-338L375-338Q373-339 371-340Q369-341 367-341L367-341Q366-341 365-340.50Q364-340 363-340L363-340L364-340Q360-339 357.50-337Q355-335 354-333L354-333L354-333L304-252Q304-251 303.50-249Q303-247 303-245L303-245Q303-239 307.50-234Q312-229 318-229L318-229L318-229L353-229L319-172L319-171L264-171Q263-171 263-173L263-173ZM871-257L871-258L1026-258Q1034-258 1036-256.50Q1038-255 1041-250L1041-250L1099-153Q1103-146 1110.50-141.50Q1118-137 1127-137L1127-137L1127-137L1144-137Q1152-137 1155-135.50Q1158-134 1159-134L1159-134Q1160-133 1161.50-130Q1163-127 1163-118L1163-118L1163-97L736-97L736-118Q736-127 737-130Q738-133 738-134L738-134Q739-134 742-135.50Q745-137 754-137L754-137L771-137Q780-137 787.50-141.50Q795-146 800-153L800-153L800-153L857-250Q860-255 862-256Q864-257 871-257L871-257ZM823-22L823-22Q832-21 833-12L833-12Q832-3 823-2L823-2Q819-2 816.50-5Q814-8 813-12L813-12L813-12Q814-21 823-22L823-22ZM1075-22L1075-22Q1084-21 1085-12L1085-12Q1084-3 1075-2L1075-2Q1071-2 1068.50-5Q1066-8 1065-12L1065-12L1065-12Q1066-21 1075-22L1075-22Z" fill="currentColor" fill-rule="evenodd"/></svg>`,
+        servicemaintenance: `<svg viewBox="0 -960 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M597-721L706-831Q701-831 695-832L695-832Q689-832 683-832L683-832Q673-832 663-831L663-831Q654-830 644-829L644-829Q612-823 583-808L583-808Q555-793 532-770Q509-747 494-718L494-718Q478-689 473-657L473-657Q467-625 471-593Q475-561 488-531L488-531Q494-519 491-506L491-506Q489-493 479-483L479-483L185-188Q178-182 174-173L174-173Q171-164 171-154L171-154Q171-145 174-136L174-136Q178-127 185-121L185-121Q191-114 200-110L200-110Q209-107 218-107L218-107Q228-107 237-110L237-110Q246-114 252-121L252-121L547-415Q557-425 570-427L570-427Q583-430 595-424L595-424Q625-411 657-407Q689-403 721-409L721-409Q753-414 782-430L782-430Q811-445 834-468Q857-491 872-519L872-519Q887-548 893-580L893-580Q894-590 895-599L895-599Q896-609 896-619L896-619Q896-625 896-631L896-631Q895-637 895-642L895-642L785-533Q773-521 758-515L758-515Q742-508 725-508L725-508Q709-508 693-515L693-515Q678-521 666-533L666-533L665-533L597-602Q585-614 579-629L579-629Q572-645 572-661L572-661Q572-678 579-694L579-694Q585-709 597-721L597-721ZM629-913L629-913Q642-915 656-916L656-916Q669-917 683-917L683-917Q714-917 745-911L745-911Q777-904 806-891L806-891Q815-887 822-878L822-878Q828-870 830-860L830-860Q832-849 829-839Q826-829 818-822L818-822L658-661L725-594L886-754Q893-762 903-765Q913-768 924-766L924-766Q934-764 942-758L942-758Q951-751 955-742L955-742Q968-713 975-681L975-681Q981-650 981-619L981-619Q981-605 980-592L980-592Q979-578 977-565L977-565Q968-520 947-480Q926-440 894-407L894-407Q862-375 821-354L821-354Q781-333 736-325L736-325Q699-318 661-321L661-321Q624-323 588-335L588-335L313-60Q294-42 269-31L269-31Q245-21 218-21L218-21Q192-21 167-31L167-31Q143-42 124-60L124-60Q106-79 95-103L95-103Q85-128 85-154L85-154Q85-181 95-205L95-205Q106-230 124-249L124-249L399-524Q387-560 385-597L385-597Q382-635 389-672L389-672Q397-717 418-757L418-757Q439-798 471-830L471-830Q504-862 544-883Q584-904 629-913Z" fill="currentColor"/></svg>`,
     };
 
     // Icon aliases (short keys → canonical keys)
@@ -76,6 +79,21 @@
     measurementIcons.zon = measurementIcons.solarpanels;
     measurementIcons.advies = measurementIcons.advisormodule;
     measurementIcons.airco = measurementIcons.airconditioning;
+    measurementIcons.dynamischeenergie = measurementIcons.dynamicenergy;
+    measurementIcons.combinatie = measurementIcons.combination;
+    measurementIcons.serviceonderhoud = measurementIcons.servicemaintenance;
+    measurementIcons.huisscan = measurementIcons.advicescan;
+    measurementIcons.cvketel = measurementIcons.gasboiler;
+    measurementIcons.zonnepanelen = measurementIcons.solarpanels;
+    measurementIcons.warmtepomp = measurementIcons.heatpump;
+    measurementIcons.thuisbatterij = measurementIcons.homebattery;
+    measurementIcons.vloerisolatie = measurementIcons.floorinsulation;
+    measurementIcons.muurisolatie = measurementIcons.wallinsulation;
+    measurementIcons.dakisolatie = measurementIcons.roofinsulation;
+    measurementIcons.glasisolatie = measurementIcons.glassinsulation;
+    measurementIcons.zonnestroomboiler = measurementIcons.solarboiler;
+    measurementIcons.adviseur = measurementIcons.advisormodule;
+    measurementIcons.algemeen = measurementIcons.general;
     measurementIcons.ems = `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2ZM11 16V13H8L13 8V11H16L11 16ZM4 12C4 16.4183 7.58172 20 12 20C16.4183 20 20 16.4183 20 12C20 7.58172 16.4183 4 12 4C7.58172 4 4 7.58172 4 12Z" fill="currentColor"/></svg>`;
     measurementIcons.meterkast = `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M4 3C3.44772 3 3 3.44772 3 4V20C3 20.5523 3.44772 21 4 21H20C20.5523 21 21 20.5523 21 20V4C21 3.44772 20.5523 3 20 3H4ZM5 5H19V19H5V5ZM8 8C8 7.44772 8.44772 7 9 7H10C10.5523 7 11 7.44772 11 8C11 8.55228 10.5523 9 10 9H9C8.44772 9 8 8.55228 8 8ZM13 8C13 7.44772 13.4477 7 14 7H15C15.5523 7 16 7.44772 16 8C16 8.55228 15.5523 9 15 9H14C13.4477 9 13 8.55228 13 8ZM9 11C8.44772 11 8 11.4477 8 12C8 12.5523 8.44772 13 9 13H15C15.5523 13 16 12.5523 16 12C16 11.4477 15.5523 11 15 11H9ZM9 15C8.44772 15 8 15.4477 8 16C8 16.5523 8.44772 17 9 17H15C15.5523 17 16 16.5523 16 16C16 15.4477 15.5523 15 15 15H9Z" fill="currentColor"/></svg>`;
 
@@ -1203,6 +1221,94 @@
         }
     }
 
+    // Diagnostics handed to offline.html so a support case does not need a screenshot.
+    function captureClientContext() {
+        const connection =
+            navigator.connection ||
+            navigator.mozConnection ||
+            navigator.webkitConnection;
+        return {
+            pageUrl: window.location.href,
+            referrer: document.referrer || undefined,
+            userAgent: navigator.userAgent,
+            language: navigator.language,
+            platform: navigator.platform,
+            timezone:
+                typeof Intl !== "undefined" &&
+                Intl.DateTimeFormat &&
+                Intl.DateTimeFormat().resolvedOptions
+                    ? Intl.DateTimeFormat().resolvedOptions().timeZone
+                    : undefined,
+            connection: connection
+                ? {
+                      effectiveType: connection.effectiveType,
+                      downlink: connection.downlink,
+                      rtt: connection.rtt,
+                      saveData: connection.saveData,
+                  }
+                : undefined,
+            visibility: document.visibilityState,
+        };
+    }
+
+    // Build the offline.html URL. Shared by the leadflow ping-check and the Pico submit, so a
+    // technical failure lands on the same page with the same diagnostics either way.
+    // targetUrl may be empty (a Pico submit has nothing to retry); offline.html then simply has
+    // no "try again" destination to offer.
+    function buildFallbackUrl(targetUrl, primaryColor, reason, context) {
+        // Resolved against the script's own directory, so each deployment serves its own copy.
+        let baseDir = getScriptBaseDir();
+
+        // Fix for jsDelivr serving HTML as text/plain - redirect to GitHub Pages instead
+        if (baseDir.includes("cdn.jsdelivr.net")) {
+            baseDir = baseDir.replace(
+                /cdn\.jsdelivr\.net\/gh\/HomeZeroTech\/Widget(@[^/]+)?\//,
+                "homezerotech.github.io/Widget/",
+            );
+        }
+
+        const fallbackUrl = new URL("offline.html", baseDir);
+
+        // targetUrl is the *target* (the HomeZero app flow URL), not the *referrer* (client site).
+        if (targetUrl) fallbackUrl.searchParams.set("targetUrl", targetUrl);
+        fallbackUrl.searchParams.set("referralUrl", window.location.href);
+
+        if (primaryColor) {
+            fallbackUrl.searchParams.set("primaryColor", primaryColor);
+        }
+
+        const reasonSnippet = (reason || "").slice(0, 300);
+        if (reasonSnippet) {
+            fallbackUrl.searchParams.set("reason", reasonSnippet);
+        }
+
+        try {
+            const contextEncoded = JSON.stringify({
+                ...captureClientContext(),
+                ...(context || {}),
+            }).slice(0, 900);
+            if (contextEncoded) {
+                fallbackUrl.searchParams.set("context", contextEncoded);
+            }
+        } catch (stringifyError) {
+            console.warn("Failed to serialize fallback context", stringifyError);
+        }
+
+        // Log separately to avoid truncation issues
+        console.error("[FALLBACK REDIRECT]", reason);
+        if (context) {
+            console.error("[FALLBACK CONTEXT]", JSON.stringify(context, null, 2));
+        }
+
+        return fallbackUrl.href;
+    }
+
+    // Send the visitor to the fallback page in the current tab. Used when there is no
+    // pre-opened window to hand the URL to, which is the case for a failed Pico submit.
+    function redirectToFallbackPage(targetUrl, primaryColor, reason, context) {
+        window.location.href = buildFallbackUrl(targetUrl, primaryColor, reason, context);
+    }
+
     function redirectToUrlWithCheck(
         url,
         openNewTab,
@@ -1222,96 +1328,8 @@
             }
         };
 
-        const captureClientContext = () => {
-            const connection =
-                navigator.connection ||
-                navigator.mozConnection ||
-                navigator.webkitConnection;
-            return {
-                pageUrl: window.location.href,
-                referrer: document.referrer || undefined,
-                userAgent: navigator.userAgent,
-                language: navigator.language,
-                platform: navigator.platform,
-                timezone:
-                    typeof Intl !== "undefined" &&
-                    Intl.DateTimeFormat &&
-                    Intl.DateTimeFormat().resolvedOptions
-                        ? Intl.DateTimeFormat().resolvedOptions().timeZone
-                        : undefined,
-                connection: connection
-                    ? {
-                          effectiveType: connection.effectiveType,
-                          downlink: connection.downlink,
-                          rtt: connection.rtt,
-                          saveData: connection.saveData,
-                      }
-                    : undefined,
-                visibility: document.visibilityState,
-            };
-        };
-
         const redirectToFallback = (reason, context) => {
-            // Log separately to avoid truncation issues
-            console.error("[FALLBACK REDIRECT]", reason);
-            if (context) {
-                console.error(
-                    "[FALLBACK CONTEXT]",
-                    JSON.stringify(context, null, 2),
-                );
-            }
-
-            // Construct the fallback URL pointing to the external GitHub Pages file
-            // NOTE: Ensure this URL matches your actual deployment path
-            // We use the script's base directory to locate the offline.html file dynamically
-            let baseDir = getScriptBaseDir();
-
-            // Fix for jsDelivr serving HTML as text/plain - redirect to GitHub Pages instead
-            if (baseDir.includes("cdn.jsdelivr.net")) {
-                baseDir = baseDir.replace(
-                    /cdn\.jsdelivr\.net\/gh\/HomeZeroTech\/Widget(@[^/]+)?\//,
-                    "homezerotech.github.io/Widget/",
-                );
-            }
-
-            const fallbackUrl = new URL("offline.html", baseDir);
-
-            // "url" here is the *target* URL (the homezero app flow URL), not the *referrer* (the client site).
-            // So we should name it targetUrl to avoid confusion in the fallback page.
-            fallbackUrl.searchParams.set("targetUrl", url);
-            fallbackUrl.searchParams.set("referralUrl", window.location.href); // This is the original site URL
-
-            if (primaryColor) {
-                fallbackUrl.searchParams.set("primaryColor", primaryColor);
-            }
-
-            const reasonSnippet = (reason || "").slice(0, 300);
-            if (reasonSnippet) {
-                fallbackUrl.searchParams.set("reason", reasonSnippet);
-            }
-
-            const combinedContext = {
-                ...captureClientContext(),
-                ...(context || {}),
-            };
-
-            if (combinedContext) {
-                try {
-                    const contextEncoded = JSON.stringify(
-                        combinedContext,
-                    ).slice(0, 900);
-                    if (contextEncoded) {
-                        fallbackUrl.searchParams.set("context", contextEncoded);
-                    }
-                } catch (stringifyError) {
-                    console.warn(
-                        "Failed to serialize fallback context",
-                        stringifyError,
-                    );
-                }
-            }
-
-            performRedirect(fallbackUrl.href);
+            performRedirect(buildFallbackUrl(url, primaryColor, reason, context));
         };
         // Flag to track if loader has been shown
         let loaderShown = false;
@@ -1605,91 +1623,13 @@
         document.head.appendChild(s);
     }
 
-    function applyTileSelectedStyle(tileEl, primaryColor, gradientFrom, gradientTo) {
-        var bg = (gradientFrom && gradientTo)
-            ? 'linear-gradient(135deg, ' + gradientFrom + ' 0%, ' + gradientTo + ' 100%)'
-            : primaryColor;
-        tileEl.style.setProperty('background', bg, 'important');
-        tileEl.style.setProperty('border-color', 'transparent', 'important');
-        tileEl.style.setProperty('color', 'var(--contrast-color, #fff)', 'important');
-        tileEl.setAttribute('aria-checked', 'true');
-        const ck = tileEl.querySelector('.embed-tile-checkmark');
-        if (ck) ck.style.setProperty('display', 'flex', 'important');
-    }
-
-    function clearTileSelectedStyle(tileEl) {
-        tileEl.style.removeProperty('background');
-        tileEl.style.removeProperty('border-color');
-        tileEl.style.removeProperty('color');
-        tileEl.setAttribute('aria-checked', 'false');
-        const ck = tileEl.querySelector('.embed-tile-checkmark');
-        if (ck) ck.style.removeProperty('display');
-    }
-
-    function decodeTileIcon(tile) {
+function decodeTileIcon(tile) {
         const decoded = decodeIconSvg(tile.iconSvg);
         if (decoded) return decoded;
         return measurementIcons[tile.key] || measurementIcons.general || '';
     }
 
-    function renderTileGrid(tiles, selectedTilesSet, primaryColor, gradientFrom, gradientTo, onSelect) {
-        ensureTileStyles();
-
-        const grid = document.createElement('div');
-        grid.className = 'embed-tile-grid';
-        grid.setAttribute('role', 'group');
-
-        tiles.forEach(function (tile) {
-            const isSelected = selectedTilesSet.has(tile.key);
-            const tileEl = document.createElement('div');
-            tileEl.className = 'embed-tile' + (isSelected ? ' selected' : '');
-            tileEl.setAttribute('data-tile-key', tile.key);
-            tileEl.setAttribute('role', 'checkbox');
-            tileEl.setAttribute('aria-checked', isSelected ? 'true' : 'false');
-            tileEl.setAttribute('aria-label', tile.title);
-            tileEl.tabIndex = 0;
-
-            // Icon wrapper — fixed 28×28, overflow hidden so SVG cannot escape
-            const iconWrap = document.createElement('div');
-            iconWrap.className = 'embed-tile-icon';
-
-            const iconRaw = decodeTileIcon(tile);
-            if (iconRaw) {
-                iconWrap.innerHTML = iconRaw.replace('<svg', '<svg aria-hidden="true"');
-                const svg = iconWrap.querySelector('svg');
-                if (svg) {
-                    svg.removeAttribute('width');
-                    svg.removeAttribute('height');
-                }
-            }
-
-            // Label
-            const label = document.createElement('span');
-            label.className = 'embed-tile-label';
-            label.textContent = tile.title;
-
-            // Checkmark badge
-            const ck = document.createElement('span');
-            ck.className = 'embed-tile-checkmark';
-            ck.innerHTML = '<svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1 5L4 8L9 2" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-
-            tileEl.appendChild(iconWrap);
-            tileEl.appendChild(label);
-            tileEl.appendChild(ck);
-
-            if (isSelected) applyTileSelectedStyle(tileEl, primaryColor, gradientFrom, gradientTo);
-
-            tileEl.addEventListener('click', function () { onSelect(tile.key, tileEl); });
-            tileEl.addEventListener('keydown', function (e) {
-                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); tileEl.click(); }
-            });
-            grid.appendChild(tileEl);
-        });
-
-        return grid;
-    }
-
-    function applyTileLargeSelectedStyle(tileEl, primaryColor) {
+function applyTileLargeSelectedStyle(tileEl, primaryColor) {
         tileEl.style.setProperty('border-color', primaryColor, 'important');
         tileEl.style.setProperty('border-width', '2px', 'important');
         tileEl.style.setProperty('background', 'color-mix(in srgb, ' + primaryColor + ' 8%, #fff)', 'important');
@@ -1719,22 +1659,52 @@
         }
     }
 
-    function renderTileLargeGrid(tiles, selectedTilesSet, primaryColor, onSelect) {
+    // Selection handler for the large-tile grid, shared by scan and booking mode. Was
+    // duplicated four times, which let the two selector types drift apart; multi-select has to
+    // behave the same for large tiles as it does for tags and the dropdown.
+    function makeLargeTileSelectHandler(form, selectedTilesSet, maxSelect, primaryColor, onAfter) {
+        return function (key, tileEl) {
+            if (selectedTilesSet.has(key)) {
+                selectedTilesSet.delete(key);
+                tileEl.classList.remove('selected');
+                clearTileLargeSelectedStyle(tileEl);
+            } else {
+                // At the limit the oldest selection makes room, so a single-select grid behaves
+                // like a radio group and a capped multi-select never exceeds its maximum.
+                if (maxSelect > 0 && selectedTilesSet.size >= maxSelect) {
+                    const firstKey = selectedTilesSet.values().next().value;
+                    selectedTilesSet.delete(firstKey);
+                    const firstEl = form.querySelector('[data-tile-key="' + firstKey + '"]');
+                    if (firstEl) { firstEl.classList.remove('selected'); clearTileLargeSelectedStyle(firstEl); }
+                }
+                selectedTilesSet.add(key);
+                tileEl.classList.add('selected');
+                applyTileLargeSelectedStyle(tileEl, primaryColor);
+            }
+            if (onAfter) onAfter();
+        };
+    }
+
+    function renderTileLargeGrid(tiles, selectedTilesSet, primaryColor, onSelect, maxSelect) {
         ensureTileStyles();
         // The only place the 4-measure limit is enforced: this grid is laid out as a fixed
         // 4-column row (2 columns below 379px), so a fifth tile has nowhere to go.
         const visibleTiles = tiles.slice(0, 4);
 
+        // Announce what the grid actually does: radio semantics only when exactly one measure
+        // can be picked, checkbox semantics otherwise — matching tags and the dropdown.
+        const single = maxSelect === 1;
         const grid = document.createElement('div');
         grid.className = 'embed-tile-grid embed-tile-grid-large';
-        grid.setAttribute('role', 'radiogroup');
+        grid.setAttribute('role', single ? 'radiogroup' : 'group');
+        if (!single) grid.setAttribute('aria-multiselectable', 'true');
 
         visibleTiles.forEach(function (tile) {
             const isSelected = selectedTilesSet.has(tile.key);
             const tileEl = document.createElement('div');
             tileEl.className = 'embed-tile embed-tile-large' + (isSelected ? ' selected' : '');
             tileEl.setAttribute('data-tile-key', tile.key);
-            tileEl.setAttribute('role', 'radio');
+            tileEl.setAttribute('role', single ? 'radio' : 'checkbox');
             tileEl.setAttribute('aria-checked', isSelected ? 'true' : 'false');
             tileEl.setAttribute('aria-label', tile.title);
             tileEl.tabIndex = 0;
@@ -2152,6 +2122,19 @@
         return wrap;
     }
 
+    // Accepted CTA modes. Anything else (including an empty attribute) returns '' so the
+    // caller falls back to the next level in the precedence chain instead of routing to a
+    // mode that does not exist.
+    const CTA_ACTIONS = ['flow', 'pico', 'booking'];
+
+    function normaliseCtaAction(value) {
+        const v = (value || '').trim().toLowerCase();
+        if (!v) return '';
+        if (CTA_ACTIONS.indexOf(v) !== -1) return v;
+        console.warn('[HomeZero embed] onbekende CTA-actie "' + v + '"; toegestaan zijn ' + CTA_ACTIONS.join(', ') + '.');
+        return '';
+    }
+
     function parseTilesFromElement(element) {
         return Array.from(element.attributes)
             .filter(function (attr) { return /^data-tile-[a-z0-9]+-url$/.test(attr.name); })
@@ -2168,6 +2151,10 @@
                     cta2Text: element.getAttribute('data-tile-' + key + '-cta2-text') || '',
                     cta1IconSvg: element.getAttribute('data-tile-' + key + '-cta1-icon-svg') || '',
                     cta2IconSvg: element.getAttribute('data-tile-' + key + '-cta2-icon-svg') || '',
+                    // Per-measure CTA mode: 'flow' | 'pico' | 'booking'. Empty means "inherit
+                    // the global action", so a partner only sets it where it differs.
+                    cta1Action: normaliseCtaAction(element.getAttribute('data-tile-' + key + '-cta1-action')),
+                    cta2Action: normaliseCtaAction(element.getAttribute('data-tile-' + key + '-cta2-action')),
                 };
             });
         // Deliberately unbounded here: only the large-tile grid has a fixed 4-column layout
@@ -2445,7 +2432,16 @@
         form.appendChild(header);
     }
 
-    function showPicoError(form, err, primaryColor, ctaBtn, ctaOriginalText, addressFieldSelector, selectedLang, ctaOriginalIcon) {
+    // Handle a failed Pico submit. Two kinds of failure, two outcomes:
+    //
+    //  - The visitor can fix it (address not found, outside the operating area) → an inline
+    //    message on the address field, so their input survives and they can correct it.
+    //  - Anything else is technical (network down, 5xx, API unreachable) → the same
+    //    offline.html fallback the leadflow uses, instead of a dead end in the form.
+    //
+    // `fallback` carries what the fallback page needs: { primaryColor, targetUrl }. Without it
+    // the generic inline error is shown, which is what the brochure mode still does.
+    function showPicoError(form, err, primaryColor, ctaBtn, ctaOriginalText, addressFieldSelector, selectedLang, ctaOriginalIcon, fallback) {
         if (ctaBtn) { ctaBtn.disabled = false; setCtaButtonContent(ctaBtn, ctaOriginalIcon || '', ctaOriginalText); }
         const lang = selectedLang || translations.nl;
         const errMsg = (err && err.message) ? err.message.toLowerCase() : '';
@@ -2460,6 +2456,12 @@
                 displayValidationMessage(field, msg);
                 return;
             }
+        }
+        if (fallback) {
+            redirectToFallbackPage(fallback.targetUrl || '', fallback.primaryColor || primaryColor,
+                'Pico submit failed: ' + ((err && err.message) || 'unknown error'),
+                { source: 'pico', responseData: (err && err.responseData) || undefined });
+            return;
         }
         const prevErr = form.querySelector('.embed-inline-error');
         if (prevErr) prevErr.remove();
@@ -3655,9 +3657,18 @@
         const cta1TextBooking = element.getAttribute('data-cta1-text-booking') || 'Plan een gratis adviesgesprek';
         let showCta2 = element.getAttribute('data-cta2-show') === 'true';
         const cta2Text = element.getAttribute('data-cta2-text') || 'Direct contact (30 sec)';
-        let cta2Action = element.getAttribute('data-cta2-action') || 'pico';
 
-        // Unified secondary / combination flow URLs
+        // CTA modes. Both CTAs accept 'flow' | 'pico' | 'booking' at three levels — per
+        // measure, per combination and globally — resolved with the same precedence as the
+        // URLs, texts and icons. CTA1 defaults to the leadflow; CTA2's default is worked out
+        // below because it carries a legacy meaning.
+        let cta1Action = normaliseCtaAction(element.getAttribute('data-cta1-action')) || 'flow';
+        let cta2Action = normaliseCtaAction(element.getAttribute('data-cta2-action'));
+        const cta1ComboAction = normaliseCtaAction(element.getAttribute('data-cta1-combo-action'));
+        const cta2ComboAction = normaliseCtaAction(element.getAttribute('data-cta2-combo-action'));
+
+        // Unified primary / secondary / combination flow URLs
+        const cta1UrlGlobal = element.getAttribute('data-cta1-url') || '';
         const cta2UrlGlobal = element.getAttribute('data-cta2-url') || '';
         const cta1ComboUrl = element.getAttribute('data-cta1-combo-url') || '';
         const cta2ComboUrl = element.getAttribute('data-cta2-combo-url') || '';
@@ -3678,7 +3689,7 @@
         let aiChatText = element.getAttribute('data-ai-chat-text') || 'Of chat met onze AI adviseur';
 
         // Backward-compat: cta2-action="ai-chat" now maps to the dedicated AI-chat link
-        if (cta2Action === 'ai-chat') {
+        if ((element.getAttribute('data-cta2-action') || '').trim().toLowerCase() === 'ai-chat') {
             console.warn('[HomeZero embed] data-cta2-action="ai-chat" is verouderd; gebruik data-ai-chat-show="true" + data-ai-chat-text.');
             aiChatShow = true;
             if (element.getAttribute('data-cta2-text')) aiChatText = cta2Text;
@@ -3710,6 +3721,22 @@
         }
 
         const tiles = parseTilesFromElement(element);
+
+        // Default CTA2 mode. Historically an omitted data-cta2-action meant "Pico quick
+        // contact", which silently swallowed every configured cta2-url. That legacy reading is
+        // kept only for the embeds that relied on it — data-cta2-show="true" with no CTA2 URL
+        // and no per-measure/combination mode anywhere. Everything else defaults to the
+        // leadflow, so filling in a URL is enough to make it route there.
+        if (!cta2Action) {
+            const anyCta2Url = !!(cta2UrlGlobal || cta2ComboUrl
+                || tiles.some(function (t) { return !!t.cta2Url; }));
+            const anyCta2Action = !!(cta2ComboAction
+                || tiles.some(function (t) { return !!t.cta2Action; }));
+            cta2Action = (element.getAttribute('data-cta2-show') === 'true' && !anyCta2Url && !anyCta2Action)
+                ? 'pico'
+                : 'flow';
+        }
+
         // Optional preselection via data-tiles-default (comma-separated keys). Not required:
         // omit it for an empty dropdown/placeholder. Capped to the selection limit so a
         // single-select dropdown preselects at most one item.
@@ -3725,7 +3752,10 @@
         }
 
         const ctaCfg = {
-            cta2Action: cta2Action, cta2UrlGlobal: cta2UrlGlobal,
+            // Modes, per level. '' at a level means "inherit from the level below".
+            cta1Action: cta1Action, cta2Action: cta2Action,
+            cta1ComboAction: cta1ComboAction, cta2ComboAction: cta2ComboAction,
+            cta1UrlGlobal: cta1UrlGlobal, cta2UrlGlobal: cta2UrlGlobal,
             cta1ComboUrl: cta1ComboUrl, cta2ComboUrl: cta2ComboUrl,
             // Per-CTA text/icon, with combination + global fallbacks.
             cta1Text: cta1Text, cta1TextBooking: cta1TextBooking, cta2Text: cta2Text,
@@ -3734,14 +3764,21 @@
             cta1ComboIcon: cta1ComboIcon, cta2ComboIcon: cta2ComboIcon,
         };
 
+        // The secondary CTA needs no opt-in flag: it appears as soon as some selection can
+        // resolve a CTA2 target — a URL at any level, or a mode that needs none (Pico).
+        // An explicit data-cta2-show still wins in both directions, so "false" stays a
+        // kill-switch and "true" keeps working for the legacy Pico-only embeds.
+        if (element.hasAttribute('data-cta2-show')) {
+            showCta2 = element.getAttribute('data-cta2-show') === 'true';
+        } else {
+            showCta2 = cta2CanEverResolve(tiles, ctaCfg);
+        }
+
         validateScanConfig(tiles, {
-            showCta2: showCta2, cta2Action: cta2Action, tilesMaxSelect: tilesMaxSelect,
-            cta1ComboUrl: cta1ComboUrl, cta2ComboUrl: cta2ComboUrl, cta2UrlGlobal: cta2UrlGlobal,
+            showCta2: showCta2, tilesMaxSelect: tilesMaxSelect, picoKey: picoKey, ctaCfg: ctaCfg,
         });
 
         function getSelectedTiles() { return tiles.filter(function (t) { return selectedTilesSet.has(t.key); }); }
-        function getPrimaryTile() { const s = getSelectedTiles(); return s.length ? s[0] : null; }
-        function isBookingTileSelected() { const p = getPrimaryTile(); return !!(p && p.bookingUrl); }
 
         // Keep CTA text + icon in sync and toggle CTA2 visibility per current selection
         function updateCtas() {
@@ -3749,13 +3786,15 @@
             const c1 = form.querySelector('.embed-cta-primary');
             if (c1) setCtaButtonContent(c1, resolveCtaIcon(1, sel, ctaCfg), resolveCtaText(1, sel, ctaCfg));
             const c2 = form.querySelector('.embed-cta-secondary');
-            if (c2 && (cta2Action === 'flow' || cta2Action === 'booking')) {
-                const t2 = resolveCtaTarget(2, sel, ctaCfg);
+            if (c2) {
+                // Hidden whenever this selection resolves no CTA2 target at all. A Pico target
+                // counts as resolved even though it carries no URL.
                 // .embed-cta-secondary has `display: inline-flex !important` in CSS, so a plain
                 // inline `display` (non-important) can't hide it — must set with priority.
-                c2.style.setProperty('display', (t2 && t2.url) ? 'inline-flex' : 'none', 'important');
+                const t2 = resolveCtaTarget(2, sel, ctaCfg);
+                c2.style.setProperty('display', t2 ? 'inline-flex' : 'none', 'important');
+                setCtaButtonContent(c2, resolveCtaIcon(2, sel, ctaCfg), resolveCtaText(2, sel, ctaCfg));
             }
-            if (c2) setCtaButtonContent(c2, resolveCtaIcon(2, sel, ctaCfg), resolveCtaText(2, sel, ctaCfg));
         }
         const updateCta1Text = updateCtas;
 
@@ -3781,46 +3820,11 @@
             } else if (tileDisplay === 'tags') {
                 const tagsWrap = renderTileTagsSelect(tiles, selectedTilesSet, config.primaryColor, tilesMaxSelect, tilesLabel, updateCta1Text, selectedLang);
                 form.insertBefore(tagsWrap, refNode);
-            } else if (tileDisplay === 'large') {
-                const grid = renderTileLargeGrid(tiles, selectedTilesSet, config.primaryColor, function (key, tileEl) {
-                    if (selectedTilesSet.has(key)) {
-                        selectedTilesSet.delete(key);
-                        tileEl.classList.remove('selected');
-                        clearTileLargeSelectedStyle(tileEl);
-                    } else {
-                        if (tilesMaxSelect > 0 && selectedTilesSet.size >= tilesMaxSelect) {
-                            const firstKey = selectedTilesSet.values().next().value;
-                            selectedTilesSet.delete(firstKey);
-                            const firstEl = form.querySelector('[data-tile-key="' + firstKey + '"]');
-                            if (firstEl) { firstEl.classList.remove('selected'); clearTileLargeSelectedStyle(firstEl); }
-                        }
-                        selectedTilesSet.add(key);
-                        tileEl.classList.add('selected');
-                        applyTileLargeSelectedStyle(tileEl, config.primaryColor);
-                    }
-                    updateCta1Text();
-                });
-                form.insertBefore(grid, refNode);
             } else {
-                // 'tiles' and 'large' both use the large variant
-                const grid = renderTileLargeGrid(tiles, selectedTilesSet, config.primaryColor, function (key, tileEl) {
-                    if (selectedTilesSet.has(key)) {
-                        selectedTilesSet.delete(key);
-                        tileEl.classList.remove('selected');
-                        clearTileLargeSelectedStyle(tileEl);
-                    } else {
-                        if (tilesMaxSelect > 0 && selectedTilesSet.size >= tilesMaxSelect) {
-                            const firstKey = selectedTilesSet.values().next().value;
-                            selectedTilesSet.delete(firstKey);
-                            const firstEl = form.querySelector('[data-tile-key="' + firstKey + '"]');
-                            if (firstEl) { firstEl.classList.remove('selected'); clearTileLargeSelectedStyle(firstEl); }
-                        }
-                        selectedTilesSet.add(key);
-                        tileEl.classList.add('selected');
-                        applyTileLargeSelectedStyle(tileEl, config.primaryColor);
-                    }
-                    updateCta1Text();
-                });
+                // 'tiles' and 'large' both render the large variant
+                const grid = renderTileLargeGrid(tiles, selectedTilesSet, config.primaryColor,
+                    makeLargeTileSelectHandler(form, selectedTilesSet, tilesMaxSelect, config.primaryColor, updateCtas),
+                    tilesMaxSelect);
                 form.insertBefore(grid, refNode);
             }
         }
@@ -3852,13 +3856,9 @@
             setCtaButtonContent(cta2Btn, resolveCtaIcon(2, getSelectedTiles(), ctaCfg), resolveCtaText(2, getSelectedTiles(), ctaCfg));
             ctaWrapper.appendChild(cta2Btn);
 
-            cta2Btn.addEventListener('click', function () {
-                if (cta2Action === 'pico') {
-                    handleScanCta2(form, tiles, selectedTilesSet, picoKey, picoEnv, picoFlowIdOverride, contactSkipAddress, config, selectedLang, dutchVal, cta2Btn, cta2Text, cta2IconGlobal);
-                } else {
-                    handleScanCtaClick(2);
-                }
-            });
+            // Mode dispatch happens inside handleScanCtaClick, because the mode now depends on
+            // the current selection rather than on one global attribute.
+            cta2Btn.addEventListener('click', function () { handleScanCtaClick(2, cta2Btn); });
         }
 
         form.appendChild(ctaWrapper);
@@ -3875,18 +3875,22 @@
             if (gInput) setupGoogleAutocomplete(gInput, config.country, config.addressFormat, form, config.language);
         }
 
-        cta1Btn.addEventListener('click', function () { handleScanCtaClick(1); });
+        cta1Btn.addEventListener('click', function () { handleScanCtaClick(1, cta1Btn); });
 
         // Initialise CTA1 text + CTA2 visibility for the default selection
         updateCtas();
 
-        // Shared click handler for flow/booking CTAs (pico handled separately above)
-        function handleScanCtaClick(ctaIndex) {
+        // Shared click handler for both CTAs. The resolved mode decides the route, so the same
+        // button can be a leadflow for one measure and an agenda link for the next.
+        function handleScanCtaClick(ctaIndex, btn) {
             form.querySelectorAll('.embed-validation-message').forEach(function (m) { m.remove(); });
 
             // Skipped when the selector is hidden: there would be no element to anchor the
-            // message to, so the CTA would refuse without telling the visitor why.
-            if (tiles.length > 0 && tileDisplay !== 'none' && selectedTilesSet.size === 0) {
+            // message to, so the CTA would refuse without telling the visitor why. CTA2 also
+            // skips it when it already resolves on an empty selection — a generic secondary
+            // CTA points at one destination and must not demand a measure first.
+            const needsTile = ctaIndex === 1 || !resolveCtaTarget(2, [], ctaCfg);
+            if (needsTile && tiles.length > 0 && tileDisplay !== 'none' && selectedTilesSet.size === 0) {
                 const selectorEl = form.querySelector('.embed-tile-grid') || form.querySelector('[data-tile-selector]');
                 if (selectorEl) {
                     const msg = document.createElement('div');
@@ -3897,37 +3901,101 @@
                 return;
             }
 
-            const target = resolveCtaTarget(ctaIndex, getSelectedTiles(), ctaCfg);
-            if (!target || !target.url || !isSafeUrl(target.url)) {
-                if (ctaIndex === 1) console.warn('[HomeZero embed] CTA1 heeft geen geldige doel-URL voor de huidige selectie.');
+            const sel = getSelectedTiles();
+            const target = resolveCtaTarget(ctaIndex, sel, ctaCfg);
+            if (!target) {
+                console.warn('[HomeZero embed] CTA' + ctaIndex + ' heeft geen doel voor de huidige selectie.');
+                return;
+            }
+
+            if (target.action === 'pico') {
+                handleScanPicoCta(target, form, tiles, selectedTilesSet, picoKey, picoEnv, picoFlowIdOverride,
+                    contactSkipAddress, config, selectedLang, dutchVal, btn,
+                    resolveCtaText(ctaIndex, sel, ctaCfg), resolveCtaIcon(ctaIndex, sel, ctaCfg));
+                return;
+            }
+
+            if (!target.url || !isSafeUrl(target.url)) {
+                console.warn('[HomeZero embed] CTA' + ctaIndex + ' heeft geen geldige doel-URL voor de huidige selectie.');
                 return;
             }
             redirectToFlow(target, form, config, selectedTilesSet, selectedLang, dutchVal);
         }
     }
 
-    // Resolve which URL a CTA should route to, given the current selection.
-    // Precedence — CTA1: combo (multi) > tile.url ; CTA2: tile.cta2Url > combo (multi) > global.
-    function resolveCtaTarget(ctaIndex, selectedTiles, ctaCfg) {
-        const n = selectedTiles.length;
-        if (n === 0) return null;
+    // ── CTA resolution ───────────────────────────────────────────────────────
+    //
+    // Every CTA slot is configurable at three levels, and each level can set a mode, a URL,
+    // a label and an icon. All four resolve with the SAME precedence, so a partner never has
+    // to reason about one attribute behaving differently from its neighbours:
+    //
+    //   >1 measure selected : combination → global
+    //    1 measure selected : that measure → global
+    //    0 measures selected: global
+    //
+    // Modes are 'flow' (HomeZero leadflow), 'booking' (external agenda) and 'pico' (lead
+    // submitted client-side, no redirect). A level that leaves the mode empty inherits it.
 
+    function resolveCtaAction(ctaIndex, selectedTiles, ctaCfg) {
+        const n = selectedTiles.length;
+        const globalAction = (ctaIndex === 1 ? ctaCfg.cta1Action : ctaCfg.cta2Action) || 'flow';
+        if (n > 1) {
+            return (ctaIndex === 1 ? ctaCfg.cta1ComboAction : ctaCfg.cta2ComboAction) || globalAction;
+        }
+        if (n === 1) {
+            const t = selectedTiles[0];
+            const own = ctaIndex === 1 ? t.cta1Action : t.cta2Action;
+            if (own) return own;
+            // Legacy single-button switch: a per-measure booking-url puts CTA1 in booking mode
+            // without an explicit action, which is how existing embeds express it.
+            if (ctaIndex === 1 && t.bookingUrl) return 'booking';
+            return globalAction;
+        }
+        return globalAction;
+    }
+
+    // The URL for the resolved level. Empty is legitimate for 'pico', which needs no target.
+    function resolveCtaUrl(ctaIndex, selectedTiles, ctaCfg, action) {
+        const n = selectedTiles.length;
         if (ctaIndex === 1) {
             if (n > 1) {
-                if (ctaCfg.cta1ComboUrl) return { url: ctaCfg.cta1ComboUrl, action: 'flow' };
-                return selectedTiles[0].url ? { url: selectedTiles[0].url, action: 'flow' } : null;
+                // Falls back to the primary measure so a multi-select widget without a
+                // combination URL still routes somewhere instead of refusing to submit.
+                return ctaCfg.cta1ComboUrl || selectedTiles[0].url || ctaCfg.cta1UrlGlobal;
             }
-            const t = selectedTiles[0];
-            if (t.bookingUrl) return { url: t.bookingUrl, action: 'booking' }; // legacy single-button switch
-            return t.url ? { url: t.url, action: 'flow' } : null;
+            if (n === 1) {
+                const t = selectedTiles[0];
+                if (action === 'booking') return t.bookingUrl || t.url || ctaCfg.cta1UrlGlobal;
+                return t.url || ctaCfg.cta1UrlGlobal;
+            }
+            return ctaCfg.cta1UrlGlobal;
         }
+        if (n > 1) return ctaCfg.cta2ComboUrl || ctaCfg.cta2UrlGlobal;
+        if (n === 1) return selectedTiles[0].cta2Url || ctaCfg.cta2UrlGlobal;
+        return ctaCfg.cta2UrlGlobal;
+    }
 
-        // ctaIndex === 2 (only flow/booking route here; pico/ai-chat handled elsewhere)
-        if (ctaCfg.cta2Action !== 'flow' && ctaCfg.cta2Action !== 'booking') return null;
-        const u = n > 1
-            ? (ctaCfg.cta2ComboUrl || ctaCfg.cta2UrlGlobal)
-            : (selectedTiles[0].cta2Url || ctaCfg.cta2UrlGlobal);
-        return u ? { url: u, action: ctaCfg.cta2Action } : null;
+    // Returns null when this selection has nothing to route to, which is also what hides CTA2.
+    function resolveCtaTarget(ctaIndex, selectedTiles, ctaCfg) {
+        const action = resolveCtaAction(ctaIndex, selectedTiles, ctaCfg);
+        const url = resolveCtaUrl(ctaIndex, selectedTiles, ctaCfg, action) || '';
+        // Pico submits the lead from the browser, so it resolves without a URL. When one is
+        // configured anyway it only supplies the Pico flow id — and it is dropped unless it is
+        // a safe http(s) URL, so nothing unroutable ever reaches the payload.
+        if (action === 'pico') return { url: isSafeUrl(url) ? url : '', action: 'pico' };
+        return url ? { url: url, action: action } : null;
+    }
+
+    // Would CTA2 be reachable for ANY selection the visitor can make? Used to decide whether
+    // to render the secondary button at all, so it is checked against an empty selection, each
+    // measure on its own, and a two-measure combination.
+    function cta2CanEverResolve(tiles, ctaCfg) {
+        if (resolveCtaTarget(2, [], ctaCfg)) return true;
+        for (let i = 0; i < tiles.length; i++) {
+            if (resolveCtaTarget(2, [tiles[i]], ctaCfg)) return true;
+        }
+        if (tiles.length > 1 && resolveCtaTarget(2, tiles.slice(0, 2), ctaCfg)) return true;
+        return false;
     }
 
     // Resolve the CTA button label for the current selection. Mirrors resolveCtaTarget's
@@ -3936,13 +4004,13 @@
     function resolveCtaText(ctaIndex, selectedTiles, ctaCfg) {
         const n = selectedTiles.length;
         if (ctaIndex === 1) {
-            if (n > 1) return ctaCfg.cta1ComboText || ctaCfg.cta1Text;
-            if (n === 1) {
-                const t = selectedTiles[0];
-                if (t.cta1Text) return t.cta1Text;
-                return t.bookingUrl ? ctaCfg.cta1TextBooking : ctaCfg.cta1Text;
-            }
-            return ctaCfg.cta1Text;
+            // In booking mode the global fallback is the booking-specific label, so a measure
+            // that opens an agenda does not invite the visitor to "calculate" anything.
+            const bookingMode = resolveCtaAction(1, selectedTiles, ctaCfg) === 'booking';
+            const globalText = bookingMode ? ctaCfg.cta1TextBooking : ctaCfg.cta1Text;
+            if (n > 1) return ctaCfg.cta1ComboText || globalText;
+            if (n === 1) return selectedTiles[0].cta1Text || globalText;
+            return globalText;
         }
         if (n > 1) return ctaCfg.cta2ComboText || ctaCfg.cta2Text;
         if (n === 1) return selectedTiles[0].cta2Text || ctaCfg.cta2Text;
@@ -4078,25 +4146,49 @@
     }
 
     // One-time config sanity checks. Logs clearly and degrades gracefully — never throws.
+    // Walks every selection the visitor can actually reach, so a mode/URL mismatch on one
+    // measure is reported even when the rest of the widget is configured correctly.
     function validateScanConfig(tiles, cfg) {
         const P = '[HomeZero embed]';
+        const c = cfg.ctaCfg;
+
+        const selections = [[]];
+        tiles.forEach(function (t) { selections.push([t]); });
+        if (cfg.tilesMaxSelect !== 1 && tiles.length > 1) selections.push(tiles.slice(0, 2));
+
+        let usesPico = false;
+        selections.forEach(function (sel) {
+            [1, 2].forEach(function (i) {
+                if (i === 2 && !cfg.showCta2) return;
+                const action = resolveCtaAction(i, sel, c);
+                if (action === 'pico') { usesPico = true; return; }
+                const target = resolveCtaTarget(i, sel, c);
+                if (target && target.url && !isSafeUrl(target.url)) {
+                    console.warn(P + ' CTA' + i + ' verwijst naar een ongeldige URL: ' + target.url);
+                }
+                if (action === 'booking' && !(target && target.url)) {
+                    console.warn(P + ' CTA' + i + ' staat op actie "booking" maar heeft geen agenda-URL voor '
+                        + (sel.length ? 'maatregel "' + sel.map(function (t) { return t.key; }).join('+') + '"' : 'een lege selectie') + '.');
+                }
+            });
+        });
+
+        if (usesPico && !cfg.picoKey) {
+            console.warn(P + ' een CTA staat op actie "pico" maar data-pico-key ontbreekt; die lead kan niet worden verstuurd.');
+        }
+
         if (tiles.length === 0) return;
 
-        const multi = cfg.tilesMaxSelect !== 1;
-        if (multi && !cfg.cta1ComboUrl) {
-            console.warn(P + ' multi-select zonder data-cta1-combo-url: bij meerdere selecties valt CTA1 terug op de eerste maatregel.');
+        if (cfg.tilesMaxSelect !== 1 && !c.cta1ComboUrl && !c.cta1ComboAction) {
+            console.warn(P + ' multi-select zonder data-cta1-combo-url of data-cta1-combo-action: bij meerdere selecties valt CTA1 terug op de eerste maatregel.');
         }
-        if (cfg.showCta2 && (cfg.cta2Action === 'flow' || cfg.cta2Action === 'booking')) {
-            const anyPerTile = tiles.some(function (t) { return !!t.cta2Url; });
-            if (!anyPerTile && !cfg.cta2UrlGlobal && !cfg.cta2ComboUrl) {
-                console.warn(P + ' data-cta2-show="true" maar geen secundair doel (geen per-tile cta2-url, combo-url of globale cta2-url). CTA2 blijft verborgen.');
-            }
-            if (cfg.cta2UrlGlobal && !isSafeUrl(cfg.cta2UrlGlobal)) {
-                console.warn(P + ' data-cta2-url is geen geldige http(s) URL.');
-            }
+        if (cfg.showCta2 && !cta2CanEverResolve(tiles, c)) {
+            console.warn(P + ' CTA2 is aan maar heeft geen doel (geen cta2-url per maatregel/combinatie/globaal en geen pico-actie). CTA2 blijft verborgen.');
         }
         tiles.forEach(function (t) {
-            if (!t.url || !isSafeUrl(t.url)) {
+            // Only a measure whose CTA1 actually routes to a leadflow needs its own flow URL;
+            // a pico- or booking-measure legitimately leaves it empty.
+            if (resolveCtaAction(1, [t], c) === 'flow' && (!t.url || !isSafeUrl(t.url))) {
                 console.warn(P + ' maatregel "' + t.key + '" heeft geen geldige data-tile-' + t.key + '-url.');
             }
         });
@@ -4131,7 +4223,10 @@
         return link;
     }
 
-    function handleScanCta2(form, tiles, selectedTilesSet, picoKey, picoEnv, picoFlowIdOverride, contactSkipAddress, config, selectedLang, dutchVal, cta2Btn, cta2OrigText, cta2OrigIcon) {
+    // Submit a lead straight into Pico from the browser — no redirect, no leadflow. Used by
+    // whichever CTA resolved to 'pico' for the current selection, so `btn` is the button that
+    // was clicked and origText/origIcon restore it if the API call fails.
+    function handleScanPicoCta(target, form, tiles, selectedTilesSet, picoKey, picoEnv, picoFlowIdOverride, contactSkipAddress, config, selectedLang, dutchVal, btn, origText, origIcon) {
         form.querySelectorAll('.embed-validation-message').forEach(function (m) { m.remove(); });
         const prevErr = form.querySelector('.embed-inline-error');
         if (prevErr) prevErr.remove();
@@ -4162,10 +4257,16 @@
 
         if (!isValid) return;
 
-        let flowId = picoFlowIdOverride;
+        // A URL on the resolved CTA is not navigated to in Pico mode; it only names the flow
+        // the lead belongs to. That lets one measure file its quick contact under its own flow.
+        let flowId = extractFlowIdFromUrl(target && target.url ? target.url : '') || picoFlowIdOverride;
         const flowsInterestedIn = [];
+        // Kept for the fallback page: the leadflow of the primary measure is the closest thing
+        // to a retry destination when the client-side submit fails.
+        let primaryTileUrl = '';
         tiles.forEach(function (tile) {
             if (selectedTilesSet.has(tile.key)) {
+                if (!primaryTileUrl && isSafeUrl(tile.url)) primaryTileUrl = tile.url;
                 const fid = extractFlowIdFromUrl(tile.url);
                 if (fid) { flowsInterestedIn.push(fid); if (!flowId) flowId = fid; }
             }
@@ -4184,8 +4285,8 @@
             city: addressParams.City, country: config.country,
         });
 
-        cta2Btn.disabled = true;
-        cta2Btn.textContent = '...';
+        btn.disabled = true;
+        btn.textContent = '...';
 
         submitPicoApi(picoKey, picoEnv, payload)
             .then(function () {
@@ -4193,7 +4294,10 @@
             })
             .catch(function (err) {
                 const addrSelector = config.addressFormat === 'dutch' ? '#postcode' : '#city';
-                showPicoError(form, err, config.primaryColor, cta2Btn, cta2OrigText, addrSelector, selectedLang, cta2OrigIcon);
+                // A technical failure routes to offline.html. targetUrl is the flow this CTA
+                // belongs to, so the fallback page can still offer it as a retry.
+                showPicoError(form, err, config.primaryColor, btn, origText, addrSelector, selectedLang, origIcon,
+                    { primaryColor: config.primaryColor, targetUrl: (target && target.url) || primaryTileUrl });
             });
     }
 
@@ -4236,43 +4340,10 @@
                 } else if (tileDisplay === 'tags') {
                     const tagsWrap = renderTileTagsSelect(tiles, selectedTilesSet, config.primaryColor, tilesMaxSelect, tilesLabel, null, selectedLang);
                     form.insertBefore(tagsWrap, refNode);
-                } else if (tileDisplay === 'large') {
-                    const grid = renderTileLargeGrid(tiles, selectedTilesSet, config.primaryColor, function (key, tileEl) {
-                        if (selectedTilesSet.has(key)) {
-                            selectedTilesSet.delete(key);
-                            tileEl.classList.remove('selected');
-                            clearTileLargeSelectedStyle(tileEl);
-                        } else {
-                            if (tilesMaxSelect > 0 && selectedTilesSet.size >= tilesMaxSelect) {
-                                const firstKey = selectedTilesSet.values().next().value;
-                                selectedTilesSet.delete(firstKey);
-                                const firstEl = form.querySelector('[data-tile-key="' + firstKey + '"]');
-                                if (firstEl) { firstEl.classList.remove('selected'); clearTileLargeSelectedStyle(firstEl); }
-                            }
-                            selectedTilesSet.add(key);
-                            tileEl.classList.add('selected');
-                            applyTileLargeSelectedStyle(tileEl, config.primaryColor);
-                        }
-                    });
-                    form.insertBefore(grid, refNode);
                 } else {
-                    const grid = renderTileLargeGrid(tiles, selectedTilesSet, config.primaryColor, function (key, tileEl) {
-                        if (selectedTilesSet.has(key)) {
-                            selectedTilesSet.delete(key);
-                            tileEl.classList.remove('selected');
-                            clearTileLargeSelectedStyle(tileEl);
-                        } else {
-                            if (tilesMaxSelect > 0 && selectedTilesSet.size >= tilesMaxSelect) {
-                                const firstKey = selectedTilesSet.values().next().value;
-                                selectedTilesSet.delete(firstKey);
-                                const firstEl = form.querySelector('[data-tile-key="' + firstKey + '"]');
-                                if (firstEl) { firstEl.classList.remove('selected'); clearTileLargeSelectedStyle(firstEl); }
-                            }
-                            selectedTilesSet.add(key);
-                            tileEl.classList.add('selected');
-                            applyTileLargeSelectedStyle(tileEl, config.primaryColor);
-                        }
-                    });
+                    const grid = renderTileLargeGrid(tiles, selectedTilesSet, config.primaryColor,
+                        makeLargeTileSelectHandler(form, selectedTilesSet, tilesMaxSelect, config.primaryColor, null),
+                        tilesMaxSelect);
                     form.insertBefore(grid, refNode);
                 }
             }
@@ -4458,7 +4529,11 @@
                 })
                 .catch(function (err) {
                     const addrSelector = addressFormat === 'dutch' ? '#postcode' : '#city';
-                    showPicoError(form, err, config.primaryColor, cta1Btn, cta1Text, showAddress ? addrSelector : null, selectedLang);
+                    // Same rule as the scan CTA: a correctable address error stays inline, a
+                    // technical failure goes to offline.html. There is no leadflow to retry
+                    // here, so the fallback page gets no targetUrl.
+                    showPicoError(form, err, config.primaryColor, cta1Btn, cta1Text, showAddress ? addrSelector : null, selectedLang, '',
+                        { primaryColor: config.primaryColor, targetUrl: '' });
                 });
         });
     }
