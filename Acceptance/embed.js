@@ -1575,7 +1575,19 @@
         if (opts.phone) payload.Phonenumber = opts.phone;
         if (opts.firstname) payload.Firstname = opts.firstname;
         if (opts.lastname) payload.Lastname = opts.lastname;
-        if (opts.flowsInterestedIn && opts.flowsInterestedIn.length) payload.FlowsInterestedIn = opts.flowsInterestedIn;
+        // The API expects a list of objects — [{ FlowID: "…" }] — not a list of bare ids.
+        // Callers pass ids; the mapping lives here so the wire format stays in one place.
+        // Deduplicated: two selected measures pointing at the same flow is one interest.
+        if (opts.flowsInterestedIn && opts.flowsInterestedIn.length) {
+            const seen = {};
+            const flows = [];
+            opts.flowsInterestedIn.forEach(function (id) {
+                if (!id || seen[id]) return;
+                seen[id] = true;
+                flows.push({ FlowID: id });
+            });
+            if (flows.length) payload.FlowsInterestedIn = flows;
+        }
 
         if (opts.zipcode && opts.housenumber) {
             payload.HouseDetails = {
@@ -2135,6 +2147,16 @@ function applyTileLargeSelectedStyle(tileEl, primaryColor) {
         return '';
     }
 
+    // A flow id may be configured as the bare id or as a full leadflow URL; a generator that
+    // lets the partner pick a leadflow from a dropdown naturally has the URL at hand. Both are
+    // accepted and normalised to the id.
+    function normalisePicoFlowId(value) {
+        const v = (value || '').trim();
+        if (!v) return '';
+        if (/^https?:\/\//i.test(v)) return extractFlowIdFromUrl(v) || '';
+        return v;
+    }
+
     function parseTilesFromElement(element) {
         return Array.from(element.attributes)
             .filter(function (attr) { return /^data-tile-[a-z0-9]+-url$/.test(attr.name); })
@@ -2155,6 +2177,10 @@ function applyTileLargeSelectedStyle(tileEl, primaryColor) {
                     // the global action", so a partner only sets it where it differs.
                     cta1Action: normaliseCtaAction(element.getAttribute('data-tile-' + key + '-cta1-action')),
                     cta2Action: normaliseCtaAction(element.getAttribute('data-tile-' + key + '-cta2-action')),
+                    // Which Pico leadflow this measure's quick contact is filed under. Only
+                    // relevant when the matching CTA is in 'pico' mode.
+                    cta1PicoFlowId: normalisePicoFlowId(element.getAttribute('data-tile-' + key + '-cta1-pico-flow-id')),
+                    cta2PicoFlowId: normalisePicoFlowId(element.getAttribute('data-tile-' + key + '-cta2-pico-flow-id')),
                 };
             });
         // Deliberately unbounded here: only the large-tile grid has a fixed 4-column layout
@@ -3667,6 +3693,13 @@ function applyTileLargeSelectedStyle(tileEl, primaryColor) {
         const cta1ComboAction = normaliseCtaAction(element.getAttribute('data-cta1-combo-action'));
         const cta2ComboAction = normaliseCtaAction(element.getAttribute('data-cta2-combo-action'));
 
+        // Pico flow ids, per CTA and per level. Pico has no redirect, so the flow the lead
+        // belongs to has to be stated rather than derived from a destination URL.
+        const cta1PicoFlowId = normalisePicoFlowId(element.getAttribute('data-cta1-pico-flow-id'));
+        const cta2PicoFlowId = normalisePicoFlowId(element.getAttribute('data-cta2-pico-flow-id'));
+        const cta1ComboPicoFlowId = normalisePicoFlowId(element.getAttribute('data-cta1-combo-pico-flow-id'));
+        const cta2ComboPicoFlowId = normalisePicoFlowId(element.getAttribute('data-cta2-combo-pico-flow-id'));
+
         // Unified primary / secondary / combination flow URLs
         const cta1UrlGlobal = element.getAttribute('data-cta1-url') || '';
         const cta2UrlGlobal = element.getAttribute('data-cta2-url') || '';
@@ -3757,6 +3790,11 @@ function applyTileLargeSelectedStyle(tileEl, primaryColor) {
             cta1ComboAction: cta1ComboAction, cta2ComboAction: cta2ComboAction,
             cta1UrlGlobal: cta1UrlGlobal, cta2UrlGlobal: cta2UrlGlobal,
             cta1ComboUrl: cta1ComboUrl, cta2ComboUrl: cta2ComboUrl,
+            // Pico flow ids, same three levels. picoFlowIdGlobal is the widget-wide fallback
+            // (data-pico-flow-id) that predates the per-CTA attributes.
+            cta1PicoFlowId: cta1PicoFlowId, cta2PicoFlowId: cta2PicoFlowId,
+            cta1ComboPicoFlowId: cta1ComboPicoFlowId, cta2ComboPicoFlowId: cta2ComboPicoFlowId,
+            picoFlowIdGlobal: normalisePicoFlowId(picoFlowIdOverride),
             // Per-CTA text/icon, with combination + global fallbacks.
             cta1Text: cta1Text, cta1TextBooking: cta1TextBooking, cta2Text: cta2Text,
             cta1ComboText: cta1ComboText, cta2ComboText: cta2ComboText,
@@ -3904,13 +3942,17 @@ function applyTileLargeSelectedStyle(tileEl, primaryColor) {
             const sel = getSelectedTiles();
             const target = resolveCtaTarget(ctaIndex, sel, ctaCfg);
             if (!target) {
-                console.warn('[HomeZero embed] CTA' + ctaIndex + ' heeft geen doel voor de huidige selectie.');
+                const action = resolveCtaAction(ctaIndex, sel, ctaCfg);
+                console.warn('[HomeZero embed] CTA' + ctaIndex + ' heeft geen doel voor de huidige selectie'
+                    + (action === 'pico'
+                        ? ': actie "pico" vereist een gekoppelde leadflow (-pico-flow-id, id= in de CTA-URL of data-pico-flow-id).'
+                        : '.'));
                 return;
             }
 
             if (target.action === 'pico') {
-                handleScanPicoCta(target, form, tiles, selectedTilesSet, picoKey, picoEnv, picoFlowIdOverride,
-                    contactSkipAddress, config, selectedLang, dutchVal, btn,
+                handleScanPicoCta(target, sel, form, picoKey, picoEnv, contactSkipAddress, config,
+                    selectedLang, dutchVal, btn,
                     resolveCtaText(ctaIndex, sel, ctaCfg), resolveCtaIcon(ctaIndex, sel, ctaCfg));
                 return;
             }
@@ -3979,11 +4021,68 @@ function applyTileLargeSelectedStyle(tileEl, primaryColor) {
     function resolveCtaTarget(ctaIndex, selectedTiles, ctaCfg) {
         const action = resolveCtaAction(ctaIndex, selectedTiles, ctaCfg);
         const url = resolveCtaUrl(ctaIndex, selectedTiles, ctaCfg, action) || '';
-        // Pico submits the lead from the browser, so it resolves without a URL. When one is
-        // configured anyway it only supplies the Pico flow id — and it is dropped unless it is
-        // a safe http(s) URL, so nothing unroutable ever reaches the payload.
-        if (action === 'pico') return { url: isSafeUrl(url) ? url : '', action: 'pico' };
+        if (action === 'pico') {
+            // Pico submits from the browser, so it needs no destination URL. A URL that is
+            // configured anyway only supplies the flow id, and is dropped unless it is a safe
+            // http(s) URL so nothing unroutable reaches the payload.
+            const safeUrl = isSafeUrl(url) ? url : '';
+            // A leadflow is mandatory: Pico routes on FlowID, and an unrouted assignment has
+            // nowhere to land. A CTA that cannot resolve one does not resolve at all — which
+            // hides CTA2 and makes CTA1 refuse instead of firing a request that gets rejected.
+            const flowId = resolveCtaPicoFlowId(ctaIndex, selectedTiles, ctaCfg, safeUrl);
+            if (!flowId) return null;
+            return {
+                url: safeUrl,
+                action: 'pico',
+                flowId: flowId,
+                flowsInterestedIn: collectPicoInterests(ctaIndex, selectedTiles),
+            };
+        }
         return url ? { url: url, action: action } : null;
+    }
+
+    // Which Pico leadflow a 'pico' CTA files its lead under, for the current selection. Same
+    // three levels as everything else, then two fallbacks that keep older embeds working:
+    //
+    //   combination / measure / global  →  the CTA's own URL (?id=)  →  data-pico-flow-id
+    //
+    // Returns '' when nothing resolves, which the caller reports: a Pico lead without a flow
+    // cannot be routed to a partner.
+    function resolveCtaPicoFlowId(ctaIndex, selectedTiles, ctaCfg, targetUrl) {
+        const n = selectedTiles.length;
+        let own = '';
+        if (n > 1) {
+            own = ctaIndex === 1 ? ctaCfg.cta1ComboPicoFlowId : ctaCfg.cta2ComboPicoFlowId;
+        } else if (n === 1) {
+            own = ctaIndex === 1 ? selectedTiles[0].cta1PicoFlowId : selectedTiles[0].cta2PicoFlowId;
+        }
+        if (!own) own = ctaIndex === 1 ? ctaCfg.cta1PicoFlowId : ctaCfg.cta2PicoFlowId;
+        if (own) return own;
+        const fromUrl = extractFlowIdFromUrl(targetUrl || '');
+        if (fromUrl) return fromUrl;
+        if (ctaCfg.picoFlowIdGlobal) return ctaCfg.picoFlowIdGlobal;
+        // Last resort: the leadflow of the primary selected measure. This is what makes the
+        // common case need no configuration — a Pico CTA on the heat-pump tile files the lead
+        // under the heat-pump flow.
+        for (let i = 0; i < selectedTiles.length; i++) {
+            const fid = extractFlowIdFromUrl(selectedTiles[i].url);
+            if (fid) return fid;
+        }
+        return '';
+    }
+
+    // The flows the visitor showed interest in: one entry per selected measure, so a combination
+    // reports every measure that was picked and not just the flow being routed to. A measure is
+    // identified by its own leadflow, falling back to its explicit Pico flow when it has no
+    // leadflow URL. Deduplicated, order of selection preserved.
+    function collectPicoInterests(ctaIndex, selectedTiles) {
+        const out = [];
+        selectedTiles.forEach(function (t) {
+            const id = extractFlowIdFromUrl(t.url)
+                || (ctaIndex === 1 ? t.cta1PicoFlowId : t.cta2PicoFlowId);
+            if (id && out.indexOf(id) === -1) out.push(id);
+        });
+        return out;
     }
 
     // Would CTA2 be reachable for ANY selection the visitor can make? Used to decide whether
@@ -4157,11 +4256,21 @@ function applyTileLargeSelectedStyle(tileEl, primaryColor) {
         if (cfg.tilesMaxSelect !== 1 && tiles.length > 1) selections.push(tiles.slice(0, 2));
 
         let usesPico = false;
+        const picoWithoutFlow = [];
         selections.forEach(function (sel) {
             [1, 2].forEach(function (i) {
                 if (i === 2 && !cfg.showCta2) return;
                 const action = resolveCtaAction(i, sel, c);
-                if (action === 'pico') { usesPico = true; return; }
+                if (action === 'pico') {
+                    usesPico = true;
+                    // A leadflow is mandatory for Pico, so a selection that cannot resolve one
+                    // makes the CTA unusable: resolveCtaTarget returns null there.
+                    if (!resolveCtaTarget(i, sel, c)) {
+                        picoWithoutFlow.push('CTA' + i + ' bij '
+                            + (sel.length ? '"' + sel.map(function (x) { return x.key; }).join('+') + '"' : 'een lege selectie'));
+                    }
+                    return;
+                }
                 const target = resolveCtaTarget(i, sel, c);
                 if (target && target.url && !isSafeUrl(target.url)) {
                     console.warn(P + ' CTA' + i + ' verwijst naar een ongeldige URL: ' + target.url);
@@ -4176,6 +4285,11 @@ function applyTileLargeSelectedStyle(tileEl, primaryColor) {
         if (usesPico && !cfg.picoKey) {
             console.warn(P + ' een CTA staat op actie "pico" maar data-pico-key ontbreekt; die lead kan niet worden verstuurd.');
         }
+        if (picoWithoutFlow.length) {
+            console.warn(P + ' actie "pico" zonder gekoppelde leadflow (geen -pico-flow-id, geen id= in de CTA-URL en '
+                + 'geen data-pico-flow-id). Die CTA blijft onbruikbaar: CTA2 wordt verborgen, CTA1 weigert. Betreft: '
+                + picoWithoutFlow.join(', ') + '.');
+        }
 
         if (tiles.length === 0) return;
 
@@ -4183,7 +4297,8 @@ function applyTileLargeSelectedStyle(tileEl, primaryColor) {
             console.warn(P + ' multi-select zonder data-cta1-combo-url of data-cta1-combo-action: bij meerdere selecties valt CTA1 terug op de eerste maatregel.');
         }
         if (cfg.showCta2 && !cta2CanEverResolve(tiles, c)) {
-            console.warn(P + ' CTA2 is aan maar heeft geen doel (geen cta2-url per maatregel/combinatie/globaal en geen pico-actie). CTA2 blijft verborgen.');
+            console.warn(P + ' CTA2 is aan maar heeft geen doel: geen cta2-url per maatregel/combinatie/globaal, en '
+                + 'geen pico-actie met gekoppelde leadflow. CTA2 blijft verborgen.');
         }
         tiles.forEach(function (t) {
             // Only a measure whose CTA1 actually routes to a leadflow needs its own flow URL;
@@ -4226,7 +4341,7 @@ function applyTileLargeSelectedStyle(tileEl, primaryColor) {
     // Submit a lead straight into Pico from the browser — no redirect, no leadflow. Used by
     // whichever CTA resolved to 'pico' for the current selection, so `btn` is the button that
     // was clicked and origText/origIcon restore it if the API call fails.
-    function handleScanPicoCta(target, form, tiles, selectedTilesSet, picoKey, picoEnv, picoFlowIdOverride, contactSkipAddress, config, selectedLang, dutchVal, btn, origText, origIcon) {
+    function handleScanPicoCta(target, selectedTiles, form, picoKey, picoEnv, contactSkipAddress, config, selectedLang, dutchVal, btn, origText, origIcon) {
         form.querySelectorAll('.embed-validation-message').forEach(function (m) { m.remove(); });
         const prevErr = form.querySelector('.embed-inline-error');
         if (prevErr) prevErr.remove();
@@ -4238,8 +4353,8 @@ function applyTileLargeSelectedStyle(tileEl, primaryColor) {
 
         let isValid = true;
         if (!phoneVal && !emailVal) {
-            const target = phone || email;
-            if (target) displayValidationMessage(target, selectedLang.phoneOrEmailRequired);
+            const field = phone || email;
+            if (field) displayValidationMessage(field, selectedLang.phoneOrEmailRequired);
             isValid = false;
         }
         if (phoneVal && !validatePhone(phone, false, selectedLang)) isValid = false;
@@ -4257,29 +4372,16 @@ function applyTileLargeSelectedStyle(tileEl, primaryColor) {
 
         if (!isValid) return;
 
-        // A URL on the resolved CTA is not navigated to in Pico mode; it only names the flow
-        // the lead belongs to. That lets one measure file its quick contact under its own flow.
-        let flowId = extractFlowIdFromUrl(target && target.url ? target.url : '') || picoFlowIdOverride;
-        const flowsInterestedIn = [];
-        // Kept for the fallback page: the leadflow of the primary measure is the closest thing
-        // to a retry destination when the client-side submit fails.
-        let primaryTileUrl = '';
-        tiles.forEach(function (tile) {
-            if (selectedTilesSet.has(tile.key)) {
-                if (!primaryTileUrl && isSafeUrl(tile.url)) primaryTileUrl = tile.url;
-                const fid = extractFlowIdFromUrl(tile.url);
-                if (fid) { flowsInterestedIn.push(fid); if (!flowId) flowId = fid; }
-            }
-        });
-
+        // Routing comes from the resolved target: resolveCtaTarget guarantees a flowId is present
+        // for a 'pico' target, and lists one interest per selected measure.
         const scanNames = config.showName ? getNameValues(form) : { firstname: '', lastname: '' };
         const payload = buildPicoPayload({
-            flowId: flowId || undefined,
+            flowId: target.flowId,
             phone: phoneVal || undefined,
             email: emailVal || undefined,
             firstname: scanNames.firstname || undefined,
             lastname: scanNames.lastname || undefined,
-            flowsInterestedIn: flowsInterestedIn,
+            flowsInterestedIn: target.flowsInterestedIn || [],
             zipcode: addressParams.Zipcode, housenumber: addressParams.Housenumber,
             addition: addressParams.Addition, street: addressParams.Street,
             city: addressParams.City, country: config.country,
@@ -4296,8 +4398,15 @@ function applyTileLargeSelectedStyle(tileEl, primaryColor) {
                 const addrSelector = config.addressFormat === 'dutch' ? '#postcode' : '#city';
                 // A technical failure routes to offline.html. targetUrl is the flow this CTA
                 // belongs to, so the fallback page can still offer it as a retry.
+                // The primary measure's leadflow is the closest thing to a retry destination.
+                let retryUrl = target.url;
+                if (!retryUrl) {
+                    for (let i = 0; i < selectedTiles.length && !retryUrl; i++) {
+                        if (isSafeUrl(selectedTiles[i].url)) retryUrl = selectedTiles[i].url;
+                    }
+                }
                 showPicoError(form, err, config.primaryColor, btn, origText, addrSelector, selectedLang, origIcon,
-                    { primaryColor: config.primaryColor, targetUrl: (target && target.url) || primaryTileUrl });
+                    { primaryColor: config.primaryColor, targetUrl: retryUrl || '' });
             });
     }
 
@@ -4412,7 +4521,15 @@ function applyTileLargeSelectedStyle(tileEl, primaryColor) {
 
         const picoKey = element.getAttribute('data-pico-key') || '';
         const picoEnv = element.getAttribute('data-pico-env') || 'production';
-        const picoFlowId = element.getAttribute('data-pico-flow-id') || '';
+        // Brochure mode has no measures, so there is no FlowsInterestedIn to fall back on: the
+        // flow has to be configured or the request cannot be routed.
+        const picoFlowId = normalisePicoFlowId(element.getAttribute('data-pico-flow-id'));
+        if (!picoFlowId) {
+            console.warn('[HomeZero embed] brochure-modus zonder data-pico-flow-id: er is geen leadflow gekoppeld, dus de aanvraag kan niet verstuurd worden.');
+        }
+        if (!picoKey) {
+            console.warn('[HomeZero embed] brochure-modus zonder data-pico-key: de aanvraag kan niet verstuurd worden.');
+        }
         const cta1Text = element.getAttribute('data-cta1-text') || 'Stuur mij de brochure';
         const successMessage = element.getAttribute('data-success-message') || 'De brochure is onderweg naar jouw inbox!';
         // Read from the shared config rather than re-reading the element, so the name
@@ -4509,8 +4626,13 @@ function applyTileLargeSelectedStyle(tileEl, primaryColor) {
             const addressParams = showAddress ? (tryGetAddressParams(form, googleSearch, addressFormat, country) || {}) : {};
             const names = showName ? getNameValues(form) : { firstname: '', lastname: '' };
 
+            if (!picoFlowId) {
+                console.warn('[HomeZero embed] brochure-aanvraag geweigerd: geen gekoppelde leadflow (data-pico-flow-id).');
+                return;
+            }
+
             const payload = buildPicoPayload({
-                flowId: picoFlowId || undefined,
+                flowId: picoFlowId,
                 email: email.value.trim(),
                 phone: showPhone && phone ? (phone.value.trim() || undefined) : undefined,
                 firstname: names.firstname || undefined,

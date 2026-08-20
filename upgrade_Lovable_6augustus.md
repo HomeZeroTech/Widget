@@ -25,6 +25,12 @@ tegenspreekt, wint dit document.
    icoon als `data-tile-heatpump-url`.
 7. **Een mislukte Pico-inschieting valt nu terug op `offline.html`**, net als de leadflow, in plaats
    van dood te lopen in het formulier.
+8. **Pico-routering per CTA, en een leadflow is verplicht.** De flow waaronder een client-side lead
+   valt is per maatregel, per combinatie en globaal instelbaar via `-pico-flow-id`. Een Pico-CTA
+   zonder oplosbare flow wordt niet meer gerenderd, zodat er nooit een onrouteerbare aanvraag
+   uitgaat. `FlowsInterestedIn` bevat altijd de geselecteerde maatregelen — bij een combinatie komen
+   ze alle mee. Daarnaast is een verzendfout gerepareerd: dat veld ging als lijst strings mee waar
+   de API een lijst objecten verwacht.
 
 ---
 
@@ -38,11 +44,14 @@ Per maatregel kon je alleen een URL zetten, niet wát ermee gebeurde.
 
 Nu kiezen **CTA1 en CTA2 elk hun eigen modus, op elk niveau**. Drie modi:
 
-| Modus | Wat het doet | URL nodig? |
+| Modus | Wat het doet | Wat het nodig heeft |
 |---|---|---|
-| `flow` | HomeZero-leadflow met adres-, naam- en contactvalidatie, plus de `offline.html`-fallback | ja |
-| `booking` | opent een externe agenda (Calendly, Google) in een nieuw tabblad, met naam/telefoon/e-mail als query-parameters | ja |
-| `pico` | schiet de lead client-side rechtstreeks in Pico en toont een bevestigingsscherm — geen redirect | **nee** |
+| `flow` | HomeZero-leadflow met adres-, naam- en contactvalidatie, plus de `offline.html`-fallback | een leadflow-URL |
+| `booking` | opent een externe agenda (Calendly, Google) in een nieuw tabblad, met naam/telefoon/e-mail als query-parameters | een agenda-URL |
+| `pico` | schiet de lead client-side rechtstreeks in Pico en toont een bevestigingsscherm — geen redirect | **geen URL, maar wél een leadflow** (§1.6) |
+
+Elke modus heeft dus een doel nodig, alleen niet hetzelfde soort doel. Zonder dat doel bestaat de
+CTA niet: CTA2 wordt niet gerenderd, CTA1 weigert de klik.
 
 Hiermee is het scenario uit de briefing mogelijk:
 
@@ -70,9 +79,21 @@ Hiermee is het scenario uit de briefing mogelijk:
 | Combinatie (≥2 gekozen) | `data-cta1-combo-action` | `data-cta2-combo-action` | `data-cta1-combo-url` | `data-cta2-combo-url` |
 | Globaal | `data-cta1-action` | `data-cta2-action` | `data-cta1-url` *(nieuw)* | `data-cta2-url` |
 
-`data-cta1-action`, `data-cta1-combo-action`, `data-cta2-combo-action`, de vier per-maatregel
-action-attributen en `data-cta1-url` zijn **nieuw**. Een onbekende waarde wordt genegeerd (met een
-console-waarschuwing) en valt terug op het niveau eronder — hij verandert nooit stil in iets anders.
+En voor de Pico-modus, die geen URL gebruikt maar een flow-id (zie §1.6):
+
+| Niveau | CTA1 flow-id | CTA2 flow-id |
+|---|---|---|
+| Per maatregel | `data-tile-{key}-cta1-pico-flow-id` | `data-tile-{key}-cta2-pico-flow-id` |
+| Combinatie (≥2 gekozen) | `data-cta1-combo-pico-flow-id` | `data-cta2-combo-pico-flow-id` |
+| Globaal | `data-cta1-pico-flow-id` | `data-cta2-pico-flow-id` |
+| Widget-breed (bestond al) | `data-pico-flow-id` | `data-pico-flow-id` |
+
+Alles in beide tabellen is **nieuw** behalve `data-tile-{key}-url`, `data-tile-{key}-cta2-url`,
+`data-cta1-combo-url`, `data-cta2-combo-url`, `data-cta2-url`, `data-cta2-action` en
+`data-pico-flow-id`. Een onbekende modus wordt genegeerd (met een console-waarschuwing) en valt
+terug op het niveau eronder — hij verandert nooit stil in iets anders. De flow-id-attributen
+accepteren zowel een kaal id als een volledige leadflow-URL; uit een URL wordt de `id=`-parameter
+gehaald, zodat de generator gewoon de gekozen leadflow-URL kan doorgeven.
 
 ### 1.3 Precedentie — één regel voor alles
 
@@ -102,9 +123,10 @@ Twee vangnetten, zodat een half-geconfigureerde widget nooit weigert:
 
 ### 1.4 Zichtbaarheid van de 2e CTA
 
-CTA2 verschijnt zodra een selectie een doel oplevert. Een doel is een URL **of** de modus `pico`,
-want die heeft er geen nodig. Dat maakt de generatorregel sluitend: **`data-cta2-show` wordt in geen
-enkele configuratie geëmit**, ook niet bij Pico.
+CTA2 verschijnt zodra een selectie een doel oplevert. Een doel is een URL, of — bij modus `pico` —
+een gekoppelde leadflow (§1.6). Dat maakt de generatorregel sluitend: **`data-cta2-show` wordt in
+geen enkele configuratie geëmit**, ook niet bij Pico. Een Pico-CTA2 zonder leadflow blijft verborgen,
+net als een booking-CTA2 zonder agenda-URL.
 
 | Globale CTA2 | Per-maatregel CTA2 | Niets gekozen | Maatregel mét eigen CTA2 | Maatregel zónder eigen CTA2 |
 |---|---|---|---|---|
@@ -115,7 +137,8 @@ enkele configuratie geëmit**, ook niet bij Pico.
 
 Een globale CTA2 is bewust **selectie-onafhankelijk**: hij staat er vanaf het begin en klikt door
 zonder dat de bezoeker eerst een maatregel hoeft te kiezen. De veldvalidatie blijft volledig gelden.
-Een globale Pico-CTA2 gedraagt zich net zo: altijd zichtbaar, ook zonder keuze.
+Een globale Pico-CTA2 gedraagt zich net zo — maar heeft dan een eigen `data-cta2-pico-flow-id` of
+`data-pico-flow-id` nodig, want zonder selectie is er geen maatregel om de flow uit af te leiden.
 
 `data-cta2-show="false"` blijft de kill-switch en is het enige geval waarin het attribuut nog iets
 doet. Omdat de generator geen "CTA2 forceer uit"-schakelaar heeft, komt dat niet voor.
@@ -127,8 +150,10 @@ doet. Omdat de generator geen "CTA2 forceer uit"-schakelaar heeft, komt dat niet
 | `data-cta2-show` | **Nooit emitten.** Het bestaan van een doel bepaalt de zichtbaarheid, in álle modi inclusief Pico. |
 | Action-attributen | **Emit de gekozen modus op het niveau waar de partner hem instelt** — ook als dat `flow` is. Expliciet `flow` uitschrijven is veilig en voorkomt dat een afwijkende globale modus doorlekt naar een maatregel. Laat het attribuut weg als de partner niets koos; dan erft dat niveau. |
 | Standaardwaarde | Globaal is `flow` de default voor beide CTA's. Zet dat als voorselectie in de UI. |
-| Pico | Emit `data-pico-key` (en `data-pico-env` als dat niet productie is) zodra **enig** niveau op `pico` staat. Zonder sleutel kan de lead niet verstuurd worden; de widget waarschuwt dan in de console. Optioneel: `data-pico-flow-id` als globale flow-override. |
-| Pico + URL | Een URL naast een Pico-modus wordt **niet** genavigeerd; hij levert alleen de flow-id (de `id=`-parameter). Handig als een maatregel zijn quick-contact onder een eigen flow moet vallen. Onveilige URL's worden genegeerd. |
+| Pico | Emit `data-pico-key` (en `data-pico-env="acceptance"` buiten productie) zodra **enig** niveau op `pico` staat. Zonder sleutel kan de lead niet verstuurd worden. |
+| Pico-routering | **Verplicht een leadflow bij elke Pico-keuze** en emit die als `-pico-flow-id` op hetzelfde niveau. De widget rendert een Pico-CTA zonder leadflow niet (§1.6). De waarde mag de leadflow-URL zelf zijn; de widget haalt de `id=` eruit. |
+| Pico in brochure-modus | `data-pico-flow-id` is daar verplicht: geen maatregelen betekent geen terugval. |
+| Pico + URL | Een URL naast een Pico-modus wordt **niet** genavigeerd; hij levert alleen de flow-id. Onveilige URL's worden genegeerd. Een expliciete `-pico-flow-id` wint hiervan. |
 | Booking | Vereist een URL op hetzelfde niveau. Ontbreekt die, dan blijft CTA2 verborgen en weigert CTA1 met een console-waarschuwing. |
 | Generieke 2e CTA | Zet het blok "Generieke 2e CTA (altijd zichtbaar)" **bovenaan** de CTA-sectie, met dezelfde drie keuzes als CTA1 en de hint dat één doel hier volstaat voor alle maatregelen. Geldt in beide modi (één maatregel én tegels). |
 | Per-maatregel CTA2 | Hint: *"Laat leeg om de generieke 2e CTA te gebruiken. Vul alleen in als deze maatregel naar een ander doel moet."* |
@@ -141,7 +166,56 @@ een globale Pico-modus is (ongeacht selectie), anders `true` bij een maatregel d
 Pico-modus heeft. Het CTA1-label volgt de modus: in `booking` is de fallback
 `data-cta1-text-booking`, in `flow` en `pico` is dat `data-cta1-text`.
 
-### 1.6 Wat er gebeurt bij een storing
+### 1.6 De Pico-modus: een leadflow is verplicht
+
+Pico stuurt de lead client-side naar `POST {base}/assignments/create` met de API-sleutel in de
+`X-API-Key`-header. Base-URL's: `https://pico.homezero.nl/rest/pico/v1/` (productie) en
+`https://pico-accp.homezero.nl/rest/pico/v1/` (acceptatie, via `data-pico-env="acceptance"`).
+
+**De widget dwingt af dat er een leadflow gekoppeld is.** Een CTA in Pico-modus zonder oplosbare
+flow-id bestáát niet: CTA2 wordt dan niet gerenderd en CTA1 weigert de klik met een
+console-waarschuwing. Er gaat dus nooit een aanvraag de deur uit die Pico niet kan routeren. De
+generator moet dezelfde eis stellen, zodat die situatie de partner nooit bereikt.
+
+**Waar `FlowID` vandaan komt** — dezelfde precedentie als de rest, met twee vangnetten:
+
+```
+1. combinatie   data-cta{n}-combo-pico-flow-id      (bij ≥2 geselecteerd)
+2. maatregel    data-tile-{key}-cta{n}-pico-flow-id (bij 1 geselecteerd)
+3. globaal      data-cta{n}-pico-flow-id
+4. de id= uit de URL van diezelfde CTA
+5. data-pico-flow-id                                (widget-breed)
+6. de leadflow van de primair geselecteerde maatregel
+```
+
+Stap 6 is waarom de normale situatie geen configuratie nodig heeft: staat CTA1 van de warmtepomp op
+`pico` en heeft die maatregel `data-tile-heatpump-url="…?id=WP"`, dan wordt `WP` de `FlowID`. Een
+expliciete `-pico-flow-id` is er voor als het quick-contact onder een **andere** flow moet vallen dan
+de leadflow van die maatregel.
+
+**Waar `FlowsInterestedIn` vandaan komt** — altijd uit de geselecteerde maatregelen, één entry per
+maatregel, in de volgorde waarin de bezoeker ze koos:
+
+| Selectie | `FlowID` | `FlowsInterestedIn` |
+|---|---|---|
+| Eén maatregel | de flow van die maatregel | `[{ FlowID: "<die maatregel>" }]` |
+| Combinatie (≥2) | de combinatie-flow (of stap 4–6) | `[{ FlowID: "A" }, { FlowID: "B" }, …]` — **alle** geselecteerde maatregelen |
+| Niets gekozen (globale Pico-CTA2) | de globale flow | `[]` |
+
+Bij een combinatie komen de gekozen maatregelen dus direct mee, náást de flow waarop gerouteerd
+wordt. Een maatregel wordt geïdentificeerd door zijn eigen leadflow (`id=` uit
+`data-tile-{key}-url`), en anders door zijn `-pico-flow-id`. Dubbelingen worden samengevoegd: twee
+maatregelen die naar dezelfde flow verwijzen zijn één interesse.
+
+De overige contractregels die de widget respecteert: `Phonenumber` **of** `Email` is verplicht (de
+widget valideert dat vóór het versturen), `HouseDetails` gaat alleen mee als zowel `Zipcode` als
+`Housenumber` bekend zijn, en `Country` gaat in hoofdletters mee met standaard `NL`.
+
+**Ook de brochure-modus vereist nu een leadflow.** Die modus heeft geen maatregelen, dus er is geen
+`FlowsInterestedIn` om op terug te vallen: zonder `data-pico-flow-id` weigert de widget de aanvraag
+en waarschuwt hij bij het laden. Emit dat attribuut dus altijd in brochure-modus.
+
+### 1.7 Wat er gebeurt bij een storing
 
 `offline.html` is de storingspagina van HomeZero. Hij wordt naast het script zelf gezocht, dus elke
 omgeving serveert zijn eigen kopie (`…/Production/offline.html`). Per route:
@@ -154,9 +228,10 @@ omgeving serveert zijn eigen kopie (`…/Production/offline.html`). Per route:
 
 **Pico onderscheidt twee soorten fouten**, en dat verschil moet de generator ook uitleggen:
 
-- **Herstelbaar** — adres niet gevonden, of buiten het werkgebied. Dat blijft een inline melding bij
-  het adresveld, zodat de bezoeker zijn invoer houdt en kan corrigeren. Naar een storingspagina
-  sturen zou hier onjuist zijn: de dienst werkt, het adres is het probleem.
+- **Herstelbaar** — de twee gedocumenteerde adresfouten, `Could not find a building with this
+  address` en `address not inside the operating area`. Die blijven een inline melding bij het
+  adresveld, zodat de bezoeker zijn invoer houdt en kan corrigeren. Naar een storingspagina sturen
+  zou hier onjuist zijn: de dienst werkt, het adres is het probleem.
 - **Technisch** — netwerkfout, 5xx, API onbereikbaar. Dat gaat naar `offline.html`, met de reden,
   de partnersite als `referralUrl` en client-diagnostiek als `context`. Staat er een leadflow-URL
   bij de maatregel, dan gaat die mee als `targetUrl` zodat de pagina een "opnieuw proberen" kan
@@ -164,7 +239,13 @@ omgeving serveert zijn eigen kopie (`…/Production/offline.html`). Per route:
 
 Bij de keuze `booking` hoort in de configurator de notitie dat die route geen storingspagina heeft.
 
-### 1.7 Validaties die de generator moet uitvoeren
+> **Aandachtspunt.** De API-sleutel is gewhitelist per domein. Wordt de widget op een niet-gewhiteliste
+> host geplaatst, dan is de afwijzing een *configuratiefout*, maar de widget classificeert hem als
+> technisch en stuurt de bezoeker naar de storingspagina. Dat is niet misleidend voor de bezoeker,
+> maar de partner ziet er niet aan dat zijn domein nog aangemeld moet worden. Laat de generator bij
+> het aanvragen van de sleutel expliciet het domein uitvragen.
+
+### 1.8 Validaties die de generator moet uitvoeren
 
 De widget degradeert netjes en waarschuwt in de console; hij gooit nooit. Maar een partner ziet die
 console niet, dus de generator moet deze fouten **vóór** het genereren afvangen. Links de melding
@@ -174,23 +255,28 @@ die de widget geeft, rechts wat de configurator moet doen om die onmogelijk te m
 |---|---|
 | `onbekende CTA-actie "…"; toegestaan zijn flow, pico, booking` | Modus alleen uit een gesloten keuzelijst; nooit vrije tekst. |
 | `een CTA staat op actie "pico" maar data-pico-key ontbreekt` | Zodra enig niveau `pico` is: `data-pico-key` verplicht maken en meeschrijven. |
+| `actie "pico" zonder gekoppelde leadflow … CTA2 wordt verborgen, CTA1 weigert` | Bij elke Pico-keuze een leadflow verplicht maken. Let op de globale Pico-CTA2: die is klikbaar zonder selectie, dus daar kan geen maatregel de flow leveren en is een eigen flow-id echt nodig. |
+| `brochure-modus zonder data-pico-flow-id` | In brochure-modus een leadflow verplicht maken; anders weigert de widget de aanvraag. |
+| `brochure-modus zonder data-pico-key` | In brochure-modus `data-pico-key` verplicht maken. |
 | `CTA{n} staat op actie "booking" maar heeft geen agenda-URL voor maatregel "…"` | URL-veld verplicht zodra de modus `booking` is, op hetzelfde niveau. |
 | `CTA{n} verwijst naar een ongeldige URL: …` | Alleen `http(s)`-URL's toestaan; `javascript:` en `data:` weigeren. |
 | `maatregel "…" heeft geen geldige data-tile-{key}-url` | Bij modus `flow` is de leadflow-URL van die maatregel verplicht. Bij `pico` en `booking` niet. |
-| `CTA2 is aan maar heeft geen doel … CTA2 blijft verborgen` | Geen 2e CTA uitschrijven zonder doel: óf een URL, óf modus `pico`. |
+| `CTA2 is aan maar heeft geen doel … CTA2 blijft verborgen` | Geen 2e CTA uitschrijven zonder doel: óf een URL, óf modus `pico` **met** gekoppelde leadflow. |
 | `multi-select zonder data-cta1-combo-url of data-cta1-combo-action` | Bij multi-select het combinatie-blok aanbieden en invullen aanmoedigen; anders erft de combinatie de eerste maatregel. |
 | `dropdown is single-select; data-tiles-max-select wordt geforceerd naar 1` | Bij `data-tile-display="dropdown"` de multi-select-optie verbergen en `data-tiles-max-select="1"` emitten. |
 | `data-cta2-action="ai-chat" is verouderd` | Nooit `ai-chat` als modus emitten; gebruik `data-ai-chat-show="true"` + `data-ai-chat-text`. |
-| `CTA{n} heeft geen doel voor de huidige selectie` (bij de klik) | Sluit uit met de checks hierboven; dit betekent dat een maatregel geen bruikbare combinatie van modus en URL heeft. |
+| `CTA{n} heeft geen geldige doel-URL voor de huidige selectie` (bij de klik) | Idem als de rij hierboven: de URL bestaat wel maar is geen geldige `http(s)`-URL. |
+| `CTA{n} heeft geen doel voor de huidige selectie` (bij de klik) | Sluit uit met de checks hierboven. Bij modus `pico` noemt de melding expliciet dat er een leadflow ontbreekt. |
+| `brochure-aanvraag geweigerd: geen gekoppelde leadflow` (bij de klik) | Idem — komt niet voor als `data-pico-flow-id` altijd geëmit wordt. |
 
 Twee dingen die de widget **niet** kan controleren en die dus in de configurator thuishoren:
 
 - Of een leadflow-URL daadwerkelijk bestaat. De widget kijkt alleen of het een geldige `http(s)`-URL
   is; een typefout in de `id=`-parameter komt pas bij de bezoeker aan het licht.
 - Of meer dan vier maatregelen met `large`/`tiles` gecombineerd worden — de widget kapt stil af op
-  vier (§1.7). Waarschuw of blokkeer dat in de UI.
+  vier (§1.9). Waarschuw of blokkeer dat in de UI.
 
-### 1.8 Bekende beperking van grote tegels
+### 1.9 Bekende beperking van grote tegels
 
 `data-tile-display="large"` (en `"tiles"`) rendert een raster van **maximaal 4 maatregelen** — het
 raster is vier kolommen breed en een vijfde tegel valt weg. Dropdown en tags kennen die grens niet.
@@ -425,6 +511,11 @@ widget kiest deze op basis van de key, dus de generator hoeft ze **niet** mee te
 - [ ] De gekozen modus wordt geëmit op het niveau waar hij is ingesteld — ook als dat `flow` is.
 - [ ] `data-cta2-show` wordt in geen enkele configuratie geëmit.
 - [ ] `data-pico-key` (en `data-pico-env` buiten productie) wordt geëmit zodra enig niveau `pico` is.
+- [ ] Elke Pico-keuze dwingt een leadflow af, geëmit als `-pico-flow-id` op hetzelfde niveau.
+- [ ] Een globale Pico-CTA2 (klikbaar zonder selectie) krijgt altijd een eigen flow-id.
+- [ ] Brochure-modus emit altijd `data-pico-flow-id`.
+- [ ] Bij het aanvragen van een Pico-sleutel wordt het domein van de partner uitgevraagd
+      (de sleutel is per domein gewhitelist).
 - [ ] `booking` zonder URL wordt in de configurator geblokkeerd, niet stil geëmit.
 - [ ] Bij `booking` staat in de UI dat die route geen storingspagina heeft.
 - [ ] Bij `pico` staat in de UI dat een technische fout naar de storingspagina leidt en een
@@ -449,4 +540,4 @@ widget kiest deze op basis van de key, dus de generator hoeft ze **niet** mee te
 - [ ] `data-tile-{key}-title` wordt altijd uitgeschreven.
 - [ ] Iconen in de preview komen uit §2.5, opgezocht op de exacte key.
 - [ ] Keys matchen `[a-z0-9]+` — geen streepjes, geen hoofdletters.
-- [ ] Bij meer dan 4 maatregelen wordt `large`/`tiles` afgeraden of geblokkeerd (§1.7).
+- [ ] Bij meer dan 4 maatregelen wordt `large`/`tiles` afgeraden of geblokkeerd (§1.9).
