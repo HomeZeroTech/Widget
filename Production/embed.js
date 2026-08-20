@@ -97,6 +97,66 @@
     measurementIcons.ems = `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2ZM11 16V13H8L13 8V11H16L11 16ZM4 12C4 16.4183 7.58172 20 12 20C16.4183 20 20 16.4183 20 12C20 7.58172 16.4183 4 12 4C7.58172 4 4 7.58172 4 12Z" fill="currentColor"/></svg>`;
     measurementIcons.meterkast = `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M4 3C3.44772 3 3 3.44772 3 4V20C3 20.5523 3.44772 21 4 21H20C20.5523 21 21 20.5523 21 20V4C21 3.44772 20.5523 3 20 3H4ZM5 5H19V19H5V5ZM8 8C8 7.44772 8.44772 7 9 7H10C10.5523 7 11 7.44772 11 8C11 8.55228 10.5523 9 10 9H9C8.44772 9 8 8.55228 8 8ZM13 8C13 7.44772 13.4477 7 14 7H15C15.5523 7 16 7.44772 16 8C16 8.55228 15.5523 9 15 9H14C13.4477 9 13 8.55228 13 8ZM9 11C8.44772 11 8 11.4477 8 12C8 12.5523 8.44772 13 9 13H15C15.5523 13 16 12.5523 16 12C16 11.4477 15.5523 11 15 11H9ZM9 15C8.44772 15 8 15.4477 8 16C8 16.5523 8.44772 17 9 17H15C15.5523 17 16 16.5523 16 16C16 15.4477 15.5523 15 15 15H9Z" fill="currentColor"/></svg>`;
 
+    // Tile key → the measurement name the leadflow expects in InterestedInMeasurements.
+    // The leadflow uses these to pre-tick the right measures, and the combination flow keys
+    // functional behaviour off them, so the spelling has to match its vocabulary exactly
+    // (note "Heatpump", "GlasInsulation", "SolarPanel" singular). Keys without an entry —
+    // advicescan, ems, or a partner's own key — are simply left out of that parameter; they
+    // still travel in Tiles/PrimaryTile.
+    const measurementNames = {
+        solarpanels: 'SolarPanel',
+        heatpump: 'Heatpump',
+        floorinsulation: 'FloorInsulation',
+        wallinsulation: 'WallInsulation',
+        roofinsulation: 'RoofInsulation',
+        glassinsulation: 'GlasInsulation',
+        carcharger: 'ChargingStation',
+        airconditioning: 'Airconditioning',
+        homebattery: 'HomeBattery',
+        solarboiler: 'SolarBoiler',
+        meterkast: 'FuseBox',
+        gasboiler: 'GasBoiler',
+        dynamicenergy: 'DynamicEnergyContract',
+        servicemaintenance: 'ServiceAndMaintenance',
+        advisormodule: 'AdvisorModule',
+        combination: 'Combination',
+        general: 'General',
+    };
+
+    // The Dutch alias keys resolve to the same measurement, mirroring the icon aliases so a
+    // partner using Dutch keys gets the same leadflow behaviour.
+    measurementNames.zonnepanelen = measurementNames.solarpanels;
+    measurementNames.zon = measurementNames.solarpanels;
+    measurementNames.warmtepomp = measurementNames.heatpump;
+    measurementNames.vloerisolatie = measurementNames.floorinsulation;
+    measurementNames.muurisolatie = measurementNames.wallinsulation;
+    measurementNames.dakisolatie = measurementNames.roofinsulation;
+    measurementNames.glasisolatie = measurementNames.glassinsulation;
+    measurementNames.laadpaal = measurementNames.carcharger;
+    measurementNames.airco = measurementNames.airconditioning;
+    measurementNames.thuisbatterij = measurementNames.homebattery;
+    measurementNames.batterij = measurementNames.homebattery;
+    measurementNames.zonnestroomboiler = measurementNames.solarboiler;
+    measurementNames.cvketel = measurementNames.gasboiler;
+    measurementNames.dynamischeenergie = measurementNames.dynamicenergy;
+    measurementNames.serviceonderhoud = measurementNames.servicemaintenance;
+    measurementNames.adviseur = measurementNames.advisormodule;
+    measurementNames.advies = measurementNames.advisormodule;
+    measurementNames.combinatie = measurementNames.combination;
+    measurementNames.algemeen = measurementNames.general;
+
+    // Map selected tile keys onto leadflow measurement names, deduplicated and in selection
+    // order. Unknown keys drop out rather than being passed through raw, so the leadflow never
+    // receives a name it cannot interpret.
+    function toMeasurementNames(keys) {
+        const out = [];
+        keys.forEach(function (k) {
+            const name = measurementNames[k];
+            if (name && out.indexOf(name) === -1) out.push(name);
+        });
+        return out;
+    }
+
     // Add translations for international address fields
     const translations = {
         en: {
@@ -4178,6 +4238,12 @@ function applyTileLargeSelectedStyle(tileEl, primaryColor) {
             // Always send the primary (first selected) tile — preserves pre-existing behavior
             // for multi-select leadflows that key off PrimaryTile.
             url += '&PrimaryTile=' + encodeURIComponent(keys[0]);
+            // Sent for every selection, single measure included: the leadflow pre-ticks these,
+            // and the combination flow drives functional behaviour off them.
+            const measurements = toMeasurementNames(keys);
+            if (measurements.length) {
+                url += '&InterestedInMeasurements=' + encodeURIComponent(measurements.join(','));
+            }
         }
 
         const showCheckbox = !!config.checkboxTitle;

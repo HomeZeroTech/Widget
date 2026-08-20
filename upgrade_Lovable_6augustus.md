@@ -25,7 +25,10 @@ tegenspreekt, wint dit document.
    icoon als `data-tile-heatpump-url`.
 7. **Een mislukte Pico-inschieting valt nu terug op `offline.html`**, net als de leadflow, in plaats
    van dood te lopen in het formulier.
-8. **Pico-routering per CTA, en een leadflow is verplicht.** De flow waaronder een client-side lead
+8. **De leadflow ontvangt de geselecteerde maatregelen** in `InterestedInMeasurements`, met de
+   namen die de leadflow kent (`Heatpump,SolarPanel`). Altijd meegestuurd, ook bij één maatregel;
+   de combinatie-flow koppelt er functioneel gedrag aan.
+9. **Pico-routering per CTA, en een leadflow is verplicht.** De flow waaronder een client-side lead
    valt is per maatregel, per combinatie en globaal instelbaar via `-pico-flow-id`. Een Pico-CTA
    zonder oplosbare flow wordt niet meer gerenderd, zodat er nooit een onrouteerbare aanvraag
    uitgaat. `FlowsInterestedIn` bevat altijd de geselecteerde maatregelen — bij een combinatie komen
@@ -215,7 +218,64 @@ widget valideert dat vóór het versturen), `HouseDetails` gaat alleen mee als z
 `FlowsInterestedIn` om op terug te vallen: zonder `data-pico-flow-id` weigert de widget de aanvraag
 en waarschuwt hij bij het laden. Emit dat attribuut dus altijd in brochure-modus.
 
-### 1.7 Wat er gebeurt bij een storing
+### 1.7 Wat de leadflow-URL meekrijgt
+
+Bij modus `flow` bouwt de widget de start-URL van de leadflow. Naast het adres, de naam- en
+contactvelden en `ReferralURL` gaan de geselecteerde maatregelen mee in drie parameters:
+
+| Parameter | Inhoud |
+|---|---|
+| `Tiles` | de ruwe tegel-keys, komma-gescheiden (`heatpump,solarpanels`) — ongewijzigd |
+| `PrimaryTile` | de eerst geselecteerde key — ongewijzigd |
+| `InterestedInMeasurements` *(nieuw)* | de maatregelnamen zoals de leadflow ze kent, komma-gescheiden (`Heatpump,SolarPanel`) |
+
+`InterestedInMeasurements` gaat **altijd** mee, ook bij één geselecteerde maatregel. De leadflow
+gebruikt het om de juiste maatregelen alvast aan te vinken; de **combinatie-flow** koppelt er
+functioneel gedrag aan. Voor de andere flows is het onschadelijk — daar landt het in een veld.
+
+De namen zijn niet gelijk aan de keys en de spelling moet exact kloppen. De widget vertaalt ze zelf,
+dus de generator hoeft hier niets voor te emitten — maar de **keuze van de key bepaalt nu ook het
+leadflow-gedrag**, niet alleen het icoon:
+
+| Key | Naam in `InterestedInMeasurements` |
+|---|---|
+| `solarpanels` | `SolarPanel` |
+| `heatpump` | `Heatpump` |
+| `floorinsulation` | `FloorInsulation` |
+| `wallinsulation` | `WallInsulation` |
+| `roofinsulation` | `RoofInsulation` |
+| `glassinsulation` | `GlasInsulation` |
+| `carcharger` | `ChargingStation` |
+| `airconditioning` | `Airconditioning` |
+| `homebattery` | `HomeBattery` |
+| `solarboiler` | `SolarBoiler` |
+| `meterkast` | `FuseBox` |
+| `gasboiler` | `GasBoiler` |
+| `dynamicenergy` | `DynamicEnergyContract` |
+| `servicemaintenance` | `ServiceAndMaintenance` |
+| `advisormodule` | `AdvisorModule` |
+| `combination` | `Combination` |
+| `general` | `General` |
+
+De Nederlandse alias-keys uit §2.2 geven dezelfde naam, dus `data-tile-warmtepomp-url` levert net als
+`data-tile-heatpump-url` de naam `Heatpump`. Dubbelingen worden samengevoegd en de selectievolgorde
+blijft behouden.
+
+**Twee keys hebben geen leadflow-naam**: `advicescan` (Huisscan) en `ems` (Energiemanagement). Die
+staan niet in de maatregellijst van de leadflow, dus ze vallen uit `InterestedInMeasurements` weg —
+ze reizen wel mee in `Tiles`. Gebruik die keys dus niet in een widget die op een combinatie-flow
+uitkomt, of vraag om een officiële naam.
+
+**Trackingparameters.** Alle dertien gedocumenteerde parameters — `utm_campaign`, `utm_medium`,
+`utm_source`, `utm_content`, `utm_term`, `gclid`, `gbraid`, `wbraid`, `dclid`, `ttclid`, `fbclid`,
+`li_fat_id`, `ad_id` — worden van de pagina waar de widget staat overgenomen en doorgegeven. De
+widget leest ze uit de query-string **en uit cookies** met dezelfde naam, zodat ze ook overleven
+wanneer de bezoeker eerst naar een andere pagina navigeert. Waarden die alleen uit witruimte bestaan
+of letterlijk `undefined`/`null` zijn (wat ad-scripts soms schrijven) worden overgeslagen. Dit geldt
+voor de leadflow-URL, voor de Pico-payload (daar heten de velden `UtmSource`, `GCLID`, …) en voor de
+classic-modus. De `booking`-route stuurt ze niet mee: die opent een externe agenda.
+
+### 1.8 Wat er gebeurt bij een storing
 
 `offline.html` is de storingspagina van HomeZero. Hij wordt naast het script zelf gezocht, dus elke
 omgeving serveert zijn eigen kopie (`…/Production/offline.html`). Per route:
@@ -245,7 +305,7 @@ Bij de keuze `booking` hoort in de configurator de notitie dat die route geen st
 > maar de partner ziet er niet aan dat zijn domein nog aangemeld moet worden. Laat de generator bij
 > het aanvragen van de sleutel expliciet het domein uitvragen.
 
-### 1.8 Validaties die de generator moet uitvoeren
+### 1.9 Validaties die de generator moet uitvoeren
 
 De widget degradeert netjes en waarschuwt in de console; hij gooit nooit. Maar een partner ziet die
 console niet, dus de generator moet deze fouten **vóór** het genereren afvangen. Links de melding
@@ -274,9 +334,9 @@ Twee dingen die de widget **niet** kan controleren en die dus in de configurator
 - Of een leadflow-URL daadwerkelijk bestaat. De widget kijkt alleen of het een geldige `http(s)`-URL
   is; een typefout in de `id=`-parameter komt pas bij de bezoeker aan het licht.
 - Of meer dan vier maatregelen met `large`/`tiles` gecombineerd worden — de widget kapt stil af op
-  vier (§1.9). Waarschuw of blokkeer dat in de UI.
+  vier (§1.10). Waarschuw of blokkeer dat in de UI.
 
-### 1.9 Bekende beperking van grote tegels
+### 1.10 Bekende beperking van grote tegels
 
 `data-tile-display="large"` (en `"tiles"`) rendert een raster van **maximaal 4 maatregelen** — het
 raster is vier kolommen breed en een vijfde tegel valt weg. Dropdown en tags kennen die grens niet.
@@ -293,30 +353,32 @@ icoon en gaat als `Tiles=` / `PrimaryTile=` naar de leadflow. Hij moet matchen o
 **geen streepjes**, want de attribuut-parser is `/^data-tile-[a-z0-9]+-url$/`. De **weergavenaam**
 is vrije tekst in `data-tile-{key}-title` en het enige dat de bezoeker leest. Emit die altijd.
 
-| # | Weergavenaam (default) | Key | Icoon |
-|---|---|---|---|
-| 1 | Zonnepanelen | `solarpanels` | ingebouwd |
-| 2 | Warmtepomp | `heatpump` | ingebouwd |
-| 3 | Vloerisolatie | `floorinsulation` | ingebouwd |
-| 4 | Muurisolatie | `wallinsulation` | ingebouwd |
-| 5 | Dakisolatie | `roofinsulation` | ingebouwd |
-| 6 | Glasisolatie | `glassinsulation` | ingebouwd |
-| 7 | Laadpaal | `carcharger` | ingebouwd |
-| 8 | Airco | `airconditioning` | ingebouwd |
-| 9 | Thuisbatterij | `homebattery` | ingebouwd |
-| 10 | Zonnestroomboiler | `solarboiler` | ingebouwd |
-| 11 | Meterkast | `meterkast` | ingebouwd |
-| 12 | Cv-ketel | `gasboiler` | ingebouwd |
-| 13 | Dynamische energie | `dynamicenergy` | ingebouwd · **nieuw icoon** |
-| 14 | Service en onderhoud | `servicemaintenance` | ingebouwd · **nieuw icoon** |
-| 15 | Combinatie | `combination` | ingebouwd · **nieuw icoon** |
-| 98 | Adviseur | `advisormodule` | ingebouwd |
-| 99 | Algemeen | `general` | ingebouwd |
-| — | Huisscan | `advicescan` | ingebouwd · bestond al, staat niet in de lijst |
-| — | Energiemanagement (EMS) | `ems` | ingebouwd · bestond al, staat niet in de lijst |
+| # | Weergavenaam (default) | Key | Icoon | Leadflow-naam |
+|---|---|---|---|---|
+| 1 | Zonnepanelen | `solarpanels` | ingebouwd | `SolarPanel` |
+| 2 | Warmtepomp | `heatpump` | ingebouwd | `Heatpump` |
+| 3 | Vloerisolatie | `floorinsulation` | ingebouwd | `FloorInsulation` |
+| 4 | Muurisolatie | `wallinsulation` | ingebouwd | `WallInsulation` |
+| 5 | Dakisolatie | `roofinsulation` | ingebouwd | `RoofInsulation` |
+| 6 | Glasisolatie | `glassinsulation` | ingebouwd | `GlasInsulation` |
+| 7 | Laadpaal | `carcharger` | ingebouwd | `ChargingStation` |
+| 8 | Airco | `airconditioning` | ingebouwd | `Airconditioning` |
+| 9 | Thuisbatterij | `homebattery` | ingebouwd | `HomeBattery` |
+| 10 | Zonnestroomboiler | `solarboiler` | ingebouwd | `SolarBoiler` |
+| 11 | Meterkast | `meterkast` | ingebouwd | `FuseBox` |
+| 12 | Cv-ketel | `gasboiler` | ingebouwd | `GasBoiler` |
+| 13 | Dynamische energie | `dynamicenergy` | ingebouwd · **nieuw icoon** | `DynamicEnergyContract` |
+| 14 | Service en onderhoud | `servicemaintenance` | ingebouwd · **nieuw icoon** | `ServiceAndMaintenance` |
+| 15 | Combinatie | `combination` | ingebouwd · **nieuw icoon** | `Combination` |
+| 98 | Adviseur | `advisormodule` | ingebouwd | `AdvisorModule` |
+| 99 | Algemeen | `general` | ingebouwd | `General` |
+| — | Huisscan | `advicescan` | ingebouwd · bestond al, staat niet in de lijst | — |
+| — | Energiemanagement (EMS) | `ems` | ingebouwd · bestond al, staat niet in de lijst | — |
 
 Alle 19 keys hierboven bestaan in de widget en hebben een eigen ingebouwd icoon. Er is geen
-maatregel meer die op het generieke `general`-icoon terugvalt.
+maatregel meer die op het generieke `general`-icoon terugvalt. De laatste kolom is de naam waarmee
+de maatregel in `InterestedInMeasurements` naar de leadflow gaat (§1.7); `advicescan` en `ems` hebben
+die niet.
 
 ### 2.2 Nederlandse alias-keys *(correctie op `LOVABLE_GENERATOR.md`)*
 
@@ -540,4 +602,8 @@ widget kiest deze op basis van de key, dus de generator hoeft ze **niet** mee te
 - [ ] `data-tile-{key}-title` wordt altijd uitgeschreven.
 - [ ] Iconen in de preview komen uit §2.5, opgezocht op de exacte key.
 - [ ] Keys matchen `[a-z0-9]+` — geen streepjes, geen hoofdletters.
-- [ ] Bij meer dan 4 maatregelen wordt `large`/`tiles` afgeraden of geblokkeerd (§1.9).
+- [ ] De keuze van de key wordt als functioneel behandeld, niet cosmetisch: hij bepaalt het icoon
+      **en** de naam in `InterestedInMeasurements` (§1.7).
+- [ ] `advicescan` en `ems` worden niet aangeboden in een widget die op een combinatie-flow uitkomt:
+      die keys hebben geen leadflow-naam.
+- [ ] Bij meer dan 4 maatregelen wordt `large`/`tiles` afgeraden of geblokkeerd (§1.10).
