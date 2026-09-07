@@ -3874,9 +3874,42 @@ function applyTileLargeSelectedStyle(tileEl, primaryColor) {
 
         validateScanConfig(tiles, {
             showCta2: showCta2, tilesMaxSelect: tilesMaxSelect, picoKey: picoKey, ctaCfg: ctaCfg,
+            showEmail: config.showEmail,
         });
 
         function getSelectedTiles() { return tiles.filter(function (t) { return selectedTilesSet.has(t.key); }); }
+
+        // Whether either CTA would file the lead straight into Pico for this selection. Pico
+        // creates the opdracht directly (no leadflow redirect), and requires an email address
+        // to do so — so a selection that resolves to Pico needs email regardless of the
+        // generic data-email-required setting.
+        function ctaResolvesToPico(sel) {
+            if (resolveCtaAction(1, sel, ctaCfg) === 'pico') return true;
+            if (showCta2 && resolveCtaAction(2, sel, ctaCfg) === 'pico') return true;
+            return false;
+        }
+
+        // Reflects the current email requirement (generic setting OR Pico for this selection)
+        // in the label asterisk/"(Optioneel)" suffix and aria-required. No-op when the widget
+        // has no email field at all.
+        function updateEmailRequiredIndicator(sel) {
+            if (!config.showEmail) return;
+            const emailInput = form.querySelector('#email');
+            const emailLabel = form.querySelector('label[for="email"]');
+            if (!emailInput) return;
+            const required = config.emailRequired || ctaResolvesToPico(sel);
+            if (required) {
+                emailInput.setAttribute('aria-required', 'true');
+            } else {
+                emailInput.removeAttribute('aria-required');
+            }
+            if (emailLabel) {
+                const suffix = required
+                    ? '<span>*</span>'
+                    : ' <span class="embed-label-optional">' + (selectedLang.optional || '(Optioneel)') + '</span>';
+                emailLabel.innerHTML = selectedLang.emailLabel + suffix;
+            }
+        }
 
         // Keep CTA text + icon in sync and toggle CTA2 visibility per current selection
         function updateCtas() {
@@ -3893,6 +3926,7 @@ function applyTileLargeSelectedStyle(tileEl, primaryColor) {
                 c2.style.setProperty('display', t2 ? 'inline-flex' : 'none', 'important');
                 setCtaButtonContent(c2, resolveCtaIcon(2, sel, ctaCfg), resolveCtaText(2, sel, ctaCfg));
             }
+            updateEmailRequiredIndicator(sel);
         }
         const updateCta1Text = updateCtas;
 
@@ -4351,6 +4385,10 @@ function applyTileLargeSelectedStyle(tileEl, primaryColor) {
         if (usesPico && !cfg.picoKey) {
             console.warn(P + ' een CTA staat op actie "pico" maar data-pico-key ontbreekt; die lead kan niet worden verstuurd.');
         }
+        if (usesPico && !cfg.showEmail) {
+            console.warn(P + ' een CTA staat op actie "pico" maar data-show-email ontbreekt; Pico vereist een e-mailadres om '
+                + 'de opdracht aan te maken, dus die lead kan alleen op telefoonnummer worden ingeschoten.');
+        }
         if (picoWithoutFlow.length) {
             console.warn(P + ' actie "pico" zonder gekoppelde leadflow (geen -pico-flow-id, geen id= in de CTA-URL en '
                 + 'geen data-pico-flow-id). Die CTA blijft onbruikbaar: CTA2 wordt verborgen, CTA1 weigert. Betreft: '
@@ -4418,13 +4456,19 @@ function applyTileLargeSelectedStyle(tileEl, primaryColor) {
         const emailVal = email ? email.value.trim() : '';
 
         let isValid = true;
-        if (!phoneVal && !emailVal) {
-            const field = phone || email;
-            if (field) displayValidationMessage(field, selectedLang.phoneOrEmailRequired);
+        // Pico creates the opdracht directly and requires an email address to do so, so a
+        // widget that shows the email field must have it filled in here regardless of the
+        // generic data-email-required setting. A widget with no email field at all falls
+        // back to the legacy "phone or email" requirement, since there's nothing else to ask.
+        if (config.showEmail) {
+            if (!validateEmail(email, true, selectedLang)) isValid = false;
+            if (phoneVal && !validatePhone(phone, false, selectedLang)) isValid = false;
+        } else if (!phoneVal) {
+            if (phone) displayValidationMessage(phone, selectedLang.phoneOrEmailRequired);
+            isValid = false;
+        } else if (!validatePhone(phone, false, selectedLang)) {
             isValid = false;
         }
-        if (phoneVal && !validatePhone(phone, false, selectedLang)) isValid = false;
-        if (emailVal && !validateEmail(email, false, selectedLang)) isValid = false;
         if (!validateNames(form, config.showName, config.nameRequired, selectedLang)) isValid = false;
 
         let addressParams = {};
